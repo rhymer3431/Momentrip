@@ -1,0 +1,18 @@
+buildscript {
+    ext {
+        compose_version = '1.6.4' // 최신 Compose 버전으로 업데이트
+    }
+    repositories {
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:8.2.0' // 안정적인 최신 버전 사용
+        classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.9.23' // 최신 Kotlin 버전 적용
+    }
+}
+
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}
