@@ -1,17 +1,22 @@
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
 buildscript {
     ext {
-        compose_version = '1.6.4' // 최신 Compose 버전으로 업데이트
+        compose_version = '1.5.0'
+        agp_version = '8.0.2'
+        agp_version1 = '8.8.0'
     }
     repositories {
         google()
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:8.2.0' // 안정적인 최신 버전 사용
-        classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.9.23' // 최신 Kotlin 버전 적용
+        classpath "com.android.tools.build:gradle:$agp_version1"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.9.0"
+        classpath 'com.google.gms:google-services:4.3.15'
+        // NOTE: Do not place your application dependencies here; they belong
+        // in the individual module build.gradle files
     }
 }
-
 
 task clean(type: Delete) {
     delete rootProject.buildDir

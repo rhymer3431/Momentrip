@@ -1,11 +1,7 @@
 package com.mp.momentrip.service
-import com.mp.momentrip.data.Schedule
+import android.util.Log
 import com.mp.momentrip.data.UserPreference
-import com.mp.momentrip.ui.home.analyzer
-import com.mp.momentrip.util.Recommender
-import com.mp.momentrip.util.Scheduler
 import com.mp.momentrip.util.vector.textToVector
-import java.io.PrintStream
 
 // 사용자 답변을 받고 벡터로 변환
 class PreferenceAnalyzer {
@@ -18,22 +14,33 @@ class PreferenceAnalyzer {
 
     private val answers : ArrayList<String> = arrayListOf()
 
-    fun addAnswer(answer:String){
+    suspend fun addAnswer(answer:String){
         answers.add(answer)
     }
-    fun removeAnswer(answer:String){
-        answers.remove(answer)
-    }
-    fun createUserPreference(): UserPreference {
-        val answers = getAnswers()
-        val newUserPreference =
-            UserPreference(preferenceVector = textToVector(answers))
-        return newUserPreference
+
+    suspend fun createUserPreference(): UserPreference {
+
+        val vectors = answers.mapNotNull { answer ->
+            answerText[answer]?.let { text ->
+                val words = text.split(" ")
+                Word2VecModel.getVectorByList(words)
+            }
+        }
+
+        if (vectors.isEmpty()) {
+            return UserPreference(preferenceVector = null) // 예외 처리
+        }
+
+        // 평균 벡터 계산
+        val averagedVector = vectors
+            .reduce { acc, vector ->
+                acc.zip(vector) { a, b -> a + b }
+            }
+            .map { it / vectors.size }
+            .toMutableList()
+        return UserPreference(preferenceVector = averagedVector)
     }
 
-    private fun getAnswers(): String{
-        val userInput = answers.joinToString(" ") { answerText[it] ?: "" }
-        return userInput;
-    }
+
 }
 

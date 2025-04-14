@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "140203803280",
+    "project_id": "momentrip-92687",
+    "storage_bucket": "momentrip-92687.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:140203803280:android:f01eddd559c90e8cda4e15",
+        "android_client_info": {
+          "package_name": "com.mp.momentrip"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC7jX0-orIs5DPdVuIOW9UYXuGXyCVYG9Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

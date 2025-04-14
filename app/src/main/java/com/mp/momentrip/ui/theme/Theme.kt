@@ -1,36 +1,35 @@
 package com.mp.momentrip.ui.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.darkColors
-import androidx.compose.material.lightColors
-import androidx.compose.runtime.Composable
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.lightColorScheme
 
-private val DarkColorPalette = darkColors(
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
+
+private val DarkColorPalette = darkColorScheme(
     primary = Purple200,
-    primaryVariant = Purple700,
     secondary = Teal200,
     background = PurpleDark,
     surface = BlueDark
 )
 
-private val LightColorPalette = lightColors(
-    primary = Purple500,
-    primaryVariant = Purple700,
-    secondary = Teal200
-
-    /* Other default colors to override
-    background = Color.White,
-    surface = Color.White,
-    onPrimary = Color.White,
-    onSecondary = Color.Black,
-    onBackground = Color.Black,
-    onSurface = Color.Black,
-    */
+private val LightColorPalette = lightColorScheme(
+    primary = Color(0xFFFEFAE0),       // 따뜻한 크림 (기본 배경)
+    onPrimary = Color(0xFFccd5ae),     // primary 위 텍스트 (소프트 다크 그레이)
+    secondary = Color(0xFFD4A373),     // 포인트 브라운
+    onSecondary = Color(0xFFFFFFFF),   // secondary 위 텍스트 (화이트)
+    background = Color(0xFFefebce),    // 전체 배경 (살짝 더 따뜻한 베이지)
+    surface = Color(0xFFa3a380),       // 카드/섹션 배경
+    onSurface = Color(0xFFccd5ae),     // surface 위 텍스트
+    error = Color(0xFFD62828),         // 따뜻한 레드
+    onError = Color(0xFFFFFFFF)        // 에러 텍스트 (화이트)
 )
 
+
 @Composable
-fun TravelAppTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composable() () -> Unit) {
+fun MomenTripTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composable() () -> Unit) {
     val colors = if (darkTheme) {
         DarkColorPalette
     } else {
@@ -38,7 +37,7 @@ fun TravelAppTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composa
     }
 
     MaterialTheme(
-        colors = colors,
+        colorScheme = colors,
         typography = Typography,
         shapes = Shapes,
         content = content
