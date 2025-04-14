@@ -19,7 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.mp.momentrip.ui.theme.OrangeNice
-import com.mp.momentrip.ui.theme.TravelAppTheme
+
 import com.mp.momentrip.util.UserDestinations
 import com.mp.momentrip.view.UserViewModel
 import java.time.LocalDate
@@ -32,7 +32,7 @@ fun RecommendResult(
     resultRegion: String,
     userState: UserViewModel
 ) {
-    TravelAppTheme {
+
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
@@ -66,5 +66,5 @@ fun RecommendResult(
                 Text(text = "여행 일정 생성")
             }
         }
-    }
+
 }

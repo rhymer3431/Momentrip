@@ -2,6 +2,9 @@ package com.mp.momentrip.service
 
 import android.content.Context
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.withContext
 import org.json.JSONObject
 import org.tensorflow.lite.Interpreter
@@ -65,15 +68,22 @@ object Word2VecModel {
         dotProduct / (normVec1 * normVec2)
     }
 
-    suspend fun getVectorByList(list: List<String>): List<Float> = withContext(Dispatchers.Default) {
+    suspend fun getVectorByList(list: List<String>): List<Float> = coroutineScope {
         val result = MutableList(200) { 0f }
 
-        for (word in list) {
-            getEmbedding(word)?.forEachIndexed { index, value ->
+        val deferreds = list.toSet().map { word ->
+            async {
+                getEmbedding(word)?.let { word to it }
+            }
+        }
+
+        deferreds.awaitAll().filterNotNull().forEach { (_, embedding) ->
+            embedding.forEachIndexed { index, value ->
                 result[index] += value
             }
         }
 
         result
     }
+
 }

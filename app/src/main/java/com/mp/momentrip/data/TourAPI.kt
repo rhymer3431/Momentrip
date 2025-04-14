@@ -1,6 +1,8 @@
 package com.mp.momentrip.data
 
 import com.google.gson.annotations.SerializedName
+import kotlin.String
+import kotlin.text.toInt
 
 
 // 카테고리 코드만 정의하는 Enum 클래스
@@ -69,25 +71,24 @@ data class CategoryCode(
 )
 
 data class CommonInfo(
-    val contentId: String,
-    val contentTypeId: String,
+    val contentid: String,
+    val contenttypeid: String,
     val title: String,
-    val address: String,
-    val roadAddress: String,
+    val addr1: String?, // 주소
+    val addr2: String?,
     val tel: String,
-    val firstImage: String,
-    val firstImage2: String,
-    val areaCode: String,
-    val sigunguCode: String,
+    val firstimage: String,
+    val firstimage2: String,
+    val areacode: String,
+    val sigungucode: String,
     val cat1: String,
     val cat2: String,
     val cat3: String,
-    val mapX: Double,
-    val mapY: Double,
+    val mapx: Double,
+    val mapy: Double,
     val mlevel: String,
     val overview: String
 )
-
 data class IntroInfo(
     val contentId: String,
     val contentTypeId: String,
@@ -146,6 +147,7 @@ data class AreaBasedItem(
 ){
     fun toPlace(): Place=Place(
         title = title,
+        contentId = contentid,
         contentTypeId = contenttypeid,
         addr1 = addr1,
         addr2 = addr2,
@@ -205,6 +207,7 @@ data class KeywordSearchItem(
         addr1 = addr1,
         addr2 = addr2,
         areaCode = areacode,
+        sigunguCode = sigungucode,
         cat1 = cat1,
         cat2 = cat2,
         cat3 = cat3,
@@ -266,7 +269,7 @@ data class ContentDetailItem(
     val title: String,             // 콘텐츠명 (제목)
     val firstimage: String?,       // 대표이미지(원본) (optional)
     val firstimage2: String?,      // 대표이미지(썸네일) (optional)
-    val areacode: Int?,            // 지역코드 (optional)
+    val areacode: String?,            // 지역코드 (optional)
     val sigungucode: String?,      // 시군구코드 (optional)
     val cat1: String?,             // 대분류 (optional)
     val cat2: String?,             // 중분류 (optional)
@@ -277,4 +280,22 @@ data class ContentDetailItem(
     val mapx: Double?,             // GPS X좌표 (optional)
     val mapy: Double?,             // GPS Y좌표 (optional)
     val overview: String?          // 개요 (optional)
-)
+){
+    fun toPlace(): Place=Place(
+        title = title,
+        contentTypeId = contenttypeid.toInt(),
+        addr1 = addr1,
+        addr2 = addr2,
+        areaCode = areacode,
+        sigunguCode = sigungucode?.toInt(),
+        cat1 = cat1,
+        cat2 = cat2,
+        cat3 = cat3,
+        firstImage = firstimage,
+        firstImage2 = firstimage2,
+        x = mapx!!,
+        y = mapy!!,
+        tel = tel,
+        overview = overview
+    )
+}

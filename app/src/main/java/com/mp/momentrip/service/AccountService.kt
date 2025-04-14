@@ -38,7 +38,6 @@ object AccountService{
                 "age" to userRegisterForm.age,
                 "userPreference" to UserPreference(),
             )
-
             db.collection("users").document(userId).set(user).await()
             Result.success(Unit)
         } catch (e: Exception) {
@@ -94,6 +93,7 @@ object AccountService{
         return try {
             val uid = getCurrentUser()?.uid ?: return false
             val db = FirebaseFirestore.getInstance()
+            Log.d("test","update success")
             db.collection("users").document(uid).set(user).await()
             true
         } catch (e: Exception) {

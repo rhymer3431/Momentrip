@@ -1,26 +1,19 @@
 package com.mp.momentrip.view
 
-import android.os.Build
 import android.util.Log
-import androidx.annotation.RequiresApi
-import androidx.compose.runtime.State
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseUser
+import com.mp.momentrip.data.Place
 import com.mp.momentrip.data.Schedule
 import com.mp.momentrip.data.User
 import com.mp.momentrip.data.UserPreference
 import com.mp.momentrip.service.AccountService
+import com.mp.momentrip.service.TourService
 
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 
@@ -43,20 +36,13 @@ class UserViewModel : ViewModel() {
     private val _isLoading = MutableStateFlow(false) // 로딩 상태 추가
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
+    private val _place = MutableStateFlow<Place?>(null)
+    val place: StateFlow<Place?> = _place.asStateFlow()
+
+
     private val region = MutableStateFlow<String?>(null)
-    // 테마 설정
-    private val _themeState = MutableStateFlow(ThemeState())
 
-    val themeState: StateFlow<ThemeState> = _themeState.asStateFlow()
 
-    // 테마 변경 메서드
-    fun updatePrimary(color: Color) {
-        _themeState.update { it.copy(primaryColor = color) }
-    }
-
-    fun updateSecondary(color: Color) {
-        _themeState.update { it.copy(secondaryColor = color) }
-    }
 
     fun loadUser(firebaseUser: FirebaseUser) {
         viewModelScope.launch {
@@ -90,7 +76,6 @@ class UserViewModel : ViewModel() {
     }
 
     suspend fun updateUser(updater: User?) {
-        updater?.userPreference?.preferenceVector?.get(0)?.let { Log.d("test", it.toString()) }
         if (updater != null) {
             AccountService.updateUser(updater)
         }
@@ -140,6 +125,45 @@ class UserViewModel : ViewModel() {
         }
     }
 
+    fun setPlace(place: Place?){
+        _place.value = place
+    }
+
+    fun loadPlaceDetail(){
+        viewModelScope.launch {
+            _isLoading.value = true
+            setPlace(TourService.getDetail(place.value))
+            _isLoading.value = false
+
+        }
+    }
+    fun like() {
+        val place = place.value
+        viewModelScope.launch {
+            val currentUser = _user.value
+            if (currentUser != null && place != null) {
+                val updatedLiked = currentUser.liked.toMutableList()
+
+                // 이미 좋아요를 눌렀다면 취소, 아니면 추가
+                if (updatedLiked.contains(place)) {
+                    updatedLiked.remove(place) // 이미 존재하면 제거 (취소)
+                } else {
+                    updatedLiked.add(place) // 존재하지 않으면 추가 (좋아요)
+                }
+
+                // 사용자 업데이트
+                _user.value = currentUser.copy(liked = updatedLiked.distinct())
+                updateUser(currentUser.copy(liked = updatedLiked.distinct()))
+            }
+        }
+    }
+
+
+    fun isLiked(): Boolean?{
+        return getUser()?.liked?.contains(place.value)
+    }
+
+
     fun logIn(email:String, password:String) {
         viewModelScope.launch {
             try {
@@ -167,43 +191,3 @@ class UserViewModel : ViewModel() {
     }
 
 }
-
-// 테마 상태를 별도 데이터 클래스로 분리
-data class ThemeState(
-    val primaryColor: Color = Color(0xFF2196F3),
-    val secondaryColor: Color = Color(0xFF03A9F4),
-    val backgroundColor: Color = Color(0xFFE3F2FD),
-    val surfaceColor: Color = Color.White,
-    val isDarkMode: Boolean = false
-) {
-    // 테마 변경 편의 메서드
-    fun copyWithPrimary(color: Color) = copy(primaryColor = color)
-    fun copyWithSecondary(color: Color) = copy(secondaryColor = color)
-    fun copyWithBackground(color: Color) = copy(backgroundColor = color)
-    fun copyWithSurface(color: Color) = copy(surfaceColor = color)
-    fun toggleDarkMode() = copy(isDarkMode = !isDarkMode)
-
-    // 프리셋 테마 적용
-    fun applyPresetTheme(preset: ThemePreset) = when (preset) {
-        ThemePreset.BLUE -> ThemeState(
-            primaryColor = Color(0xFF2196F3),
-            secondaryColor = Color(0xFF03A9F4),
-            backgroundColor = Color(0xFFE3F2FD),
-            surfaceColor = Color.White
-        )
-        ThemePreset.GREEN -> ThemeState(
-            primaryColor = Color(0xFF4CAF50),
-            secondaryColor = Color(0xFF8BC34A),
-            backgroundColor = Color(0xFFE8F5E9),
-            surfaceColor = Color.White
-        )
-        ThemePreset.PURPLE -> ThemeState(
-            primaryColor = Color(0xFF9C27B0),
-            secondaryColor = Color(0xFFE91E63),
-            backgroundColor = Color(0xFFF3E5F5),
-            surfaceColor = Color.White
-        )
-    }
-}
-
-enum class ThemePreset { BLUE, GREEN, PURPLE }
