@@ -1,13 +1,11 @@
 package com.mp.momentrip.ui.screen
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -16,18 +14,14 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
-import androidx.compose.material.icons.filled.ArrowForward
 
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Person
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -36,27 +30,31 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.google.firebase.auth.FirebaseAuth
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 
 import com.mp.momentrip.R
 import com.mp.momentrip.data.Place
-import com.mp.momentrip.service.AccountService
-import com.mp.momentrip.service.RecommendService
+import com.mp.momentrip.data.Region
 import com.mp.momentrip.ui.components.ImageCard
+import com.mp.momentrip.util.MainDestinations
+import com.mp.momentrip.util.UserDestinations
 import com.mp.momentrip.view.RecommendViewModel
 import com.mp.momentrip.view.UserViewModel
 
 @SuppressLint("StateFlowValueCalledInComposition")
 @Composable
 fun FeedScreen(
+    navController: NavController,
     userState: UserViewModel,
     recommendViewModel: RecommendViewModel = viewModel()
 ) {
@@ -65,63 +63,71 @@ fun FeedScreen(
     LaunchedEffect(Unit) {
         // 이 블록 안의 코드가 컴포넌트 최초 렌더링 시에만 실행됩니다.
         recommendViewModel.setUser(userState)
-        recommendViewModel.loadRecommendRestaurant()
-
-
+        recommendViewModel.loadRecommendPlaces()
     }
 
     val isLoading by recommendViewModel.isLoading.collectAsState()
     val recommendRestaurant by recommendViewModel.recommendRestaurant.collectAsState()
+    val recommendDormitory by recommendViewModel.recommendDormitory.collectAsState()
+    val recommendTourSpot by recommendViewModel.recommendTourSpot.collectAsState()
     if(isLoading){
         LoadingScreen()
     }
     else{
 
-        Box(
+        LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color.White)
+                .padding(horizontal = 16.dp),
+            contentPadding = PaddingValues(vertical = 16.dp)
         ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-
-            ) {
-                // Content
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1f)
-                        .padding(horizontal = 16.dp)
-                        .verticalScroll(scrollState)
-                ) {
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    // First Section - Categories
-                    CategorySection()
-
-                    Spacer(modifier = Modifier.height(24.dp))
-
-                    // Second Section - Recommended Places
-                    RecommendedPlacesSection(
-                        title = "추천 장소",
-                        placeList = recommendRestaurant
-                    )
-
-                    Spacer(modifier = Modifier.height(24.dp))
-
-                }
-
+            item {
+                // First Section - Categories
+                CategorySection(userState,navController)
+                Spacer(modifier = Modifier.height(24.dp))
             }
 
+            item {
 
+                // Second Section - Recommended Places
+                RecommendedPlacesSection(
+                    userState,
+                    navController,
+                    title = "추천 식당",
+                    placeList = recommendRestaurant
+                )
+                Spacer(modifier = Modifier.height(24.dp))
+            }
+
+            item {
+                RecommendedPlacesSection(
+                    userState,
+                    navController,
+                    title = "추천 숙소",
+                    placeList = recommendDormitory
+                )
+                Spacer(modifier = Modifier.height(24.dp))
+            }
+
+            item {
+                RecommendedPlacesSection(
+                    userState,
+                    navController,
+                    title = "추천 여행지",
+                    placeList = recommendTourSpot
+                )
+            }
         }
+
     }
 
 }
 
 @Composable
-fun CategorySection() {
+fun CategorySection(
+    userState: UserViewModel,
+    navController: NavController
+) {
     Column {
         // Title
         Row(
@@ -131,6 +137,7 @@ fun CategorySection() {
         ) {
             Text(
                 text = "Title",
+                fontFamily = FontFamily(Font(R.font.omyu)),
                 fontSize = 16.sp,
                 fontWeight = FontWeight.SemiBold,
                 color = Color.Black
@@ -151,29 +158,38 @@ fun CategorySection() {
         ) {
             CategoryItem(
                 imageRes = R.drawable.yoga_s, // Replace with your actual drawable
-                title = "여행일정"
+                title = "여행일정",
+                onClick = {navController.navigate(UserDestinations.SCHEDULE_LIST_ROUTE)}
             )
             CategoryItem(
                 imageRes = R.drawable.yoga_s, // Replace with your actual drawable
-                title = "이전 여행"
+                title = "이전 여행",
+                onClick = {}
             )
             CategoryItem(
                 imageRes = R.drawable.city, // Replace with your actual drawable
-                title = "맛집"
+                title = "맛집",
+                onClick = {}
             )
             CategoryItem(
                 imageRes = R.drawable.city, // Replace with your actual drawable
-                title = "숙소"
+                title = "숙소",
+                onClick = {}
             )
         }
     }
 }
 
 @Composable
-fun CategoryItem(imageRes: Int, title: String) {
+fun CategoryItem(
+    imageRes: Int,
+    title: String,
+    onClick: () -> Unit) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.width(76.dp)
+        modifier = Modifier
+            .width(76.dp)
+            .clickable { onClick() } // Column 전체 클릭 가능
     ) {
         Image(
             painter = painterResource(id = imageRes),
@@ -193,8 +209,11 @@ fun CategoryItem(imageRes: Int, title: String) {
     }
 }
 
+
 @Composable
 fun RecommendedPlacesSection(
+    userState: UserViewModel,
+    navController: NavController,
     title: String,
     placeList: List<Place>?
 ) {
@@ -227,42 +246,55 @@ fun RecommendedPlacesSection(
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             placeList.orEmpty().take(5).forEach { place ->
-                PlaceCard(place)
+                PlaceCard(
+                    place = place,
+                    onClick = {
+                        userState.setPlace(place)
+                        navController.navigate(MainDestinations.PLACE_DETAIL)}
+                    )
             }
         }
     }
 }
+
 @Composable
 fun PlaceCard(
-    place:Place
-){
+    place: Place,
+    onClick: () -> Unit // 클릭 이벤트 처리
+) {
     Column(
-        modifier = Modifier.width(148.dp),
+        modifier = Modifier
+            .width(148.dp)
+            .clickable { onClick() }, // 클릭 시 호출될 함수
+
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        place.firstImage2?.let {
-            ImageCard(
-                imageUrl = it
-            )
+        Column(
+            modifier = Modifier
+                .height(150.dp)
+
+        ){
+            ImageCard(place.firstImage2)
         }
 
         Column(
             verticalArrangement = Arrangement.spacedBy(2.dp)
         ) {
+
             Text(
-                text = place.areaCode!!,
-                fontSize = 12.sp,
+                text = Region.fromCode(place.areaCode!!.toInt())!!.locationName,
+                fontSize = 16.sp,
                 fontWeight = FontWeight.Normal,
                 color = Color.Black.copy(alpha = 0.5f)
             )
             Text(
                 text = place.title,
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Normal,
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold,
                 color = Color.Black
             )
             Text(
-                text = place.dist.toString(),
+                text = place.addr1.toString(),
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Medium,
                 color = Color.Black
@@ -274,5 +306,7 @@ fun PlaceCard(
 @Preview
 @Composable
 fun FeedScreenPreview(){
-    FeedScreen(UserViewModel())
+    FeedScreen(
+        navController = rememberNavController(),
+        userState = UserViewModel())
 }

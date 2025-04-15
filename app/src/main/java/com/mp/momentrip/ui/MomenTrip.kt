@@ -17,6 +17,8 @@ import com.google.firebase.auth.FirebaseAuth
 import com.kakao.sdk.common.util.Utility
 import com.mp.momentrip.service.AccountService
 import com.mp.momentrip.service.RecommendService
+import com.mp.momentrip.ui.screen.LoadingScreen
+import com.mp.momentrip.ui.theme.MomenTripTheme
 import com.mp.momentrip.util.MainDestinations
 import com.mp.momentrip.util.NavGraph
 import com.mp.momentrip.view.AuthViewModel
@@ -60,9 +62,8 @@ fun MomenTrip(
 
 
     if (startDestination == null) {
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            CircularProgressIndicator()
-        }
+        LoadingScreen()
+
     } else {
         Log.d("test",startDestination.toString())
 

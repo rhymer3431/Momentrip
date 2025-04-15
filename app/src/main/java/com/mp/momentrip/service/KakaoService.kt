@@ -1,6 +1,7 @@
 package com.mp.momentrip.service
 
 
+import com.mp.momentrip.data.KakaoImageSearchResponse
 import com.mp.momentrip.data.KakaoPlace
 import com.mp.momentrip.data.Place
 import retrofit2.Call
@@ -20,24 +21,15 @@ interface KakaoApiService {
         @Query("page") page: Int,
         @Query("sort") sort: String
     ): Call<com.mp.momentrip.data.KakaoSearchResponse>
+    @GET("v2/search/image")
+    fun searchImages(
+        @Header("Authorization") authorization: String,
+        @Query("query") query: String,
+        @Query("size") size: Int,
+        @Query("page") page: Int
+    ): Call<KakaoImageSearchResponse>
 }
 
-fun convertPlaces(kakaoPlaces : List<KakaoPlace>) : List<Place> {
-    val places: MutableList<Place> = mutableListOf()
-
-
-    for (kp in kakaoPlaces){
-        places.add(Place(
-            name=kp.place_name,
-            category=kp.category_name,
-            address = kp.address_name,
-            phone = kp.phone,
-            x = kp.x.toDouble(),
-            y = kp.y.toDouble()
-        ))
-    }
-    return places
-}
 
 object RetrofitClient {
     private const val BASE_URL = "https://dapi.kakao.com/"

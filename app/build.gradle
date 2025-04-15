@@ -1,18 +1,33 @@
 plugins {
-    id 'com.android.application'
-    id 'kotlin-android'
+    id("com.android.application")
+    id("org.jetbrains.kotlin.android")
+    id 'com.google.gms.google-services'
 }
+
+Properties properties = new Properties()
+properties.load(project.rootProject.file('local.properties').newDataInputStream())
 
 android {
     compileSdk 35
-    namespace "com.mp.momentrip"
+    namespace 'com.mp.momentrip'
     defaultConfig {
-        minSdk 21
+        applicationId 'com.mp.momentrip'
+        minSdk 26
         targetSdk 35
         versionCode 1
         versionName "1.0"
+        ndk {
+            abiFilters 'arm64-v8a', 'armeabi-v7a' // ARM 계열만 포함
+            // x86, x86_64 제거
+        }
+
+        buildConfigField "String", "TOUR_API_KEY", properties['TOUR_API_KEY']
+        buildConfigField "String", "HF_API_KEY", properties['HF_API_KEY']
+        buildConfigField "String", "KAKAO_API_KEY", properties['KAKAO_API_KEY']
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        vectorDrawables.useSupportLibrary = true
+        vectorDrawables {
+            useSupportLibrary true
+        }
     }
 
     buildTypes {
@@ -21,55 +36,71 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
-
     compileOptions {
+
+
         sourceCompatibility JavaVersion.VERSION_17
         targetCompatibility JavaVersion.VERSION_17
     }
-
     kotlinOptions {
         jvmTarget = '17'
-        freeCompilerArgs += ["-opt-in=kotlin.RequiresOptIn"]
-    }
 
+        freeCompilerArgs += ["-Xuse-experimental=androidx.compose.material.ExperimentalMaterialApi"]
+    }
     buildFeatures {
-        compose = true
+        compose true
     }
-
     composeOptions {
-        kotlinCompilerExtensionVersion '1.5.11' // 최신 버전 사용
+        kotlinCompilerExtensionVersion compose_version
     }
-
     packagingOptions {
-        resources.excludes.add("/META-INF/{AL2.0,LGPL2.1}")
+        resources {
+            excludes += '/META-INF/{AL2.0,LGPL2.1}'
+        }
     }
 }
-
 dependencies {
+    implementation("com.exyte:animated-navigation-bar:1.0.0")
+    implementation("org.openkoreantext:open-korean-text:2.1.0")
+
+    implementation 'com.airbnb.android:lottie:6.0.0'
+    implementation 'com.airbnb.android:lottie-compose:6.0.0' // Compose 사용 시
+
+    implementation 'org.tensorflow:tensorflow-lite:2.9.0'
+    implementation 'com.kakao.sdk:v2-all:2.14.0'
+    implementation 'com.kakao.maps.open:android:2.12.8'
+
+    implementation platform('com.google.firebase:firebase-bom:32.7.0')
+    implementation 'com.google.firebase:firebase-database'
+    implementation 'com.google.firebase:firebase-appcheck'
+    implementation 'com.google.firebase:firebase-auth'
+    implementation 'com.google.firebase:firebase-firestore'
 
     implementation(platform("org.jetbrains.kotlin:kotlin-bom"))
     implementation("org.jetbrains.kotlin:kotlin-stdlib")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3") // BOM과 호환되는 버전 사용
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
 
-    // 최신 Compose 버전 적용
-    def compose_version = "1.6.4" // 최신 버전으로 업데이트 가능
+    implementation "io.github.vanpra.compose-material-dialogs:datetime:0.8.1-rc"
+    implementation("io.coil-kt:coil-compose:2.4.0")
 
-    implementation "androidx.compose.ui:ui:$compose_version"
-    implementation "androidx.compose.foundation:foundation:$compose_version"
-    implementation "androidx.compose.material:material:$compose_version"
-    implementation "androidx.compose.material:material-icons-extended:$compose_version"
-    implementation "androidx.compose.ui:ui-tooling-preview:$compose_version"
 
-    implementation "androidx.navigation:navigation-compose:2.7.4"
+    implementation "androidx.compose.material3:material3:1.2.0"
+    implementation "androidx.compose.material3:material3-window-size-class:1.2.0"
+    implementation "androidx.compose.material:material-icons-core:1.5.0" // 기본 아이콘 (Material 1)
+    implementation "com.mikepenz:iconics-core:5.4.0"
+    implementation "androidx.navigation:navigation-compose:2.8.9"
     implementation "androidx.constraintlayout:constraintlayout-compose:1.0.1"
-    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.6.2'
+    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.6.2' // 최신 안정 버전
     implementation 'androidx.activity:activity-compose:1.7.2'
 
     implementation("com.squareup.retrofit2:retrofit:2.9.0") // Retrofit
     implementation("com.squareup.retrofit2:converter-gson:2.9.0") // JSON 변환
+    implementation("com.squareup.okhttp3:logging-interceptor:4.9.3")
 
     implementation 'androidx.core:core-ktx:1.12.0'
     implementation 'androidx.appcompat:appcompat:1.6.1'
-    implementation 'com.google.android.material:material:1.10.0'
+
 
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
@@ -77,3 +108,5 @@ dependencies {
     androidTestImplementation "androidx.compose.ui:ui-test-junit4:$compose_version"
     debugImplementation "androidx.compose.ui:ui-tooling:$compose_version"
 }
+
+apply plugin: 'com.google.gms.google-services' // 반드시 마지막에 추가

@@ -281,7 +281,7 @@ fun SignUpButton(
                     if (result.isSuccess) {
                         // 회원가입 성공 시 사용자 정보 로드 및 홈 화면으로 이동
                         userState.loadUser(FirebaseAuth.getInstance().currentUser!!)
-                        navController.navigate(MainDestinations.HOME_ROUTE) {
+                        navController.navigate(MainDestinations.PREFERENCE_ANALYZE) {
                             popUpTo(0)
                         }
                     } else {

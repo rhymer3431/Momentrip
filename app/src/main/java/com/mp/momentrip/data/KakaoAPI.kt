@@ -14,6 +14,18 @@ data class KakaoPlace(
     val y: String  // latitude
 )
 
+data class KakaoImageSearchResponse(
+    val documents: List<KakaoImage>,
+    val meta: Meta
+)
+
+data class KakaoImage(
+    val image_url: String,
+    val thumbnail_url: String,
+    val width: Int,
+    val height: Int
+)
+
 
 data class Meta(
     val total_count: Int,

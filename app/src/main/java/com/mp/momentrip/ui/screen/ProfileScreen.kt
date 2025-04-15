@@ -26,7 +26,9 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -43,6 +45,7 @@ import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.mp.momentrip.data.User
 import com.mp.momentrip.service.AccountService
+
 import com.mp.momentrip.util.UserDestinations
 import com.mp.momentrip.view.UserViewModel
 import java.io.File
@@ -56,7 +59,6 @@ fun ProfileScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.White)
     ) {
         Column(
             modifier = Modifier.fillMaxSize()
@@ -222,9 +224,7 @@ fun ProfileMenu(navController: NavController) {
             defaultElevation = 4.dp
         ),
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = Color.White
-        )
+
 
     ) {
         Column {
@@ -273,7 +273,7 @@ fun ProfileMenuItem(
                 Icon(
                     imageVector = icon,
                     contentDescription = title,
-                    tint = Color(0xFF7D848D),
+                    tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(24.dp)
                 )
                 Spacer(modifier = Modifier.width(16.dp))
@@ -281,7 +281,7 @@ fun ProfileMenuItem(
                     text = title,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Medium,
-                    color = Color(0xFF1B1E28),
+                    color = MaterialTheme.colorScheme.primary,
                     letterSpacing = 0.5.sp,
                     modifier = Modifier.weight(1f)
                 )

@@ -1,6 +1,7 @@
 package com.mp.momentrip.ui.screen
 
 import android.annotation.SuppressLint
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -12,8 +13,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Face
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
@@ -21,6 +24,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -30,12 +34,25 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraph
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
+import com.exyte.animatednavbar.AnimatedNavigationBar
+import com.exyte.animatednavbar.animation.balltrajectory.Parabolic
+import com.exyte.animatednavbar.animation.balltrajectory.Straight
+import com.exyte.animatednavbar.animation.balltrajectory.Teleport
+import com.exyte.animatednavbar.animation.indendshape.Height
+import com.exyte.animatednavbar.animation.indendshape.shapeCornerRadius
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.mp.momentrip.ScheduleListScreen
+import com.mp.momentrip.data.User
+import com.mp.momentrip.ui.theme.BeigeDark
+import com.mp.momentrip.ui.theme.BeigeDeepDark
+import com.mp.momentrip.ui.theme.BeigeLight
+import com.mp.momentrip.ui.theme.MomenTripTheme
 import com.mp.momentrip.util.MainDestinations
 import com.mp.momentrip.util.UserDestinations
 import com.mp.momentrip.view.UserViewModel
@@ -49,12 +66,11 @@ fun HomeScreen(
 ){
     Scaffold(
         bottomBar = { BottomNavBar(navController) }
-    ) {
-        BottomNavGraph(
-            navController,
-            userState)
+    ) { paddingValues ->
+        Box(modifier = Modifier.padding(paddingValues)) {
+            BottomNavGraph(navController, userState)
+        }
     }
-
 }
 @Composable
 fun BottomNavBar(navController: NavController) {
@@ -68,36 +84,56 @@ fun BottomNavBar(navController: NavController) {
             label = "피드"
         ),
         BottomNavItem(
+            route = UserDestinations.LIKED_ROUTE,
+            icon = Icons.Default.Star,
+            label = "좋아요"
+        ),
+        BottomNavItem(
             route = MainDestinations.PROFILE_ROUTE,
             icon = Icons.Default.Face,
             label = "프로필"
         )
     )
 
-    Surface(
-        color = MaterialTheme.colorScheme.surface,
-        shadowElevation = 8.dp
+    // Find the current selected index
+    val selectedIndex = remember (items, currentRoute) {
+        items.indexOfFirst { it.route == currentRoute }.coerceAtLeast(0)
+    }
+
+    AnimatedNavigationBar(
+
+        selectedIndex = selectedIndex,
+        modifier = Modifier.fillMaxWidth(),
+        barColor = colorScheme.surface,
+        ballColor = colorScheme.onSurface,
+        cornerRadius = shapeCornerRadius(
+            topLeft = 50.dp,
+            topRight = 50.dp,
+            bottomLeft = 0.dp,
+            bottomRight = 0.dp
+        ),
+        ballAnimation = Straight(tween(300)),
+        indentAnimation = Height(tween(300))
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(56.dp)
-                .padding(horizontal = 16.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            items.forEach { item ->
-                BottomNavItem(
-                    icon = item.icon,
-                    isSelected = currentRoute == item.route,
-                    onClick = {
-                        navController.navigate(item.route) {
-                            popUpTo(navController.graph.findStartDestination().id) {
-                                saveState = true
-                            }
-                            launchSingleTop = true
-                            restoreState = true
+        items.forEachIndexed { index, item ->
+            IconButton(
+                onClick = {
+                    navController.navigate(item.route) {
+                        popUpTo(navController.graph.findStartDestination().id) {
+                            saveState = true
                         }
+                        launchSingleTop = true
+                        restoreState = true
+                    }
+                }
+            ) {
+                Icon(
+                    imageVector = item.icon,
+                    contentDescription = item.label,
+                    tint = if (selectedIndex == index) {
+                        colorScheme.primary
+                    } else {
+                        colorScheme.onSurface.copy(alpha = 0.6f)
                     }
                 )
             }
@@ -139,7 +175,9 @@ fun BottomNavGraph(
     ) {
 
         composable(MainDestinations.FEED_ROUTE) {
-            FeedScreen(userState)
+            FeedScreen(
+                navController = navController,
+                userState = userState)
         }
         composable(MainDestinations.PROFILE_ROUTE) {
             ProfileScreen(
@@ -183,6 +221,12 @@ fun BottomNavGraph(
                 modifier = Modifier,
                 userState = userState
             )
+        }
+        composable(MainDestinations.PLACE_DETAIL) {
+            PlaceDetailScreen(userState)
+        }
+        composable(UserDestinations.LIKED_ROUTE) {
+            LikedPlaceScreen(userState)
         }
 
     }
