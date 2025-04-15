@@ -116,6 +116,31 @@ class QuestionSetList{
                     type = "D"
                 )
             )
+        ),
+        QuestionSet(
+            question = "어떤 음식을 선호하시나요?",
+            answers = listOf(
+                Answer(
+                    answer = "한식",
+                    image_id =  R.drawable.nature,
+                    type = "A"
+                ),
+                Answer(
+                    answer = "양식",
+                    image_id =  R.drawable.nature,
+                    type = "B"
+                ),
+                Answer(
+                    answer = "일식",
+                    image_id =  R.drawable.nature,
+                    type = "C"
+                ),
+                Answer(
+                    answer = "중식",
+                    image_id =  R.drawable.nature,
+                    type = "D"
+                )
+            )
         )
     )
 
