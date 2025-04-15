@@ -17,7 +17,14 @@ data class UserPreference(
 
         return true
     }
-
+    
+    private val foodMap = mutableMapOf(
+    "한식" to 3.5,  // 예시 실수 값
+    "양식" to 2.8,
+    "일식" to 4.2,
+    "중식" to 3.0
+)
+    
     override fun hashCode(): Int {
         return preferenceVector?.hashCode() ?: 0
     }
