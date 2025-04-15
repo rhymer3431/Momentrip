@@ -21,7 +21,7 @@ object RecommendService {
 
     
     // 수정 가능한(mutable) 리스트 선언:
-    private val foodList = mutableListOf("한식", "양식", "일식", "중식")\
+    private val foodList = mutableListOf("한식", "양식", "일식", "중식")
     
     suspend fun getRegionByPreference(userPreference: UserPreference?): String {
         val regionVectors = regions.mapValues { (_, keywords) ->
