@@ -45,6 +45,7 @@ import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.mp.momentrip.data.User
 import com.mp.momentrip.service.AccountService
+import com.mp.momentrip.ui.components.ThemeCard
 
 import com.mp.momentrip.util.UserDestinations
 import com.mp.momentrip.view.UserViewModel
@@ -67,9 +68,7 @@ fun ProfileScreen(
             // Header
             ProfileHeader()
 
-            // User Stats
-            UserStats(userState.getUser())
-
+            UserStats(userState)
             // Profile Menu
             ProfileMenu(navController)
         }
@@ -86,31 +85,20 @@ fun ProfileHeader() {
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-
-
         Text(
             text = "Profile",
             fontSize = 18.sp,
             fontWeight = FontWeight.SemiBold,
             color = Color(0xFF1B1E28)
         )
-
-        Box(
-            modifier = Modifier
-                .size(44.dp)
-                .background(Color(0xFFF7F7F9), CircleShape)
-                .clickable { /* Handle edit click */ },
-            contentAlignment = Alignment.Center
-        ) {
-
-        }
     }
 }
 
 @Composable
 fun UserStats(
-    user: User?
+    userState: UserViewModel
 ) {
+    val user = userState.getUser()
     Column(
         modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -152,41 +140,29 @@ fun UserStats(
         Spacer(modifier = Modifier.height(32.dp))
 
         // Stats Card
-        Card(
+        ThemeCard(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 20.dp)
                 .height(78.dp),
-            elevation = CardDefaults.cardElevation(
-                defaultElevation = 4.dp
-            ),
-            shape = RoundedCornerShape(16.dp),
-            colors = CardDefaults.cardColors(
-                containerColor = Color.White
-            )
-        ) {
-            Row(
-                modifier = Modifier.fillMaxSize(),
-                horizontalArrangement = Arrangement.SpaceEvenly,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                StatItem(title = "Reward Points", value = "360")
-                HorizontalDivider(
-                    modifier = Modifier
-                        .height(40.dp)
-                        .width(1.5.dp),
-                    color = Color(0xFFF7F7F9)
-                )
-                StatItem(title = "Travel Trips", value = "238")
-                HorizontalDivider(
-                    modifier = Modifier
-                        .height(40.dp)
-                        .width(1.5.dp),
-                    color = Color(0xFFF7F7F9)
-                )
-                StatItem(title = "Bucket List", value = "473")
+            content = {
+                Row(
+                    modifier = Modifier.fillMaxSize(),
+                    horizontalArrangement = Arrangement.SpaceEvenly,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    userState.getRegion()?.let { StatItem(title = "추천 여행지", value = it) }
+                    HorizontalDivider(
+                        modifier = Modifier
+                            .height(40.dp)
+                            .width(1.5.dp),
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                    StatItem(title = "다녀온 여행 횟수", value = userState.getScheduleSize().toString())
+
+                }
             }
-        }
+        )
     }
 }
 
@@ -207,7 +183,7 @@ fun StatItem(title: String, value: String) {
             text = value,
             fontSize = 16.sp,
             fontWeight = FontWeight.SemiBold,
-            color = Color(0xFFFF7029),
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             letterSpacing = 0.5.sp
         )
     }
@@ -215,14 +191,12 @@ fun StatItem(title: String, value: String) {
 
 @Composable
 fun ProfileMenu(navController: NavController) {
-    Card(
+
+    ThemeCard(
         modifier = Modifier
             .fillMaxWidth()
             .padding(20.dp)
             .height(344.dp),
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = 4.dp
-        ),
         shape = RoundedCornerShape(16.dp),
 
 
@@ -273,7 +247,7 @@ fun ProfileMenuItem(
                 Icon(
                     imageVector = icon,
                     contentDescription = title,
-                    tint = MaterialTheme.colorScheme.primary,
+                    tint = MaterialTheme.colorScheme.onPrimary,
                     modifier = Modifier.size(24.dp)
                 )
                 Spacer(modifier = Modifier.width(16.dp))
@@ -281,7 +255,7 @@ fun ProfileMenuItem(
                     text = title,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Medium,
-                    color = MaterialTheme.colorScheme.primary,
+                    color = MaterialTheme.colorScheme.onSurface,
                     letterSpacing = 0.5.sp,
                     modifier = Modifier.weight(1f)
                 )
@@ -299,22 +273,7 @@ fun ProfileMenuItem(
 
 }
 
-@Composable
-fun HomeIndicator() {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(34.dp),
-        contentAlignment = Alignment.BottomCenter
-    ) {
-        Box(
-            modifier = Modifier
-                .width(134.dp)
-                .height(5.dp)
-                .background(Color(0xFF1B1E28), RoundedCornerShape(100.dp))
-        )
-    }
-}
+
 
 @Composable
 fun ProfileImage(userId: String) {

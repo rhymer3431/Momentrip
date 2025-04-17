@@ -20,11 +20,13 @@ private val LightColorPalette = lightColorScheme(
     onPrimary = Color(0xFFccd5ae),     // primary 위 텍스트 (소프트 다크 그레이)
     secondary = Color(0xFFD4A373),     // 포인트 브라운
     onSecondary = Color(0xFFFFFFFF),   // secondary 위 텍스트 (화이트)
-    background = Color(0xFFefebce),    // 전체 배경 (살짝 더 따뜻한 베이지)
-    surface = Color(0xFFa3a380),       // 카드/섹션 배경
-    onSurface = Color(0xFFccd5ae),     // surface 위 텍스트
+    background = Color(0xFFFFFFFF),    // 전체 배경 (살짝 더 따뜻한 베이지)
+    surface = Color(0xFFE6E0B2),       // 카드/섹션 배경
+    onSurface = Color(0xFF5E6450),     // surface 위 텍스트
     error = Color(0xFFD62828),         // 따뜻한 레드
-    onError = Color(0xFFFFFFFF)        // 에러 텍스트 (화이트)
+    onError = Color(0xFFFFFFFF),        // 에러 텍스트 (화이트)
+    tertiary = Color(0xFF1A2DFE),
+    onTertiary = Color(0xFFF3F9FD)
 )
 
 

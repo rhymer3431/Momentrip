@@ -22,6 +22,7 @@ import com.mp.momentrip.ui.theme.MomenTripTheme
 import com.mp.momentrip.util.MainDestinations
 import com.mp.momentrip.util.NavGraph
 import com.mp.momentrip.view.AuthViewModel
+import com.mp.momentrip.view.RecommendViewModel
 import com.mp.momentrip.view.UserViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -36,9 +37,10 @@ fun MomenTrip(
     val navController = rememberNavController()
     val authState by authViewModel.authState
 
+
+
     // ✅ Firebase 유저 가져와서 userState 업데이트
     LaunchedEffect(authState) {
-        FirebaseAuth.getInstance().currentUser?.let { Log.d("test", it.uid) }
         FirebaseAuth.getInstance().currentUser?.let { user ->
             AccountService.loadUser(user)?.let { loadedUser ->
 
@@ -65,7 +67,6 @@ fun MomenTrip(
         LoadingScreen()
 
     } else {
-        Log.d("test",startDestination.toString())
 
         NavGraph(
             navController = navController,

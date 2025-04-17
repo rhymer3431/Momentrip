@@ -1,6 +1,6 @@
 package com.mp.momentrip.ui.components
 
-import android.graphics.Color
+
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
@@ -22,53 +22,43 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconToggleButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import com.mp.momentrip.ui.theme.Like
 import com.mp.momentrip.view.UserViewModel
-
 
 @Composable
 fun LikeButton(
     userState: UserViewModel,
+    modifier: Modifier = Modifier
 ) {
-    var isLiked by remember { mutableStateOf(userState.isLiked()) }
-    val transition = updateTransition(targetState = isLiked, label = "likeTransition")
+    val isLiked by userState.isLikedFlow.collectAsState()
+    val iconColor by animateColorAsState(
+        targetValue = if (isLiked) Like else  Color(0xFFDCDCDC),
+        animationSpec = tween(durationMillis = 300)
+    )
+    val iconScale by animateFloatAsState(
+        targetValue = if (isLiked) 1.2f else 1f,
+        animationSpec = tween(durationMillis = 300)
+    )
 
     IconToggleButton(
-        checked = isLiked == true,
-        onCheckedChange = {
-            isLiked = it
-            userState.like() // 상태 변경 시 사용자 좋아요 상태도 업데이트
-        }
+        checked = isLiked,
+        onCheckedChange = { userState.like() },
+        modifier = modifier
     ) {
-        AnimatedVisibility(
-            visible = isLiked == true,
-            enter = fadeIn() + expandVertically(),
-            exit = fadeOut() + shrinkVertically()
-        ) {
-            Icon(
-                imageVector = Icons.Filled.Favorite,
-                contentDescription = "Liked",
-
-            )
-        }
-
-        isLiked?.let {
-            AnimatedVisibility(
-                visible = !it,
-                enter = fadeIn() + expandVertically(),
-                exit = fadeOut() + shrinkVertically()
-            ) {
-                Icon(
-                    imageVector = Icons.Outlined.Favorite,
-                    contentDescription = "Not Liked",
-
-                    )
-            }
-        }
+        Icon(
+            imageVector = if (isLiked) Icons.Filled.Favorite else Icons.Outlined.Favorite,
+            contentDescription = if (isLiked) "Liked" else "Not liked",
+            tint = iconColor,
+            modifier = Modifier.size(24.dp)
+        )
     }
 }

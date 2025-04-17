@@ -23,6 +23,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -55,6 +57,7 @@ import com.mp.momentrip.ui.theme.BeigeLight
 import com.mp.momentrip.ui.theme.MomenTripTheme
 import com.mp.momentrip.util.MainDestinations
 import com.mp.momentrip.util.UserDestinations
+import com.mp.momentrip.view.RecommendViewModel
 import com.mp.momentrip.view.UserViewModel
 
 
@@ -104,8 +107,8 @@ fun BottomNavBar(navController: NavController) {
 
         selectedIndex = selectedIndex,
         modifier = Modifier.fillMaxWidth(),
-        barColor = colorScheme.surface,
-        ballColor = colorScheme.onSurface,
+        barColor = colorScheme.tertiary,
+        ballColor = colorScheme.onTertiary,
         cornerRadius = shapeCornerRadius(
             topLeft = 50.dp,
             topRight = 50.dp,
@@ -133,7 +136,7 @@ fun BottomNavBar(navController: NavController) {
                     tint = if (selectedIndex == index) {
                         colorScheme.primary
                     } else {
-                        colorScheme.onSurface.copy(alpha = 0.6f)
+                        colorScheme.onTertiary.copy(alpha = 0.6f)
                     }
                 )
             }
@@ -169,6 +172,7 @@ fun BottomNavGraph(
     navController: NavHostController = rememberNavController(),
     userState: UserViewModel
 ){
+
     NavHost(
         navController = navController,
         startDestination = MainDestinations.FEED_ROUTE
@@ -177,7 +181,8 @@ fun BottomNavGraph(
         composable(MainDestinations.FEED_ROUTE) {
             FeedScreen(
                 navController = navController,
-                userState = userState)
+                userState = userState,
+            )
         }
         composable(MainDestinations.PROFILE_ROUTE) {
             ProfileScreen(

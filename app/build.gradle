@@ -59,54 +59,63 @@ android {
         }
     }
 }
+
 dependencies {
-    implementation("com.exyte:animated-navigation-bar:1.0.0")
-    implementation("org.openkoreantext:open-korean-text:2.1.0")
+// 🔵 UI 관련
+    implementation("com.exyte:animated-navigation-bar:1.0.0") // 애니메이션 하단 네비게이션 바
+    implementation 'com.airbnb.android:lottie:6.0.0' // Lottie 애니메이션
+    implementation 'com.airbnb.android:lottie-compose:6.0.0' // Lottie Compose 지원
 
-    implementation 'com.airbnb.android:lottie:6.0.0'
-    implementation 'com.airbnb.android:lottie-compose:6.0.0' // Compose 사용 시
-
-    implementation 'org.tensorflow:tensorflow-lite:2.9.0'
-    implementation 'com.kakao.sdk:v2-all:2.14.0'
-    implementation 'com.kakao.maps.open:android:2.12.8'
-
-    implementation platform('com.google.firebase:firebase-bom:32.7.0')
-    implementation 'com.google.firebase:firebase-database'
-    implementation 'com.google.firebase:firebase-appcheck'
-    implementation 'com.google.firebase:firebase-auth'
-    implementation 'com.google.firebase:firebase-firestore'
-
-    implementation(platform("org.jetbrains.kotlin:kotlin-bom"))
-    implementation("org.jetbrains.kotlin:kotlin-stdlib")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3") // BOM과 호환되는 버전 사용
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
-
-    implementation "io.github.vanpra.compose-material-dialogs:datetime:0.8.1-rc"
-    implementation("io.coil-kt:coil-compose:2.4.0")
-
-
-    implementation "androidx.compose.material3:material3:1.2.0"
-    implementation "androidx.compose.material3:material3-window-size-class:1.2.0"
+    implementation "androidx.compose.material3:material3:1.2.0" // Material3 컴포넌트
+    implementation "androidx.compose.material3:material3-window-size-class:1.2.0" // 반응형 레이아웃 지원
     implementation "androidx.compose.material:material-icons-core:1.5.0" // 기본 아이콘 (Material 1)
-    implementation "com.mikepenz:iconics-core:5.4.0"
-    implementation "androidx.navigation:navigation-compose:2.8.9"
-    implementation "androidx.constraintlayout:constraintlayout-compose:1.0.1"
-    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.6.2' // 최신 안정 버전
-    implementation 'androidx.activity:activity-compose:1.7.2'
+    implementation "com.mikepenz:iconics-core:5.4.0" // 커스텀 아이콘 시스템
 
-    implementation("com.squareup.retrofit2:retrofit:2.9.0") // Retrofit
-    implementation("com.squareup.retrofit2:converter-gson:2.9.0") // JSON 변환
-    implementation("com.squareup.okhttp3:logging-interceptor:4.9.3")
+    implementation "androidx.navigation:navigation-compose:2.8.9" // Compose 네비게이션
+    implementation "androidx.constraintlayout:constraintlayout-compose:1.0.1" // Compose용 ConstraintLayout
+    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.6.2' // 생명주기 관리
+    implementation 'androidx.activity:activity-compose:1.7.2' // Compose용 액티비티
 
+    implementation "io.github.vanpra.compose-material-dialogs:datetime:0.8.1-rc" // 날짜/시간 다이얼로그
+    implementation("io.coil-kt:coil-compose:2.4.0") // 이미지 로딩 (Coil)
+
+// 🟢 네트워크
+    implementation("com.squareup.retrofit2:retrofit:2.9.0") // HTTP 통신 (Retrofit)
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0") // JSON 변환 (Gson)
+    implementation("com.squareup.okhttp3:logging-interceptor:4.9.3") // 네트워크 로그 인터셉터
+
+// 🟡 Firebase
+    implementation platform('com.google.firebase:firebase-bom:32.7.0') // Firebase BOM
+    implementation 'com.google.firebase:firebase-database' // 실시간 DB
+    implementation 'com.google.firebase:firebase-appcheck' // 앱 무결성 확인
+    implementation 'com.google.firebase:firebase-auth' // 사용자 인증
+    implementation 'com.google.firebase:firebase-firestore' // 클라우드 Firestore
+
+    // 🟣 AI / NLP / ML
+    implementation("org.openkoreantext:open-korean-text:2.0.0") // 한국어 형태소 분석기
+    implementation 'org.tensorflow:tensorflow-lite:2.9.0' // TensorFlow Lite (모바일 ML)
+
+    // 🟤 Kakao SDK
+    implementation 'com.kakao.sdk:v2-all:2.14.0' // 카카오 전체 SDK
+    implementation 'com.kakao.maps.open:android:2.12.8' // 카카오 맵
+
+    // ⚫ Kotlin & 코루틴
+    implementation platform("org.jetbrains.kotlin:kotlin-bom") // Kotlin BOM
+    implementation("org.jetbrains.kotlin:kotlin-stdlib") // Kotlin 표준 라이브러리
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3") // 코루틴 (Core)
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3") // 코루틴 (Android)
+
+    // ⚪ 기본 AndroidX
     implementation 'androidx.core:core-ktx:1.12.0'
     implementation 'androidx.appcompat:appcompat:1.6.1'
 
+    // 🧪 테스트
+    testImplementation 'junit:junit:4.13.2' // 단위 테스트
+    androidTestImplementation 'androidx.test.ext:junit:1.1.5' // Android 테스트용 JUnit
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1' // UI 테스트용 Espresso
+    androidTestImplementation "androidx.compose.ui:ui-test-junit4:$compose_version" // Compose UI 테스트
+    debugImplementation "androidx.compose.ui:ui-tooling:$compose_version" // Compose UI 디버깅
 
-    testImplementation 'junit:junit:4.13.2'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.5'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
-    androidTestImplementation "androidx.compose.ui:ui-test-junit4:$compose_version"
-    debugImplementation "androidx.compose.ui:ui-tooling:$compose_version"
 }
 
 apply plugin: 'com.google.gms.google-services' // 반드시 마지막에 추가

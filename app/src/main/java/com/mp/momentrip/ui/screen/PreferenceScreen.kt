@@ -64,6 +64,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.mp.momentrip.data.Answer
 import com.mp.momentrip.ui.components.DotsIndicator
+import com.mp.momentrip.ui.theme.MomenTripTheme
 import com.mp.momentrip.util.MainDestinations
 import com.mp.momentrip.util.UserDestinations
 
@@ -75,7 +76,7 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun QuestionScreen(
-    modifier: Modifier = Modifier,
+    modifier: Modifier,
     navController: NavController,
     userState: UserViewModel
 ) {
@@ -83,61 +84,51 @@ fun QuestionScreen(
     val isLoading by questionViewModel.isLoading.collectAsState()
     val currentIndex by questionViewModel.currentIndex.collectAsState()
 
-
+    if (isLoading) {
+        LoadingScreen()
+    }
+    else{
         Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = modifier.fillMaxSize().padding(36.dp),
             verticalArrangement = Arrangement.Center,
-            modifier = modifier
-                .fillMaxSize()
-                .padding(16.dp)
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            if (isLoading) {
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator()
-                }
-            } else {
-                Column(
-                    modifier = modifier.fillMaxSize().padding(16.dp),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text(
-                        text = questionViewModel.getQuestion(currentIndex),
-                        fontSize = 34.sp,
-                        fontFamily = FontFamily(Font(R.font.omyu))
-                    )
-                    Spacer(modifier = Modifier.height(100.dp))
+            Text(
+                text = questionViewModel.getQuestion(currentIndex),
+                fontSize = 34.sp,
+                fontFamily = FontFamily(Font(R.font.omyu))
+            )
+            Spacer(modifier = Modifier.height(100.dp))
 
-                    LazyVerticalGrid(
-                        columns = GridCells.Fixed(2),
-                        horizontalArrangement = Arrangement.spacedBy(30.dp),
-                        verticalArrangement = Arrangement.spacedBy(30.dp),
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(2),
+                horizontalArrangement = Arrangement.spacedBy(30.dp),
+                verticalArrangement = Arrangement.spacedBy(30.dp),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                val answers = questionViewModel.getAnswers(currentIndex)
+                items(answers.size) { index ->
+                    val answer = answers[index]
+                    AnswerCard(
+                        answer = answer,
+                        onClick = {
+                            CoroutineScope(Dispatchers.Main).launch {
+                                questionViewModel.getAnalyzer().addAnswer(answer.type)
+                                questionViewModel.setNextQuestion(navController, userState)
+                            }
+
+                        },
                         modifier = Modifier.fillMaxWidth()
-                    ) {
-                        val answers = questionViewModel.getAnswers(currentIndex)
-                        items(answers.size) { index ->
-                            val answer = answers[index]
-                            AnswerCard(
-                                answer = answer,
-                                onClick = {
-                                    CoroutineScope(Dispatchers.Main).launch {
-                                        questionViewModel.getAnalyzer().addAnswer(answer.type)
-                                        questionViewModel.setNextQuestion(navController, userState)
-                                    }
-
-                                },
-                                modifier = Modifier.fillMaxWidth()
-                            )
-                        }
-                    }
-                    Spacer(modifier = Modifier.height(100.dp))
-                    DotsIndicator(
-                        currentIndex,
-                        questionViewModel.questionSetSize
                     )
                 }
             }
+            Spacer(modifier = Modifier.height(100.dp))
+            DotsIndicator(
+                currentIndex,
+                questionViewModel.questionSetSize
+            )
         }
+    }
 
 }
 
@@ -165,7 +156,6 @@ fun ImageOption(imageRes: Int, label: String) {
 
         Text(
             text = label,
-            fontFamily = androidx.compose.ui.text.font.FontFamily.Default, // Replace with Roboto if needed
             fontWeight = FontWeight.Medium,
             fontSize = 13.sp,
             lineHeight = 25.sp,
@@ -206,9 +196,11 @@ fun AnswerCard(
 
                 Image(
                     painter = painterResource(id = answer.image_id),
-                    contentDescription = "Nature Image",
+                    contentDescription = "",
                     modifier = Modifier.clip(RoundedCornerShape(16.dp))
                 )
+
+                Spacer(modifier = Modifier.height(30.dp))
 
                 Text(
                     text = answer.answer,
@@ -226,12 +218,13 @@ fun AnswerCard(
 )
 @Composable
 fun QuestionScreenPreview(){
-
-        QuestionScreen(
-            modifier = Modifier,
-            navController = rememberNavController(),
-            userState = UserViewModel()
-        )
+        MomenTripTheme {
+            QuestionScreen(
+                modifier = Modifier,
+                navController = rememberNavController(),
+                userState = UserViewModel()
+            )
+        }
 
 }
 

@@ -9,12 +9,16 @@ import com.mp.momentrip.data.Schedule
 import com.mp.momentrip.data.User
 import com.mp.momentrip.data.UserPreference
 import com.mp.momentrip.service.AccountService
+import com.mp.momentrip.service.RecommendService
 import com.mp.momentrip.service.TourService
+import com.mp.momentrip.service.Word2VecModel
+import kotlinx.coroutines.Dispatchers
 
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.time.LocalDate
 
 class UserViewModel : ViewModel() {
@@ -38,6 +42,9 @@ class UserViewModel : ViewModel() {
 
     private val _place = MutableStateFlow<Place?>(null)
     val place: StateFlow<Place?> = _place.asStateFlow()
+
+    private val _isLiked = MutableStateFlow(false)
+    val isLikedFlow: StateFlow<Boolean> = _isLiked.asStateFlow()
 
 
     private val region = MutableStateFlow<String?>(null)
@@ -100,7 +107,6 @@ class UserViewModel : ViewModel() {
     // 유효한 사용자 정보 가져오기
     fun getUser(): User? {
         return _user.value
-
     }
     fun setSchedule(schedule: Schedule){
         viewModelScope.launch {
@@ -109,6 +115,9 @@ class UserViewModel : ViewModel() {
     }
     fun getSchedule(): Schedule?{
         return schedule.value
+    }
+    fun getScheduleSize(): Int{
+        return schedules.value.size
     }
     // 사용자 선호도 가져오기
     fun getUserPreference(): UserPreference? {
@@ -127,6 +136,7 @@ class UserViewModel : ViewModel() {
 
     fun setPlace(place: Place?){
         _place.value = place
+        updateIsLikedState()
     }
 
     fun loadPlaceDetail(){
@@ -138,29 +148,70 @@ class UserViewModel : ViewModel() {
         }
     }
     fun like() {
-        val place = place.value
         viewModelScope.launch {
             val currentUser = _user.value
-            if (currentUser != null && place != null) {
-                val updatedLiked = currentUser.liked.toMutableList()
+            val currentPlace = place.value
+            _isLoading.value = true
 
-                // 이미 좋아요를 눌렀다면 취소, 아니면 추가
-                if (updatedLiked.contains(place)) {
-                    updatedLiked.remove(place) // 이미 존재하면 제거 (취소)
-                } else {
-                    updatedLiked.add(place) // 존재하지 않으면 추가 (좋아요)
+            if (currentUser != null && currentPlace != null) {
+                try {
+                    // 좋아요 상태 변경 (UI 스레드)
+                    val updatedLiked = currentUser.liked.toMutableList()
+                    val isNowLiked = if (updatedLiked.contains(currentPlace)) {
+                        updatedLiked.remove(currentPlace)
+                        false
+                    } else {
+                        updatedLiked.add(currentPlace)
+                        true
+                    }
+
+                    // 사용자 정보 업데이트 (UI 스레드)
+                    val updatedUser = currentUser.copy(liked = updatedLiked)
+                    _user.value = updatedUser
+                    _isLiked.value = isNowLiked
+
+                    // 무거운 연산을 백그라운드로 이동
+                    withContext(Dispatchers.Default) {
+                        if (isNowLiked) {
+                            // 벡터 계산은 백그라운드에서 수행
+                            Word2VecModel.like(
+                                currentUser.userPreference.preferenceVector,
+                                currentPlace
+                            )
+                        }
+                        else{
+                            Word2VecModel.dislike(
+                                currentUser.userPreference.preferenceVector,
+                                currentPlace
+                            )
+                        }
+
+                        // 백엔드 동기화 (IO 스레드)
+                        withContext(Dispatchers.IO) {
+                            AccountService.updateUser(updatedUser)
+                        }
+                    }
+                } catch (e: Exception) {
+                    // 오류 발생 시 롤백
+                    _user.value = currentUser
+
+                    Log.e("UserViewModel", "Like failed", e)
+                } finally {
+                    _isLoading.value = false
                 }
-
-                // 사용자 업데이트
-                _user.value = currentUser.copy(liked = updatedLiked.distinct())
-                updateUser(currentUser.copy(liked = updatedLiked.distinct()))
+            } else {
+                _isLoading.value = false
             }
         }
     }
 
+    fun isLiked(): Boolean {
+        val currentPlace = place.value ?: return false
+        return _user.value?.liked?.contains(currentPlace) ?: false
+    }
 
-    fun isLiked(): Boolean?{
-        return getUser()?.liked?.contains(place.value)
+    private fun updateIsLikedState() {
+        _isLiked.value = isLiked()
     }
 
 

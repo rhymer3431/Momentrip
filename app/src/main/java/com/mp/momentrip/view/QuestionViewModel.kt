@@ -30,8 +30,8 @@ class QuestionViewModel : ViewModel() {
     private val _analyzer = MutableStateFlow(PreferenceAnalyzer())
 
     // 상태 노출은 StateFlow로 일관되게
-    val currentIndex: StateFlow<Int> get() = _currentIndex.asStateFlow()
-    val questionSetSize: Int get() = _questionList.value.questionSet.size
+    val currentIndex: StateFlow<Int>  = _currentIndex.asStateFlow()
+    val questionSetSize: Int = _questionList.value.questionSet.size
     val questionList: StateFlow<QuestionSetList> = _questionList.asStateFlow()
     private fun incrementcurrentIndex() {
         _currentIndex.value += 1

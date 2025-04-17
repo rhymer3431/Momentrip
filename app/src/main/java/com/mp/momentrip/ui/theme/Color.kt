@@ -16,6 +16,7 @@ val PurpleNice = Color(0xff7513f2)
 val GreenNice = Color(0xff14C25A)
 val CyanNice = Color(0xff0cd8cd)
 val RedNice = Color(0xffe73b50)
+val Like = Color(0XFFFF6363)
 
 val BeigeLight = Color(0xFFF8F3D9)
 val BeigeMiddle = Color(0xFFEBE5C2)

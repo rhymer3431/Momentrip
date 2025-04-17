@@ -18,18 +18,49 @@ enum class ContentTypeId(val code: String) {
     RESTAURANT("39");        // 음식점
 }
 
-enum class Category(val categoryName: String, val rnum: Int) {
-    A01("자연", 1),
-    A02("인문(문화/예술/역사)", 2),
-    A03("레포츠", 3),
-    A04("쇼핑", 4),
-    A05("음식", 5),
-    B02("숙박", 6),
-    C01("추천코스", 7);
+enum class Category(val categoryName: String) {
+    A01("자연"),
+    A02("인문(문화/예술/역사)"),
+    A03("레포츠"),
+    A04("쇼핑"),
+    A05("음식"),
+    B02("숙박"),
+    C01("추천코스"),
+    A0501("한식"),
+    A0502("양식"),
+    A0503("중식"),
+    A0504("일식"),
+    A0505("아시안/기타"),
+    A0506("카페/디저트"),
+    A0507("주점/바"),
+    A0508("음식특산물");
 
-    // You can still access the default name property if needed
-    // by using it directly: this.name
+
+    companion object {
+        fun fromCode(code: String): Category? = entries.find { it.name == code }
+    }
 }
+
+enum class FoodCategory(val code: String, val description: String) {
+    KOREAN("A05020100", "한식"),
+    WESTERN("A05020200", "양식"),
+    JAPANESE("A05020300", "일식"),
+    CHINESE("A05020400", "중식"),
+    ASIAN("A05020500", "아시아식"),
+    BUFFET("A05020600", "뷔페"),
+    FAST_FOOD("A05020700", "패스트푸드"),
+    CHICKEN("A05020800", "치킨"),
+    PIZZA("A05020900", "피자"),
+    SNACK("A05021000", "야식"),
+    BAKERY("A05021100", "제과·제빵"),
+    CAFE("A05021200", "카페"),
+    OTHER("A05021300", "기타");
+
+    companion object {
+        fun fromCode(code: String): FoodCategory? = entries.find { it.code == code }
+    }
+}
+
 
 
 
@@ -64,69 +95,6 @@ data class AreaCode(
     val rnum: Int
 )
 
-data class CategoryCode(
-    val code: String,
-    val name: String,
-    val rnum: Int
-)
-
-data class CommonInfo(
-    val contentid: String,
-    val contenttypeid: String,
-    val title: String,
-    val addr1: String?, // 주소
-    val addr2: String?,
-    val tel: String,
-    val firstimage: String,
-    val firstimage2: String,
-    val areacode: String,
-    val sigungucode: String,
-    val cat1: String,
-    val cat2: String,
-    val cat3: String,
-    val mapx: Double,
-    val mapy: Double,
-    val mlevel: String,
-    val overview: String
-)
-data class IntroInfo(
-    val contentId: String,
-    val contentTypeId: String,
-    // 관광지(12) 관련 필드
-    val accomodationCount: String? = null,
-    val parking: String? = null,
-    // 문화시설(14) 관련 필드
-    val scale: String? = null,
-    // 행사/공연/축제(15) 관련 필드
-    val eventStartDate: String? = null,
-    val eventEndDate: String? = null,
-    // 여행코스(25) 관련 필드
-    val distance: String? = null,
-    // 레포츠(28) 관련 필드
-    val openPeriod: String? = null,
-    // 숙박(32) 관련 필드
-    val checkinTime: String? = null,
-    // 쇼핑(38) 관련 필드
-    val saleItem: String? = null,
-    // 음식점(39) 관련 필드
-    val openTime: String? = null
-)
-
-data class DetailInfo(
-    val contentId: String,
-    val contentTypeId: String,
-    val infoname: String,
-    val infotext: String,
-    val serialnum: Int
-)
-
-data class ImageInfo(
-    val contentId: String,
-    val originImgurl: String,
-    val smallImgurl: String,
-    val imgname: String,
-    val serialnum: Int
-)
 
 data class AreaBasedItem(
     val addr1: String?, // 주소

@@ -1,6 +1,9 @@
 package com.mp.momentrip.service
 
 import android.content.Context
+import android.util.Log
+import com.mp.momentrip.data.Place
+import com.mp.momentrip.service.RecommendService.extractKeywords
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -55,6 +58,14 @@ object Word2VecModel {
         output[0][0].toList()
     }
 
+    suspend fun getVectorByPlace(place: Place) : List<Float>?{
+        if(place.overview != null){
+            val keywords = extractKeywords(place.overview)
+            return getVectorByList(keywords)
+        }
+        else return null
+    }
+
     suspend fun getSimilarity(word1: String, word2: String): Float? = withContext(Dispatchers.Default) {
         val vec1 = getEmbedding(word1) ?: return@withContext null
         val vec2 = getEmbedding(word2) ?: return@withContext null
@@ -82,8 +93,29 @@ object Word2VecModel {
                 result[index] += value
             }
         }
-
         result
     }
 
+    suspend fun like(preferenceVector: MutableList<Float>?, place: Place) {
+        val placeVector = getVectorByPlace(place)
+        Log.d("test",preferenceVector?.get(0).toString())
+        preferenceVector?.let { current ->
+            for (index in current.indices) {
+
+                current[index] = ((current[index] + (placeVector?.get(index) ?: current[index])) / 2.0f)
+            }
+        }
+        Log.d("test",preferenceVector?.get(0).toString())
+    }
+
+    suspend fun dislike(preferenceVector: MutableList<Float>?, place: Place) {
+        val placeVector = getVectorByPlace(place)
+        Log.d("test",preferenceVector?.get(0).toString())
+        preferenceVector?.let { current ->
+            for (index in current.indices) {
+                current[index] = (2*(current[index] - (placeVector?.get(index) ?: current[index])))
+            }
+        }
+        Log.d("test",preferenceVector?.get(0).toString())
+    }
 }
