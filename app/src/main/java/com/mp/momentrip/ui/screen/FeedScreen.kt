@@ -46,6 +46,7 @@ import com.mp.momentrip.R
 import com.mp.momentrip.data.Place
 import com.mp.momentrip.data.Region
 import com.mp.momentrip.ui.components.ImageCard
+import com.mp.momentrip.ui.theme.MomenTripTheme
 import com.mp.momentrip.util.MainDestinations
 import com.mp.momentrip.util.UserDestinations
 import com.mp.momentrip.view.RecommendViewModel
@@ -59,11 +60,8 @@ fun FeedScreen(
     recommendViewModel: RecommendViewModel = viewModel()
 ) {
 
-    val scrollState = rememberScrollState()
     LaunchedEffect(Unit) {
-        // 이 블록 안의 코드가 컴포넌트 최초 렌더링 시에만 실행됩니다.
-        recommendViewModel.setUser(userState)
-        recommendViewModel.loadRecommendPlaces()
+        recommendViewModel.initialize(userState)
     }
 
     val isLoading by recommendViewModel.isLoading.collectAsState()
@@ -303,10 +301,13 @@ fun PlaceCard(
     }
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 fun FeedScreenPreview(){
-    FeedScreen(
-        navController = rememberNavController(),
-        userState = UserViewModel())
+    MomenTripTheme {
+        FeedScreen(
+            navController = rememberNavController(),
+            userState = UserViewModel())
+    }
+
 }

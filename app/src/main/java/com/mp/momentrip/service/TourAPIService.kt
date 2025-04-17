@@ -17,25 +17,14 @@ import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.Query
 
-suspend fun main() {
-    val service = TourApiClient.apiService
 
-    val call = service.getAreaBasedList(
-        areaCode = "1",
-        contentTypeId = "39",
-        serviceKey = TOUR_API_KEY) // 실제 API 키 입력
-    val list = call.response.body.items?.item
-    list?.forEach {
-        item -> println(item.toPlace())
-    }
-
-}
+val request_num = 3
 
 
 interface TourAPIService {
     @GET("areaCode1")
     suspend fun getAreaCode(
-        @Query("numOfRows") numOfRows: Int = 10,
+        @Query("numOfRows") numOfRows: Int = request_num,
         @Query("pageNo") pageNo: Int = 1,
         @Query("areaCode") areaCode: String? = null,
         @Query("MobileOS") mobileOS: String = "AND",
@@ -46,10 +35,11 @@ interface TourAPIService {
 
     @GET("areaBasedList1")
     suspend fun getAreaBasedList(
-        @Query("numOfRows") numOfRows: Int = 10,
+        @Query("numOfRows") numOfRows: Int = request_num,
         @Query("pageNo") pageNo: Int = 1,
         @Query("MobileOS") mobileOS: String = "AND",
         @Query("MobileApp") mobileApp: String = "MomenTrip",
+        @Query("arrange") arrange: String = "O",
         @Query("_type") type: String = "json",
         @Query("areaCode") areaCode: String? = null,
         @Query("sigunguCode") sigunguCode: String? = null,
@@ -59,7 +49,7 @@ interface TourAPIService {
 
     @GET("locationBasedList1")
     suspend fun getLocationBasedList(
-        @Query("numOfRows") numOfRows: Int = 10,
+        @Query("numOfRows") numOfRows: Int = request_num,
         @Query("pageNo") pageNo: Int = 1,
         @Query("MobileOS") mobileOS: String = "AND",
         @Query("MobileApp") mobileApp: String = "MomenTrip",
@@ -76,7 +66,7 @@ interface TourAPIService {
 
     @GET("searchKeyword1")
     suspend fun searchKeyword(
-        @Query("numOfRows") numOfRows: Int = 10,
+        @Query("numOfRows") numOfRows: Int = request_num,
         @Query("pageNo") pageNo: Int = 1,
         @Query("MobileOS") mobileOS: String = "AND",
         @Query("MobileApp") mobileApp: String = "AppTest",
@@ -99,7 +89,7 @@ interface TourAPIService {
 
     @GET("searchFestival1")
     suspend fun searchFestival(
-        @Query("numOfRows") numOfRows: Int = 10,
+        @Query("numOfRows") numOfRows: Int = request_num,
         @Query("pageNo") pageNo: Int = 1,
         @Query("MobileOS") mobileOS: String = "AND",
         @Query("MobileApp") mobileApp: String = "APPTest",
@@ -117,7 +107,7 @@ interface TourAPIService {
 
     @GET("searchStay1")
     suspend fun searchStay(
-        @Query("numOfRows") numOfRows: Int = 10,
+        @Query("numOfRows") numOfRows: Int = request_num,
         @Query("pageNo") pageNo: Int = 1,
         @Query("MobileOS") mobileOS: String = "AND",
         @Query("MobileApp") mobileApp: String = "APPTest",
@@ -132,13 +122,13 @@ interface TourAPIService {
 
     @GET("detailCommon1")
     suspend fun getContentDetail(
-        @Query("numOfRows") numOfRows: Int = 10,
+        @Query("numOfRows") numOfRows: Int = request_num,
         @Query("pageNo") pageNo: Int = 1,
         @Query("MobileOS") mobileOS: String = "ETC",
         @Query("MobileApp") mobileApp: String = "APPTest",
         @Query("serviceKey") serviceKey: String,
         @Query("_type") type: String = "json",
-        @Query("contentId") contentId: String,
+        @Query("contentId") contentId: Int,
         @Query("contentTypeId") contentTypeId: String? = null,
         @Query("defaultYN") defaultYN: String = "Y",
         @Query("firstImageYN") firstImageYN: String = "Y",

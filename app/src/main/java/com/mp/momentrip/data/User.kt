@@ -9,6 +9,7 @@ data class User(
     val age: Int = 0,
     val userPreference: UserPreference = UserPreference(),
     val liked: List<Place?> = emptyList(),
+    val schedules: List<Schedule?> = emptyList()
 )
 data class UserRegisterForm(
     val email: String,

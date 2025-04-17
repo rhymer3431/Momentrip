@@ -16,6 +16,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -35,10 +36,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.mp.momentrip.service.AccountService
+import com.mp.momentrip.ui.theme.MomenTripTheme
 import com.mp.momentrip.util.MainDestinations
 import com.mp.momentrip.view.UserViewModel
 
@@ -126,7 +130,7 @@ fun SignInScreen(
                     text = "비밀번호를 잊으셨나요?",
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Medium,
-                    color = Color(0xFFFF7029),
+                    color = MaterialTheme.colorScheme.onBackground,
                     modifier = Modifier
                         .fillMaxWidth()
                         .clickable { /* Handle forgot password */ },
@@ -175,7 +179,7 @@ fun SignInScreen(
                         text = "Sign up",
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Medium,
-                        color = Color(0xFFFF7029),
+                        color = MaterialTheme.colorScheme.background,
                         modifier = Modifier.clickable { navController.navigate(MainDestinations.SIGN_UP_ROUTE) }
                     )
                 }
@@ -184,10 +188,15 @@ fun SignInScreen(
     }
 }
 
-fun onSuccess(){
-
-}
-fun onFailure(){
+@Preview
+@Composable
+fun SignInPreview(){
+    MomenTripTheme {
+        SignInScreen(
+            navController = rememberNavController(),
+            modifier = Modifier,
+            userState = UserViewModel())
+    }
 
 }
 

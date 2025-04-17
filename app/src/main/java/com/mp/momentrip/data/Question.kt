@@ -37,7 +37,7 @@ class QuestionSetList{
                 ),
                 Answer(
                     answer = "휴식과 웰빙",
-                    image_id =  R.drawable.rest,
+                    image_id =  R.drawable.relax,
                     type = "D"
                 )
             )
@@ -122,22 +122,22 @@ class QuestionSetList{
             answers = listOf(
                 Answer(
                     answer = "한식",
-                    image_id =  R.drawable.nature,
+                    image_id =  R.drawable.korean_food,
                     type = "A"
                 ),
                 Answer(
                     answer = "양식",
-                    image_id =  R.drawable.nature,
+                    image_id =  R.drawable.western_food,
                     type = "B"
                 ),
                 Answer(
                     answer = "일식",
-                    image_id =  R.drawable.nature,
+                    image_id =  R.drawable.japanese_food,
                     type = "C"
                 ),
                 Answer(
                     answer = "중식",
-                    image_id =  R.drawable.nature,
+                    image_id =  R.drawable.chinese_food,
                     type = "D"
                 )
             )

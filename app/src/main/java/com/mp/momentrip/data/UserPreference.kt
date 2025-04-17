@@ -1,7 +1,10 @@
 package com.mp.momentrip.data
 
+import android.util.Log
+
 
 data class UserPreference(
+    val foodPreference: FoodPreference = FoodPreference(),
     val preferenceVector: MutableList<Float>? = null
 ) {
     override fun equals(other: Any?): Boolean {
@@ -18,22 +21,35 @@ data class UserPreference(
         return true
     }
     
-    private val foodMap = mutableMapOf(
-    "한식" to 3.5,  // 예시 실수 값
-    "양식" to 2.8,
-    "일식" to 4.2,
-    "중식" to 3.0
-)
-    
     override fun hashCode(): Int {
         return preferenceVector?.hashCode() ?: 0
     }
 
-    fun update(target: List<Float>) {
+    fun like(target: List<Float>) {
         preferenceVector?.let { current ->
             for (index in current.indices) {
                 current[index] = ((current[index] + target[index]) / 2.0f)
             }
         }
+        Log.d("test",preferenceVector?.get(0).toString())
+    }
+    fun dislike(target: List<Float>) {
+        preferenceVector?.let { current ->
+            for (index in current.indices) {
+                current[index] = (2*current[index] - target[index])
+            }
+        }
+    }
+}
+
+data class FoodPreference(
+    val foodTypeId: MutableMap<String, Int>? = null,
+    val foodNameId: MutableMap<String, Int>? = null
+){
+    fun addFoodTypeCount(code: String){
+        foodTypeId?.set(code, foodTypeId[code]?.plus(1) ?: 1)
+    }
+    fun addFoodNameCount(code: String){
+        foodNameId?.set(code, foodNameId[code]?.plus(1) ?: 1)
     }
 }

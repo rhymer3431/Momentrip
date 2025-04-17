@@ -32,9 +32,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.mp.momentrip.data.Category
+import com.mp.momentrip.data.FoodCategory
 import com.mp.momentrip.ui.components.ImageCard
 import com.mp.momentrip.ui.components.LikeButton
+import com.mp.momentrip.ui.theme.MomenTripTheme
 import com.mp.momentrip.view.UserViewModel
+
 
 @SuppressLint("StateFlowValueCalledInComposition")
 @Composable
@@ -51,7 +55,6 @@ fun PlaceDetailScreen(
         LoadingScreen()
     }
     else{
-        val place = userState.place.value
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -77,6 +80,7 @@ fun PlaceDetailScreen(
                 userState.place.value?.firstImage?.let { image ->
                     ImageCard(image)  // 이미지는 ImageCard를 통해 표시
                 }
+
             }
 
             // 제목 부분 (사진과 내용 사이에 위치)
@@ -97,6 +101,9 @@ fun PlaceDetailScreen(
                     color = Color.Black,
                     modifier = Modifier.padding(horizontal = 16.dp)
                 )
+
+
+
             }
 
             // 내용 영역
@@ -122,8 +129,10 @@ fun PlaceDetailScreen(
 }
 
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 fun PlaceDetailScreenPreview(){
-    PlaceDetailScreen(UserViewModel())
+    MomenTripTheme {
+        PlaceDetailScreen(UserViewModel())
+    }
 }

@@ -20,8 +20,7 @@ data class Place(
     val dist: Double? = null,                    // 중심좌표로부터 거리 (Optional)
     val eventStartDate: String? = null,          // 행사시작일 (Optional)
     val eventEndDate: String? = null,            // 행사종료일 (Optional)
-    val goodstay: Int? = null,                   // 굿스테이여부 (Optional)
-    val hanok: Int? = null,                      // 한옥여부 (Optional)
+    // 한옥여부 (Optional)
     val hmpg: String? = null,                    // 홈페이지주소 (Optional)
     val overview: String? = null                 // 개요 (Optional)
 )
@@ -33,14 +32,6 @@ data class KakaoPlaceDTO(
     val phone: String = "",
     val x: Double = 0.0,         // GPS X좌표 (경도)
     val y: Double = 0.0,         // GPS Y좌표 (위도)
-
-)
-
-data class PlaceCardDTO(
-    val title: String = "",                      // 필수 (기본값 빈 문자열)
-    val addr1: String? = null,                   // 주소 (Optional)
-    val firstImage: String? = null,              // 대표 이미지 (원본) (Optional)
-    val tel: String? = null,                     // 전화번호 (Optional)
 )
 
 
@@ -65,7 +56,7 @@ enum class Region(val code: Int, val locationName: String) {
 
     companion object {
         private val codeMap = entries.associateBy { it.code }
-        private val nameMap = entries.associateBy { it.name }
+        private val nameMap = entries.associateBy { it.locationName }
 
         fun fromCode(code: Int) = codeMap[code]
         fun fromName(name: String) = nameMap[name]

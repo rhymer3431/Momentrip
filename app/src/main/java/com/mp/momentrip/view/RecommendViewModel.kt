@@ -1,6 +1,8 @@
 package com.mp.momentrip.view
 
 import android.util.Log
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mp.momentrip.data.Place
@@ -11,7 +13,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-class RecommendViewModel() : ViewModel() {
+class RecommendViewModel : ViewModel() {
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
@@ -24,6 +26,9 @@ class RecommendViewModel() : ViewModel() {
     private val _recommendDormitory = MutableStateFlow<List<Place>?>(null)
     val recommendDormitory: StateFlow<List<Place>?> = _recommendDormitory.asStateFlow()
 
+    private val _favoriteFoodType = MutableStateFlow<String?>(null)
+    val favoriteFoodType: StateFlow<String?> = _favoriteFoodType.asStateFlow()
+
     private val _recommendTourSpot = MutableStateFlow<List<Place>?>(null)
     val recommendTourSpot: StateFlow<List<Place>?> = _recommendTourSpot.asStateFlow()
 
@@ -35,6 +40,32 @@ class RecommendViewModel() : ViewModel() {
     }
     fun setLoading(status: Boolean){
         _isLoading.value = status
+    }
+
+    private val _isInitialized = mutableStateOf(false)
+    val isInitialized: State<Boolean> = _isInitialized
+
+    fun initialize(userState: UserViewModel) {
+        if (!_isInitialized.value) {
+            setUser(userState)
+            recommendRegion()
+            loadRecommendPlaces()
+            _isInitialized.value = true
+        }
+    }
+
+    fun recommendRegion(){
+        viewModelScope.launch {
+            val recommended = RecommendService.getRegionByPreference(userState.value?.getUserPreference())
+            userState.value?.setRegion(recommended)
+        }
+    }
+
+    fun getFavoriteFoodType(){
+        viewModelScope.launch {
+            val type = RecommendService.getFavoriteFoodType(userState.value?.getUserPreference())
+            _favoriteFoodType.value = type
+        }
     }
     fun loadRecommendPlaces() {
         viewModelScope.launch {

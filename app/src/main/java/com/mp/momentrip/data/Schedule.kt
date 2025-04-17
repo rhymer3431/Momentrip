@@ -10,6 +10,7 @@ import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 
 data class Schedule (
+    val user: String = "",
     val startDate: String = "",
     val endDate: String = "",
     val duration: Long = 0,

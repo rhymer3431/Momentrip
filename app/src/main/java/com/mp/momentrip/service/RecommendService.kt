@@ -1,9 +1,12 @@
 package com.mp.momentrip.service
 
 import android.util.Log
+import com.mp.momentrip.data.Category
+import com.mp.momentrip.data.FoodCategory
 import com.mp.momentrip.data.Place
 import com.mp.momentrip.data.UserPreference
 import com.mp.momentrip.view.UserViewModel
+import org.openkoreantext.processor.KoreanPosJava
 import org.openkoreantext.processor.OpenKoreanTextProcessorJava
 
 object RecommendService {
@@ -19,8 +22,18 @@ object RecommendService {
         "안동" to "문화 역사 전통 건축물 음식"
     )
 
+    suspend fun getFavoriteFoodType(userPreference: UserPreference?): String? {
+        // 유저의 foodPreference가 null일 경우를 체크
+        val foodTypeCode = userPreference?.foodPreference?.foodTypeId?.maxByOrNull{ it.value }?.key
 
-    
+        // foodTypeCode가 null이 아니면 해당 카테고리 찾기
+        return if (foodTypeCode != null) {
+            FoodCategory.fromCode(foodTypeCode)?.description
+        } else {
+            null  // foodTypeCode가 null일 경우 null 반환
+        }
+    }
+
     suspend fun getRegionByPreference(userPreference: UserPreference?): String {
         val regionVectors = regions.mapValues { (_, keywords) ->
             val keywordList = keywords.split(" ")
@@ -60,7 +73,7 @@ object RecommendService {
         places: List<Place>
     ): List<Place> {
         val placeSimilarities = places.mapNotNull { place ->
-            placeToVector(place)?.let { vector ->
+            Word2VecModel.getVectorByPlace(place)?.let { vector ->
                 Pair(cosineSimilarity(userPreference.preferenceVector!!, vector), place)
             }
         }
@@ -81,7 +94,7 @@ object RecommendService {
         // 각 레스토랑의 벡터와 사용자의 벡터를 비교하여 추천
         val restaurantSimilarities = restaurants.mapNotNull { restaurant ->
             // 레스토랑 정보를 벡터로 변환
-            val restaurantVector = placeToVector(restaurant)
+            val restaurantVector = Word2VecModel.getVectorByPlace(restaurant)
 
             // 레스토랑 벡터가 null이 아닐 경우
             if (userPreference.preferenceVector != null && restaurantVector != null) {
@@ -106,27 +119,52 @@ object RecommendService {
         // 추천된 레스토랑 반환
         return topRestaurants
     }
-    suspend fun placeToVector(place: Place) : List<Float>?{
 
-        if(place.overview != null){
-            val keywords = extractKeywords(place.overview)
-
-            return Word2VecModel.getVectorByList(keywords)
-
-        }
-        else return null
-    }
     suspend fun extractKeywords(text: String): List<String> {
-        // 텍스트 정규화
-        val normalized = OpenKoreanTextProcessorJava.normalize(text)
-        // 토큰화
-        val tokens = OpenKoreanTextProcessorJava.tokenize(normalized)
-        // 품사 분석 및 명사 필터링
-        val tokenList = OpenKoreanTextProcessorJava.tokensToJavaKoreanTokenList(tokens)
+        return try {
+            // 1. 입력 텍스트 유효성 검사
+            if (text.isBlank()) return emptyList()
 
-        return tokenList
-            .filter { it.pos.toString() == "Noun" }
-            .map { it.text }.take(5)
+            // 2. 텍스트 정규화 (예외 처리 추가)
+            val normalized = try {
+                OpenKoreanTextProcessorJava.normalize(text)
+            } catch (e: Exception) {
+                Log.w("extractKeywords", "Text normalization failed, using original text", e)
+                text
+            }
+
+            // 3. 토큰화 (예외 처리 추가)
+            val tokens = try {
+                OpenKoreanTextProcessorJava.tokenize(normalized)
+            } catch (e: Exception) {
+                Log.e("extractKeywords", "Tokenization failed", e)
+                return emptyList()
+            }
+
+            // 4. 안전한 토큰 변환
+            val tokenList = try {
+                OpenKoreanTextProcessorJava.tokensToJavaKoreanTokenList(tokens)
+                    .filter { token ->
+                        // 안전한 품사 확인
+                        try {
+                            token.pos == KoreanPosJava.Noun
+                        } catch (e: Exception) {
+                            Log.w("extractKeywords", "Invalid POS tag: ${token.pos}", e)
+                            false
+                        }
+                    }
+                    .take(5)
+                    .map { it.text }
+            } catch (e: Exception) {
+                Log.e("extractKeywords", "Token conversion failed", e)
+                emptyList()
+            }
+
+            return tokenList
+        } catch (e: Exception) {
+            Log.e("extractKeywords", "Unexpected error in keyword extraction", e)
+            emptyList()
+        }
     }
 
     // 코사인 유사도 함수
