@@ -20,9 +20,8 @@ data class Place(
     val dist: Double? = null,                    // 중심좌표로부터 거리 (Optional)
     val eventStartDate: String? = null,          // 행사시작일 (Optional)
     val eventEndDate: String? = null,            // 행사종료일 (Optional)
-    // 한옥여부 (Optional)
     val hmpg: String? = null,                    // 홈페이지주소 (Optional)
-    val overview: String? = null                 // 개요 (Optional)
+    val overview: String? = null,                 // 개요 (Optional)
 )
 
 data class KakaoPlaceDTO(

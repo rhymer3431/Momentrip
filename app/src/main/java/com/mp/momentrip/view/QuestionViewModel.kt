@@ -1,23 +1,17 @@
 package com.mp.momentrip.view
 
 import android.util.Log
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.mp.momentrip.data.Answer
-import com.mp.momentrip.data.QuestionSet
 import com.mp.momentrip.data.QuestionSetList
 import com.mp.momentrip.service.PreferenceAnalyzer
 import com.mp.momentrip.service.RecommendService
-import com.mp.momentrip.util.UserDestinations
+import com.mp.momentrip.ui.UserDestinations
 
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
 
 class QuestionViewModel : ViewModel() {
 

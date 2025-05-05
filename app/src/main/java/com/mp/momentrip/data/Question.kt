@@ -31,7 +31,7 @@ class QuestionSetList{
                     type = "B"
                 ),
                 Answer(
-                    answer = "도시의 편리함과 현대적 시설",
+                    answer = "도시의 편리함",
                     image_id =  R.drawable.city,
                     type = "C"
                 ),
@@ -46,23 +46,23 @@ class QuestionSetList{
             question = "여행지에서 주로 어떤 활동을 즐기고 싶나요?",
             answers = listOf(
                 Answer(
-                    answer = "하이킹, 캠핑, 자연 탐방",
+                    answer = "하이킹, 캠핑 등 자연 탐방",
                     image_id =  R.drawable.camping,
                     type = "A"
                 ),
                 Answer(
-                    answer = "박물관, 유적지 방문, 역사적인 장소 탐방",
+                    answer = "박물관, 유적지 방문",
                     image_id =  R.drawable.museum,
                     type = "B"
                 ),
                 Answer(
-                    answer = "쇼핑, 미술관, 나이트라이프",
+                    answer = "쇼핑, 미술관",
                     image_id =  R.drawable.shopping,
                     type = "C"
                 ),
                 Answer(
-                    answer = "스파, 마사지, 요가 등 힐링 활동",
-                    image_id =  R.drawable.yoga_s,
+                    answer = "스파, 마사지 등 힐링 활동",
+                    image_id =  R.drawable.massage,
                     type = "D"
                 )
             )
@@ -72,22 +72,22 @@ class QuestionSetList{
             answers = listOf(
                 Answer(
                     answer = "산과 자연이 어우러진 곳",
-                    image_id =  R.drawable.nature,
+                    image_id =  R.drawable.nature2,
                     type = "A"
                 ),
                 Answer(
                     answer = "전통적인 문화와 건축물이 있는 도시",
-                    image_id =  R.drawable.nature,
+                    image_id =  R.drawable.historic_village,
                     type = "B"
                 ),
                 Answer(
-                    answer = "활기찬 도시와 현대적인 인프라",
-                    image_id =  R.drawable.nature,
+                    answer = "활기찬 도시와 현대적인 장소",
+                    image_id =  R.drawable.city,
                     type = "C"
                 ),
                 Answer(
                     answer = "편안한 리조트나 휴양지",
-                    image_id =  R.drawable.nature,
+                    image_id =  R.drawable.pension,
                     type = "D"
                 )
             )
@@ -97,22 +97,22 @@ class QuestionSetList{
             answers = listOf(
                 Answer(
                     answer = "액티브한 스포츠와 모험적인 활동",
-                    image_id =  R.drawable.nature,
+                    image_id =  R.drawable.q4a1,
                     type = "A"
                 ),
                 Answer(
-                    answer = "지역 음식과 미식 경험",
-                    image_id =  R.drawable.nature,
+                    answer = "맛집 탐방",
+                    image_id =  R.drawable.korean_food,
                     type = "B"
                 ),
                 Answer(
-                    answer = "고요하고 평화로운 자연 환경",
-                    image_id =  R.drawable.nature,
+                    answer = "고요하고 평화로운 자연",
+                    image_id =  R.drawable.q4a3,
                     type = "C"
                 ),
                 Answer(
                     answer = "문화적 경험과 역사 탐방",
-                    image_id =  R.drawable.nature,
+                    image_id =  R.drawable.q4a4,
                     type = "D"
                 )
             )

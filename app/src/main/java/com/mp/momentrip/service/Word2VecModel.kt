@@ -58,13 +58,29 @@ object Word2VecModel {
         output[0][0].toList()
     }
 
-    suspend fun getVectorByPlace(place: Place) : List<Float>?{
-        if(place.overview != null){
+    suspend fun getVectorByPlace(place: Place): List<Float>? {
+        // 우선 카테고리로 시도
+        val categoryVector = getVectorByCategories(place)
+        if (categoryVector != null) return categoryVector
+
+        // 카테고리가 없으면 fallback으로 overview 키워드로
+        if (place.overview != null) {
             val keywords = extractKeywords(place.overview)
             return getVectorByList(keywords)
         }
-        else return null
+
+        return null
     }
+    suspend fun getVectorByCategories(place: Place): List<Float>? {
+        val categories = listOfNotNull(place.cat1, place.cat2, place.cat3)
+
+        if (categories.isEmpty()) return null
+
+        return getVectorByList(categories)
+    }
+
+
+
 
     suspend fun getSimilarity(word1: String, word2: String): Float? = withContext(Dispatchers.Default) {
         val vec1 = getEmbedding(word1) ?: return@withContext null

@@ -3,20 +3,19 @@ package com.mp.momentrip.ui.screen
 import android.widget.Toast
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -28,17 +27,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.navigation.NavOptionsBuilder
-import androidx.navigation.navOptions
 import com.google.firebase.auth.FirebaseAuth
 import com.mp.momentrip.R
 import com.mp.momentrip.data.UserRegisterForm
 import com.mp.momentrip.service.AccountService
-import com.mp.momentrip.util.MainDestinations
+import com.mp.momentrip.ui.MainDestinations
 import com.mp.momentrip.view.UserViewModel
 import kotlinx.coroutines.launch
 
@@ -90,9 +86,10 @@ fun SignUpForm(
     var password by remember { mutableStateOf("") }
     var age by remember { mutableStateOf("") }
 
+
     // Gender Dropdown State
     var expanded by remember { mutableStateOf(false) }
-    val genders = listOf("남성", "여성", "기타")
+    val genders = listOf("남성", "여성")
     var selectedGender by remember { mutableStateOf(genders[0]) }
 
     Column(
@@ -135,13 +132,21 @@ fun SignUpForm(
         )
         // Password field
         val passwordVisibility = remember { mutableStateOf(false) }
+
         // Password field
-        TextField(
+        OutlinedTextField(
             value = password,
             onValueChange = { password = it }, // ✅ 값이 변경되도록 수정!
             modifier = Modifier
                 .fillMaxWidth()
                 .height(56.dp),
+            placeholder = {
+                Text(
+                    text = "비밀번호를 입력하세요",
+                    color = Color(0xFF1B1E28),
+                    fontSize = 16.sp
+                )
+            },
 
             shape = RoundedCornerShape(14.dp),
             visualTransformation = if (passwordVisibility.value) VisualTransformation.None else PasswordVisualTransformation(),
@@ -190,7 +195,9 @@ fun SignUpForm(
             }
         )
         Spacer(modifier = Modifier.height(24.dp))
+
         // Gender Dropdown
+// Gender Dropdown
         Text(
             text = "성별",
             fontSize = 16.sp,
@@ -198,11 +205,8 @@ fun SignUpForm(
             modifier = Modifier.padding(bottom = 8.dp)
         )
 
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .wrapContentSize(Alignment.TopStart)
-        ) {
+        Box(modifier = Modifier.fillMaxWidth()) {
+            // 드롭다운 트리거 (클릭 가능한 TextField)
             OutlinedTextField(
                 value = selectedGender,
                 onValueChange = {},
@@ -211,12 +215,40 @@ fun SignUpForm(
                     .height(56.dp)
                     .clickable { expanded = true },
                 shape = RoundedCornerShape(14.dp),
-
-                readOnly = true
+                readOnly = true,
+                trailingIcon = {
+                    Icon(
+                        imageVector = Icons.Default.KeyboardArrowDown,
+                        contentDescription = "성별 선택",
+                        modifier = Modifier.clickable { expanded = !expanded }
+                    )
+                }
             )
 
-
+            // 드롭다운 메뉴
+            DropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                genders.forEach { gender ->
+                    DropdownMenuItem(
+                        text = {
+                            Text(
+                                text = gender,
+                                fontSize = 16.sp,
+                                color = Color(0xFF1B1E28)
+                            )
+                        },
+                        onClick = {
+                            selectedGender = gender
+                            expanded = false
+                        }
+                    )
+                }
+            }
         }
+
 
         Spacer(modifier = Modifier.height(24.dp))
 
@@ -252,8 +284,12 @@ fun SignUpForm(
                 email,
                 password,
                 name,
-                1,
-                24
+                when (selectedGender) {
+                    "남성" -> 0
+                    "여성" -> 1
+                    else -> 2 // 기타 경우
+                },
+                age.toIntOrNull() ?: 0 // 안전한 변환을 위해 toIntOrNull 사용
             ),
             navController = navController,
             userState = userState
@@ -300,6 +336,12 @@ fun SignUpButton(
             .fillMaxWidth()
             .height(100.dp)
             .padding(top = 48.dp),
+        colors = ButtonColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant,
+            contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+            disabledContainerColor = MaterialTheme.colorScheme.onSurfaceVariant,
+            disabledContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+        ),
         shape = RoundedCornerShape(16.dp),
 
         enabled = !isLoading
@@ -345,4 +387,3 @@ fun AlreadyHaveAccount(navController: NavController) {
         )
     }
 }
-

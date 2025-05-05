@@ -1,6 +1,5 @@
 package com.mp.momentrip.ui.screen
 import android.annotation.SuppressLint
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -16,11 +15,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.material3.MaterialTheme
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -28,10 +27,8 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -41,14 +38,18 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.mikepenz.iconics.typeface.library.googlematerial.GoogleMaterial
+import com.mikepenz.iconics.compose.Image
 
 import com.mp.momentrip.R
 import com.mp.momentrip.data.Place
 import com.mp.momentrip.data.Region
 import com.mp.momentrip.ui.components.ImageCard
 import com.mp.momentrip.ui.theme.MomenTripTheme
-import com.mp.momentrip.util.MainDestinations
-import com.mp.momentrip.util.UserDestinations
+import com.mp.momentrip.ui.MainDestinations
+import com.mp.momentrip.ui.UserDestinations
+
+
 import com.mp.momentrip.view.RecommendViewModel
 import com.mp.momentrip.view.UserViewModel
 
@@ -155,47 +156,35 @@ fun CategorySection(
             horizontalArrangement = Arrangement.spacedBy(24.dp)
         ) {
             CategoryItem(
-                imageRes = R.drawable.yoga_s, // Replace with your actual drawable
-                title = "여행일정",
+                icon = GoogleMaterial.Icon.gmd_event, // Replace with your actual drawable
+                title = "나의 일정",
                 onClick = {navController.navigate(UserDestinations.SCHEDULE_LIST_ROUTE)}
             )
             CategoryItem(
-                imageRes = R.drawable.yoga_s, // Replace with your actual drawable
+                icon = GoogleMaterial.Icon.gmd_luggage,
                 title = "이전 여행",
-                onClick = {}
-            )
-            CategoryItem(
-                imageRes = R.drawable.city, // Replace with your actual drawable
-                title = "맛집",
-                onClick = {}
-            )
-            CategoryItem(
-                imageRes = R.drawable.city, // Replace with your actual drawable
-                title = "숙소",
                 onClick = {}
             )
         }
     }
 }
 
+
 @Composable
 fun CategoryItem(
-    imageRes: Int,
+    icon: GoogleMaterial.Icon, // 아이콘으로 받음
     title: String,
-    onClick: () -> Unit) {
+    onClick: () -> Unit
+) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .width(76.dp)
-            .clickable { onClick() } // Column 전체 클릭 가능
+            .clickable { onClick() }
     ) {
         Image(
-            painter = painterResource(id = imageRes),
-            contentDescription = title,
-            modifier = Modifier
-                .size(76.dp)
-                .clip(CircleShape),
-            contentScale = ContentScale.Crop
+            icon,
+            colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary),
         )
         Spacer(modifier = Modifier.height(8.dp))
         Text(

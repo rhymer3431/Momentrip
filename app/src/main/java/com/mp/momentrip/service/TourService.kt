@@ -6,6 +6,7 @@ import com.mp.momentrip.data.AreaCode
 import com.mp.momentrip.data.ContentTypeId
 import com.mp.momentrip.data.Place
 import com.mp.momentrip.data.Region
+import com.mp.momentrip.util.vector.cosineSimilarity
 
 object TourService {
     private lateinit var serviceKey: String
@@ -66,6 +67,7 @@ object TourService {
         }
         return result.toList()
     }
+
 
     suspend fun getDetail(place: Place?): Place?{
         try{

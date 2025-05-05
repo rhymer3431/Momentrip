@@ -1,20 +1,17 @@
 package com.mp.momentrip.service
 
-import android.annotation.SuppressLint
 import android.util.Log
-import androidx.compose.runtime.LaunchedEffect
 import androidx.navigation.NavController
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.mp.momentrip.data.Schedule
 import com.mp.momentrip.data.User
 import com.mp.momentrip.data.UserPreference
 import com.mp.momentrip.data.UserRegisterForm
+import com.mp.momentrip.ui.MainDestinations
 
-import com.mp.momentrip.util.MainDestinations
-import com.mp.momentrip.view.UserViewModel
+
 import kotlinx.coroutines.tasks.await
 
 object AccountService{
@@ -51,6 +48,7 @@ object AccountService{
             val auth = FirebaseAuth.getInstance()
             val result = auth.signInWithEmailAndPassword(email, password).await()
             result.user?.let { Result.success(it) } ?: Result.failure(Exception("User is null"))
+
         } catch (e: Exception) {
             Log.e("Firebase", "SignIn failed", e)
             Result.failure(e)

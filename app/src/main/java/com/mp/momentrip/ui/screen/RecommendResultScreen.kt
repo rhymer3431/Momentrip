@@ -1,7 +1,5 @@
 package com.mp.momentrip.ui.screen
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -20,7 +18,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.mp.momentrip.ui.theme.OrangeNice
 
-import com.mp.momentrip.util.UserDestinations
+import com.mp.momentrip.ui.UserDestinations
 import com.mp.momentrip.view.UserViewModel
 import java.time.LocalDate
 
@@ -58,7 +56,7 @@ fun RecommendResult(
             Button(
                 onClick = {
                     // viewModelScope를 사용하여 ViewModel에서 비동기 작업 처리
-                    userState.generateSchedule(startAt = LocalDate.of(2025,3,3), endAt = LocalDate.of(2025,3,6), resultRegion)
+
                     navController.navigate(UserDestinations.SCHEDULE_ROUTE)
                 },
                 modifier = Modifier.padding(top = 16.dp)

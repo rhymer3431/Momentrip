@@ -1,5 +1,4 @@
-package com.mp.momentrip.util
-
+package com.mp.momentrip.ui
 import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.runtime.Composable
@@ -13,17 +12,16 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.google.firebase.auth.FirebaseAuth
-import com.mp.momentrip.ScheduleList
-import com.mp.momentrip.ScheduleListScreen
+
 
 import com.mp.momentrip.ui.screen.HomeScreen
 
 
-import com.mp.momentrip.util.MainDestinations.PLACE_DETAIL_ROUTE
 
 import com.mp.momentrip.ui.screen.ProfileScreen
 import com.mp.momentrip.ui.screen.QuestionScreen
 import com.mp.momentrip.ui.screen.RecommendResult
+import com.mp.momentrip.ui.screen.ScheduleListScreen
 import com.mp.momentrip.ui.screen.ScheduleMapScreen
 import com.mp.momentrip.ui.screen.SignInScreen
 import com.mp.momentrip.ui.screen.SignUpScreen
@@ -42,14 +40,13 @@ object MainDestinations {
     const val SIGN_UP_ROUTE = "signUp"
     const val PREFERENCE_ANALYZE = "preferenceAnalyze"
     const val FEED_ROUTE = "feed"
-
+    const val SCHEDULE_CREATION = "scheduleCreate"
 }
 
 object UserDestinations {
     const val ANALYZE_RESULT = "analyzeResult"
     const val SCHEDULE_ROUTE = "schedule"
     const val SCHEDULE_LIST_ROUTE = "scheduleList"
-    const val USER_COLOR_SELECTION = "userColor"
     const val LIKED_ROUTE = "liked"
 }
 
@@ -71,7 +68,6 @@ fun NavGraph(
         composable(MainDestinations.SIGN_IN_ROUTE) {
             SignInScreen(
                 navController = navController,
-                modifier = modifier,
                 userState = userState
             )
         }
@@ -145,10 +141,4 @@ fun NavGraph(
 
     }
 
-}
-
-class MainActions(navController: NavHostController) {
-    val navigateToPlaceDetail = { placeId: String ->
-        navController.navigate(route = "$PLACE_DETAIL_ROUTE/$placeId")
-    }
 }
