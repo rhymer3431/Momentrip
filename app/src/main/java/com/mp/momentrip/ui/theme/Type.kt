@@ -18,12 +18,12 @@ private val Poppins = FontFamily(
 val Typography = Typography(
 
      bodyLarge = TextStyle(
-        fontFamily = FontFamily(Font(R.font.omyu)),
+        fontFamily = FontFamily(Font(R.font.pretendar)),
         fontWeight = FontWeight.Normal,
         fontSize = 20.sp
     ),
     bodyMedium = TextStyle(
-        fontFamily = FontFamily(Font(R.font.omyu)),
+        fontFamily = FontFamily(Font(R.font.pretendar)),
         fontWeight = FontWeight.Normal,
         fontSize = 16.sp
     )

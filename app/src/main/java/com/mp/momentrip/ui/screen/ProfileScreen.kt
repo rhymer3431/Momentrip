@@ -20,15 +20,12 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBox
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Place
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -43,13 +40,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
-import com.mp.momentrip.data.User
 import com.mp.momentrip.service.AccountService
 import com.mp.momentrip.ui.components.ThemeCard
+import com.mp.momentrip.ui.UserDestinations
 
-import com.mp.momentrip.util.UserDestinations
+
 import com.mp.momentrip.view.UserViewModel
-import java.io.File
 
 
 @Composable
@@ -127,12 +123,12 @@ fun UserStats(
                 text = user.name,
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Medium,
-                color = Color(0xFF1B1E28)
+                color = MaterialTheme.colorScheme.onSurface
             )
             Text(
                 text = user.email,
                 fontSize = 14.sp,
-                color = Color(0xFF7D848D)
+                color = MaterialTheme.colorScheme.onSurface
             )
         }
 
@@ -207,12 +203,6 @@ fun ProfileMenu(navController: NavController) {
                 title = "나의 여행",
                 showDivider = true,
                 onClick = {navController.navigate(UserDestinations.SCHEDULE_LIST_ROUTE)}
-            )
-            ProfileMenuItem(
-                icon = Icons.Default.Edit,
-                title = "색깔 변경",
-                showDivider = true,
-                onClick = {navController.navigate(UserDestinations.USER_COLOR_SELECTION)}
             )
             ProfileMenuItem(
                 icon = Icons.Filled.AccountBox,

@@ -1,7 +1,6 @@
 package com.mp.momentrip.ui.screen
 
 
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -18,9 +17,6 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -31,42 +27,25 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.mp.momentrip.R
-import com.mp.momentrip.data.QuestionSetList
-
-
-import com.mp.momentrip.service.PreferenceAnalyzer
-
-import com.mp.momentrip.ui.theme.OrangeNice
 
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.LinearProgressIndicator
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.core.os.bundleOf
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.mp.momentrip.data.Answer
 import com.mp.momentrip.ui.components.DotsIndicator
 import com.mp.momentrip.ui.theme.MomenTripTheme
-import com.mp.momentrip.util.MainDestinations
-import com.mp.momentrip.util.UserDestinations
 
 import com.mp.momentrip.view.QuestionViewModel
 import com.mp.momentrip.view.UserViewModel
@@ -76,7 +55,7 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun QuestionScreen(
-    modifier: Modifier,
+    modifier: Modifier = Modifier,
     navController: NavController,
     userState: UserViewModel
 ) {
@@ -94,11 +73,11 @@ fun QuestionScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = questionViewModel.getQuestion(currentIndex),
-                fontSize = 34.sp,
+                text = "Q${currentIndex+1}. ${questionViewModel.getQuestion(currentIndex)}",
+                fontSize = 24.sp,
                 fontFamily = FontFamily(Font(R.font.omyu))
             )
-            Spacer(modifier = Modifier.height(100.dp))
+            Spacer(modifier = Modifier.height(30.dp))
 
             LazyVerticalGrid(
                 columns = GridCells.Fixed(2),
@@ -122,7 +101,7 @@ fun QuestionScreen(
                     )
                 }
             }
-            Spacer(modifier = Modifier.height(100.dp))
+            Spacer(modifier = Modifier.height(30.dp))
             DotsIndicator(
                 currentIndex,
                 questionViewModel.questionSetSize
@@ -174,42 +153,34 @@ fun AnswerCard(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Box(
-        modifier = modifier
-            .aspectRatio(1f)
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(12.dp)
+            .clickable { onClick() }
     ) {
-        Surface(
-            shape = RoundedCornerShape(16.dp),
-
+        Image(
+            painter = painterResource(id = answer.image_id),
+            contentDescription = "",
+            contentScale = ContentScale.Crop, // 꽉 채우기
             modifier = Modifier
-                .fillMaxSize()
+                .clip(RoundedCornerShape(16.dp))
+                .fillMaxWidth()
                 .aspectRatio(1f)
-                .clickable(onClick = onClick)
-        ) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(12.dp)
-            ) {
+        )
 
-                Image(
-                    painter = painterResource(id = answer.image_id),
-                    contentDescription = "",
-                    modifier = Modifier.clip(RoundedCornerShape(16.dp))
-                )
 
-                Spacer(modifier = Modifier.height(30.dp))
+        Spacer(modifier = Modifier.height(10.dp))
 
-                Text(
-                    text = answer.answer,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 18.sp
-                )
-            }
-        }
+        Text(
+            text = answer.answer,
+
+            fontSize = 15.sp
+        )
     }
+
 }
 
 @Preview(

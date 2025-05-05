@@ -6,6 +6,9 @@ import com.mp.momentrip.data.FoodCategory
 import com.mp.momentrip.data.Place
 import com.mp.momentrip.data.UserPreference
 import com.mp.momentrip.view.UserViewModel
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import org.openkoreantext.processor.KoreanPosJava
 import org.openkoreantext.processor.OpenKoreanTextProcessorJava
 
@@ -70,55 +73,48 @@ object RecommendService {
      */
     private suspend fun calculateTopPlaces(
         userPreference: UserPreference,
-        places: List<Place>
-    ): List<Place> {
-        val placeSimilarities = places.mapNotNull { place ->
-            Word2VecModel.getVectorByPlace(place)?.let { vector ->
-                Pair(cosineSimilarity(userPreference.preferenceVector!!, vector), place)
+        places: List<Place>,
+        topN: Int = 10
+    ): List<Place> = coroutineScope {
+        val placeSimilarities = places.map { place ->
+            async {
+                val placeVector = Word2VecModel.getVectorByPlace(place)
+                placeVector?.let { vector ->
+                    val similarity = cosineSimilarity(userPreference.preferenceVector!!, vector)
+                    Pair(similarity, place)
+                }
             }
-        }
+        }.awaitAll()  // 모든 async 완료 대기
+            .filterNotNull()  // 실패한 건 제외
 
-        return placeSimilarities
+        placeSimilarities
+            .sortedByDescending { it.first }
+            .take(topN)
+            .map { it.second }
+    }
+
+    suspend fun getRecommendRestaurant(userPreference: UserPreference): List<Place> = coroutineScope {
+        val region = getRegionByPreference(userPreference)
+
+        val restaurants = TourService.getRestaurantByRegion(region)
+
+        val restaurantSimilarities = restaurants.map { restaurant ->
+            async {
+                val restaurantVector = Word2VecModel.getVectorByPlace(restaurant)
+                if (userPreference.preferenceVector != null && restaurantVector != null) {
+                    val similarity = cosineSimilarity(userPreference.preferenceVector, restaurantVector)
+                    Pair(similarity, restaurant)
+                } else null
+            }
+        }.awaitAll()
+            .filterNotNull()
+
+        restaurantSimilarities
             .sortedByDescending { it.first }
             .take(10)
             .map { it.second }
     }
-    // 상위 10개의 유사한 레스토랑을 추천하는 함수
-    suspend fun getRecommendRestaurant(userPreference: UserPreference): List<Place> {
-        // 사용자 선호도 기반으로 지역을 가져오는 메서드
-        val region = getRegionByPreference(userPreference)
 
-        // 해당 지역에 있는 레스토랑 정보 가져오기
-        val restaurants = TourService.getRestaurantByRegion(region)
-
-        // 각 레스토랑의 벡터와 사용자의 벡터를 비교하여 추천
-        val restaurantSimilarities = restaurants.mapNotNull { restaurant ->
-            // 레스토랑 정보를 벡터로 변환
-            val restaurantVector = Word2VecModel.getVectorByPlace(restaurant)
-
-            // 레스토랑 벡터가 null이 아닐 경우
-            if (userPreference.preferenceVector != null && restaurantVector != null) {
-                // 유저의 벡터와 레스토랑의 벡터 간의 유사도 계산
-                val userVector = userPreference.preferenceVector // 유저 벡터
-                val similarity = cosineSimilarity(userVector, restaurantVector)
-
-                // 유사도와 레스토랑 객체를 쌍으로 묶음
-                Pair(similarity, restaurant)
-            } else {
-
-                null
-            }
-        }
-
-        // 유사도 기준으로 내림차순 정렬하고 상위 10개만 추출
-        val topRestaurants = restaurantSimilarities
-            .sortedByDescending { it.first } // 유사도 높은 순으로 정렬
-            .take(10) // 상위 10개 선택
-            .map { it.second } // Pair에서 레스토랑 객체만 추출
-
-        // 추천된 레스토랑 반환
-        return topRestaurants
-    }
 
     suspend fun extractKeywords(text: String): List<String> {
         return try {

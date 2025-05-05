@@ -3,15 +3,18 @@ package com.mp.momentrip.view
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavController
 import com.google.firebase.auth.FirebaseUser
+import com.mp.momentrip.data.Activity
+import com.mp.momentrip.data.Day
 import com.mp.momentrip.data.Place
 import com.mp.momentrip.data.Schedule
 import com.mp.momentrip.data.User
 import com.mp.momentrip.data.UserPreference
 import com.mp.momentrip.service.AccountService
-import com.mp.momentrip.service.RecommendService
 import com.mp.momentrip.service.TourService
 import com.mp.momentrip.service.Word2VecModel
+import com.mp.momentrip.ui.MainDestinations
 import kotlinx.coroutines.Dispatchers
 
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,6 +23,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoUnit
 
 class UserViewModel : ViewModel() {
     private val _isLoggedIn = MutableStateFlow(false)
@@ -31,8 +36,10 @@ class UserViewModel : ViewModel() {
     private val _user = MutableStateFlow<User?>(null)
     val user: StateFlow<User?> = _user.asStateFlow()
 
-    private val _schedule = MutableStateFlow<Schedule?>(null)
-    val schedule: StateFlow<Schedule?> = _schedule.asStateFlow()
+
+
+    private val _selectedScheduleIndex = MutableStateFlow<Int?>(null)
+    val selectedScheduleIndex: StateFlow<Int?> get() = _selectedScheduleIndex.asStateFlow()
 
     private val _schedules = MutableStateFlow<List<Schedule>>(emptyList())
     val schedules: StateFlow<List<Schedule>> get() = _schedules.asStateFlow()
@@ -46,10 +53,14 @@ class UserViewModel : ViewModel() {
     private val _isLiked = MutableStateFlow(false)
     val isLikedFlow: StateFlow<Boolean> = _isLiked.asStateFlow()
 
+    private var currentEditingDayIndex: Int = 0
+
+    fun setEditingDayIndex(index: Int) {
+        currentEditingDayIndex = index
+    }
+
 
     private val region = MutableStateFlow<String?>(null)
-
-
 
     fun loadUser(firebaseUser: FirebaseUser) {
         viewModelScope.launch {
@@ -57,9 +68,8 @@ class UserViewModel : ViewModel() {
             try {
                 val user = AccountService.loadUser(firebaseUser) // suspend 함수로 변경
                 _user.value = user
-                _isLoggedIn.value = true
-                Log.d("test","${_user.value?.userPreference}")
                 loadSchedules() // 사용자 로드 시 스케줄도 자동 로드
+                _isLoggedIn.value = true
             } catch (e: Exception) {
 
                 logOut()
@@ -73,6 +83,7 @@ class UserViewModel : ViewModel() {
             _isLoading.value = true
             try {
                 val schedules = AccountService.loadSchedulesOfUser() // suspend 함수로 변경
+                Log.d("test",schedules.toString())
                 _schedules.value = schedules
             } catch (e: Exception) {
 
@@ -84,6 +95,7 @@ class UserViewModel : ViewModel() {
 
     suspend fun updateUser(updater: User?) {
         if (updater != null) {
+            setUser(updater)
             AccountService.updateUser(updater)
         }
     }
@@ -108,14 +120,70 @@ class UserViewModel : ViewModel() {
     fun getUser(): User? {
         return _user.value
     }
-    fun setSchedule(schedule: Schedule){
-        viewModelScope.launch {
-            _schedule.emit(schedule)  // emit을 사용해 상태 변경
+
+
+    fun getSchedule(): Schedule? {
+        val index = _selectedScheduleIndex.value
+        return if (index != null && index in schedules.value.indices) {
+            schedules.value[index]
+        } else {
+            null
         }
     }
-    fun getSchedule(): Schedule?{
-        return schedule.value
+
+
+    fun createSchedule(
+        region: String,
+        startDate: String,
+        endDate: String,
+        onSuccess: () -> Unit,
+        onError: (String) -> Unit
+    ) {
+        viewModelScope.launch {
+            val user = _user.value
+            if (user == null) {
+                onError("사용자 정보가 없습니다.")
+                return@launch
+            }
+
+            val duration = calculateDuration(startDate, endDate)
+            if (duration <= 0) {
+                onError("시작일과 종료일을 다시 확인하세요.")
+                return@launch
+            }
+
+            val newSchedule = Schedule(
+                user = user.email,
+                startDate = startDate,
+                endDate = endDate,
+                duration = duration,
+                days = List(duration.toInt()) { Day() },
+                region = region
+            )
+
+            val updatedSchedules = user.schedules.orEmpty().toMutableList().apply { add(newSchedule) }
+            val updatedUser = user.copy(schedules = updatedSchedules)
+            try {
+                updateUser(updatedUser)
+                loadSchedules()
+                onSuccess()
+            } catch (e: Exception) {
+                onError("스케줄 저장에 실패했습니다.")
+            }
+        }
     }
+
+    private fun calculateDuration(startDate: String, endDate: String): Long {
+        return try {
+            val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+            val start = LocalDate.parse(startDate, formatter)
+            val end = LocalDate.parse(endDate, formatter)
+            ChronoUnit.DAYS.between(start, end) + 1
+        } catch (e: Exception) {
+            0
+        }
+    }
+
     fun getScheduleSize(): Int{
         return schedules.value.size
     }
@@ -126,12 +194,6 @@ class UserViewModel : ViewModel() {
     fun isValidUserPreference(): Boolean? {
 
         return _user.value?.userPreference?.preferenceVector?.isNotEmpty()
-    }
-
-    fun generateSchedule(startAt: LocalDate, endAt:LocalDate, region: String) {
-        viewModelScope.launch {
-
-        }
     }
 
     fun setPlace(place: Place?){
@@ -215,13 +277,14 @@ class UserViewModel : ViewModel() {
     }
 
 
-    fun logIn(email:String, password:String) {
+    fun logIn(email:String, password:String, navController: NavController) {
         viewModelScope.launch {
             try {
                 AccountService.signIn(email, password)
                 val user = AccountService.getCurrentUser()?.let { AccountService.loadUser(it) }
                 _user.value = user
                 _isLoggedIn.value = true
+                navController.navigate(MainDestinations.FEED_ROUTE)
 
             } catch (e: Exception) {
 

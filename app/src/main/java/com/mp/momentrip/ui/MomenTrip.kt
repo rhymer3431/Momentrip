@@ -1,33 +1,21 @@
 package com.mp.momentrip.ui
 
 import android.util.Log
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.google.android.material.progressindicator.CircularProgressIndicator
 import com.google.firebase.auth.FirebaseAuth
-import com.kakao.sdk.common.util.Utility
 import com.mp.momentrip.service.AccountService
 import com.mp.momentrip.service.RecommendService
 import com.mp.momentrip.ui.screen.LoadingScreen
-import com.mp.momentrip.ui.theme.MomenTripTheme
-import com.mp.momentrip.util.MainDestinations
-import com.mp.momentrip.util.NavGraph
+import com.mp.momentrip.ui.MainDestinations
+import com.mp.momentrip.ui.NavGraph
 import com.mp.momentrip.view.AuthViewModel
-import com.mp.momentrip.view.RecommendViewModel
 import com.mp.momentrip.view.UserViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlin.math.log
 
 @Composable
 fun MomenTrip(
@@ -48,7 +36,7 @@ fun MomenTrip(
                 if(userState.isValidUserPreference()==true){
                     userState.setRegion(RecommendService.getRegionByPreference(userState.getUserPreference()))
                 }
-
+                
                 authViewModel.setAuthenticated() // ✅ 유저 정보 로드 완료 후 상태 변경
             }
         }
@@ -61,13 +49,10 @@ fun MomenTrip(
         else -> MainDestinations.HOME_ROUTE
     }
 
-
-
     if (startDestination == null) {
         LoadingScreen()
 
     } else {
-
         NavGraph(
             navController = navController,
             modifier = Modifier.fillMaxSize(),

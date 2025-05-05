@@ -1,25 +1,18 @@
 package com.mp.momentrip.data
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import com.kakao.vectormap.LatLng
-import java.sql.Time
-import java.time.Duration
 import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 
-data class Schedule (
+data class Schedule(
     val user: String = "",
     val startDate: String = "",
     val endDate: String = "",
     val duration: Long = 0,
     val days: List<Day> = emptyList<Day>(),
-    val region : String = "",
+    val region: String = "",
 
     ){
-
-
 }
 
 data class Day(
