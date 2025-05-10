@@ -23,7 +23,6 @@ fun ImageCard(imageUrl: String?) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary)
     ) {
         AsyncImage(
             model = ImageRequest.Builder(LocalContext.current)

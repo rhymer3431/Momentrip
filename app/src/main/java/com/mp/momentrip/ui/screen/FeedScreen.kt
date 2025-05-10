@@ -25,6 +25,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -53,6 +54,20 @@ import com.mp.momentrip.ui.UserDestinations
 import com.mp.momentrip.view.RecommendViewModel
 import com.mp.momentrip.view.UserViewModel
 
+/* … import 들은 그대로 두면 됩니다 … */
+import androidx.compose.runtime.saveable.rememberSaveable   // **추가**
+import androidx.compose.runtime.setValue
+import com.mp.momentrip.ui.components.FoodCard
+
+/* ───────────────────────────── 선택 카테고리 Enum ───────────────────────────── */
+private enum class FeedCategory(val koLabel: String) {
+    ALL("All"),
+    RESTAURANT("맛집"),
+    TOUR("핫플"),
+    DORMITORY("숙소")
+}
+
+/* ───────────────────────────── FeedScreen ───────────────────────────── */
 @SuppressLint("StateFlowValueCalledInComposition")
 @Composable
 fun FeedScreen(
@@ -60,141 +75,172 @@ fun FeedScreen(
     userState: UserViewModel,
     recommendViewModel: RecommendViewModel = viewModel()
 ) {
+    /* 초기화 */
+    LaunchedEffect(Unit) { recommendViewModel.initialize(userState) }
 
-    LaunchedEffect(Unit) {
-        recommendViewModel.initialize(userState)
-    }
+    val isLoading          by recommendViewModel.isLoading.collectAsState()
+    val restaurants        by recommendViewModel.recommendRestaurant.collectAsState()
+    val tourSpots          by recommendViewModel.recommendTourSpot.collectAsState()
+    val dormitories        by recommendViewModel.recommendDormitory.collectAsState()
 
-    val isLoading by recommendViewModel.isLoading.collectAsState()
-    val recommendRestaurant by recommendViewModel.recommendRestaurant.collectAsState()
-    val recommendDormitory by recommendViewModel.recommendDormitory.collectAsState()
-    val recommendTourSpot by recommendViewModel.recommendTourSpot.collectAsState()
-    if(isLoading){
+    /* **현재 선택된 카테고리 상태** */
+    var selected by rememberSaveable { mutableStateOf(FeedCategory.ALL) }
+
+    if (isLoading) {
         LoadingScreen()
+        return
     }
-    else{
 
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 16.dp),
-            contentPadding = PaddingValues(vertical = 16.dp)
-        ) {
-            item {
-                // First Section - Categories
-                CategorySection(userState,navController)
-                Spacer(modifier = Modifier.height(24.dp))
-            }
-
-            item {
-
-                // Second Section - Recommended Places
-                RecommendedPlacesSection(
-                    userState,
-                    navController,
-                    title = "추천 식당",
-                    placeList = recommendRestaurant
-                )
-                Spacer(modifier = Modifier.height(24.dp))
-            }
-
-            item {
-                RecommendedPlacesSection(
-                    userState,
-                    navController,
-                    title = "추천 숙소",
-                    placeList = recommendDormitory
-                )
-                Spacer(modifier = Modifier.height(24.dp))
-            }
-
-            item {
-                RecommendedPlacesSection(
-                    userState,
-                    navController,
-                    title = "추천 여행지",
-                    placeList = recommendTourSpot
-                )
-            }
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 16.dp),
+        contentPadding = PaddingValues(vertical = 16.dp)
+    ) {
+        /* ─── 1. 카테고리 토글 바 ─── */
+        item {
+            CategorySection(
+                selectedCategory = selected,
+                onCategorySelect = { selected = it }
+            )
+            Spacer(modifier = Modifier.height(24.dp))
         }
 
+        /* ─── 2. 컨텐츠 영역 ─── */
+        when (selected) {
+            FeedCategory.ALL -> {
+                item {
+                    RecommendedPlacesSection(
+                        userState, navController,
+                        title = "추천 식당",
+                        placeList = restaurants
+                    )
+                    Spacer(Modifier.height(24.dp))
+                }
+                item {
+                    RecommendedPlacesSection(
+                        userState, navController,
+                        title = "추천 핫플",
+                        placeList = tourSpots
+                    )
+                    Spacer(Modifier.height(24.dp))
+                }
+                item {
+                    RecommendedPlacesSection(
+                        userState, navController,
+                        title = "추천 숙소",
+                        placeList = dormitories
+                    )
+                }
+            }
+            FeedCategory.RESTAURANT -> {
+                item {
+                    RecommendedPlacesSection(
+                        userState, navController,
+                        title = "추천 식당",
+                        placeList = restaurants
+                    )
+                }
+            }
+            FeedCategory.TOUR -> {
+                item {
+                    RecommendedPlacesSection(
+                        userState, navController,
+                        title = "추천 핫플",
+                        placeList = tourSpots
+                    )
+                }
+            }
+            FeedCategory.DORMITORY -> {
+                item {
+                    RecommendedPlacesSection(
+                        userState, navController,
+                        title = "추천 숙소",
+                        placeList = dormitories
+                    )
+                }
+            }
+        }
     }
-
 }
 
+/* ───────────────────────────── CategorySection 수정 ───────────────────────────── */
 @Composable
-fun CategorySection(
-    userState: UserViewModel,
-    navController: NavController
+private fun CategorySection(
+    selectedCategory: FeedCategory,
+    onCategorySelect: (FeedCategory) -> Unit
 ) {
     Column {
-        // Title
+        /* 상단 Title bar 생략 가능 – 예시로 그대로 둡니다 */
         Row(
             modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-
+            verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "Title",
+                text = "카테고리",
                 fontFamily = FontFamily(Font(R.font.omyu)),
                 fontSize = 16.sp,
-                fontWeight = FontWeight.SemiBold,
-                color = Color.Black
+                fontWeight = FontWeight.SemiBold
             )
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.ArrowForward,
-                contentDescription = "More",
+                contentDescription = null,
                 modifier = Modifier.size(20.dp)
             )
         }
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(Modifier.height(8.dp))
 
-        // Categories
+        /* 카테고리 버튼들 */
         Row(
             modifier = Modifier.horizontalScroll(rememberScrollState()),
             horizontalArrangement = Arrangement.spacedBy(24.dp)
         ) {
-            CategoryItem(
-                icon = GoogleMaterial.Icon.gmd_event, // Replace with your actual drawable
-                title = "나의 일정",
-                onClick = {navController.navigate(UserDestinations.SCHEDULE_LIST_ROUTE)}
-            )
-            CategoryItem(
-                icon = GoogleMaterial.Icon.gmd_luggage,
-                title = "이전 여행",
-                onClick = {}
-            )
+            FeedCategory.values().forEach { category ->
+                CategoryItem(
+                    icon  = GoogleMaterial.Icon.gmd_event,
+                    title = category.koLabel,
+                    isSelected = category == selectedCategory,
+                    onClick = { onCategorySelect(category) }
+                )
+            }
         }
     }
 }
 
-
+/* ───────────────────────────── CategoryItem 선택 상태 표시 추가 ───────────────────────────── */
 @Composable
 fun CategoryItem(
-    icon: GoogleMaterial.Icon, // 아이콘으로 받음
+    icon: GoogleMaterial.Icon,
     title: String,
+    isSelected: Boolean,
     onClick: () -> Unit
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .width(76.dp)
-            .clickable { onClick() }
+            .clickable(onClick = onClick)
     ) {
         Image(
             icon,
-            colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary),
+            colorFilter = ColorFilter.tint(
+                if (isSelected) MaterialTheme.colorScheme.primary
+                else MaterialTheme.colorScheme.outline
+            )
         )
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(Modifier.height(8.dp))
         Text(
             text = title,
             fontSize = 14.sp,
-            fontWeight = FontWeight.Medium,
-            color = Color(0xFF161823)
+            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
+            color = if (isSelected) MaterialTheme.colorScheme.primary
+            else Color(0xFF161823)
         )
     }
 }
+
+/* RecommendedPlacesSection · PlaceCard · Preview 는 그대로 사용 */
 
 
 @Composable
@@ -233,7 +279,7 @@ fun RecommendedPlacesSection(
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             placeList.orEmpty().take(5).forEach { place ->
-                PlaceCard(
+                FoodCard(
                     place = place,
                     onClick = {
                         userState.setPlace(place)
