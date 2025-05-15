@@ -2,6 +2,7 @@ package com.mp.momentrip.ui.screen
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.Composable
+import com.mp.momentrip.ui.components.PlaceCard
 import com.mp.momentrip.view.UserViewModel
 
 @Composable
@@ -13,7 +14,7 @@ fun LikedPlaceScreen(
             place->
             PlaceCard(
                 place!!,
-                {}
+                onClick = {},
             )
         }
     }

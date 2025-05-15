@@ -122,17 +122,7 @@ fun TripDatePickerScreen() {
                         }
                     }
                 ) {
-                    DatePicker(
-                        state = rememberDatePickerState(
-                            initialSelectedDateMillis = endDate.toEpochMillis(),
-                            yearRange = startDate.year..(startDate.year + 1),
-                            selectableDates = object : SelectableDates {
-                                override fun isSelectableDate(utcTimeMillis: Long): Boolean {
-                                    return utcTimeMillis.toLocalDate().isAfter(startDate.minusDays(1))
-                                }
-                            }
-                        )
-                    )
+
                 }
             }
         }

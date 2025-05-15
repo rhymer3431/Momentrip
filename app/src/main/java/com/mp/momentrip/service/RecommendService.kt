@@ -51,7 +51,7 @@ object RecommendService {
         userPreference: UserPreference,
         region: String
     ): List<Place> {
-        val tourSpots = TourService.getTourSpotByRegion(region)
+        val tourSpots = TourService.getTouristSpotsByKeyword(region)
 
         return calculateTopPlaces(userPreference, tourSpots)
     }
@@ -63,7 +63,7 @@ object RecommendService {
         userPreference: UserPreference,
         region: String
     ): List<Place> {
-        val accommodations = TourService.getDormitoryByRegion(region)
+        val accommodations = TourService.getAccommodationsByKeyword(region)
 
         return calculateTopPlaces(userPreference, accommodations)
     }
@@ -96,7 +96,7 @@ object RecommendService {
     suspend fun getRecommendRestaurant(userPreference: UserPreference): List<Place> = coroutineScope {
         val region = getRegionByPreference(userPreference)
 
-        val restaurants = TourService.getRestaurantByRegion(region)
+        val restaurants = TourService.getRestaurantsByKeyword(region)
 
         val restaurantSimilarities = restaurants.map { restaurant ->
             async {

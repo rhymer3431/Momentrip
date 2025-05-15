@@ -22,7 +22,7 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Place
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
-import androidx.compose.material3.HorizontalDivider
+
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -148,12 +148,7 @@ fun UserStats(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     userState.getRegion()?.let { StatItem(title = "추천 여행지", value = it) }
-                    HorizontalDivider(
-                        modifier = Modifier
-                            .height(40.dp)
-                            .width(1.5.dp),
-                        color = MaterialTheme.colorScheme.primary
-                    )
+
                     StatItem(title = "다녀온 여행 횟수", value = userState.getScheduleSize().toString())
 
                 }

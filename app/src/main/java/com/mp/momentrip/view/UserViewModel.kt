@@ -200,15 +200,6 @@ class UserViewModel : ViewModel() {
         _place.value = place
         updateIsLikedState()
     }
-
-    fun loadPlaceDetail(){
-        viewModelScope.launch {
-            _isLoading.value = true
-            setPlace(TourService.getDetail(place.value))
-            _isLoading.value = false
-
-        }
-    }
     fun like() {
         viewModelScope.launch {
             val currentUser = _user.value

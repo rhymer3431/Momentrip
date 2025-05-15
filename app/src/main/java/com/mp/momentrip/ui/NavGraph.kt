@@ -23,6 +23,7 @@ import com.mp.momentrip.ui.screen.QuestionScreen
 import com.mp.momentrip.ui.screen.RecommendResult
 import com.mp.momentrip.ui.screen.ScheduleListScreen
 import com.mp.momentrip.ui.screen.ScheduleMapScreen
+import com.mp.momentrip.ui.screen.SearchScreen
 import com.mp.momentrip.ui.screen.SignInScreen
 import com.mp.momentrip.ui.screen.SignUpScreen
 
@@ -35,6 +36,7 @@ object MainDestinations {
     const val HOME_ROUTE = "home"
     const val PROFILE_ROUTE = "profile"
     const val PLACE_DETAIL_ROUTE = "place"
+    const val SEARCH_ROUTE = "search"
     const val PLACE_DETAIL = "placeId"
     const val SIGN_IN_ROUTE = "signIn"
     const val SIGN_UP_ROUTE = "signUp"
@@ -131,7 +133,6 @@ fun NavGraph(
         composable(UserDestinations.SCHEDULE_ROUTE){
             ScheduleMapScreen(
                 userState = userState,
-
                 )
 
         }

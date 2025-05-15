@@ -7,6 +7,7 @@ import com.mp.momentrip.data.ApiResponse
 import com.mp.momentrip.data.AreaBasedItem
 import com.mp.momentrip.data.AreaCode
 import com.mp.momentrip.data.ContentDetailItem
+import com.mp.momentrip.data.DetailInfoItem
 import com.mp.momentrip.data.FestivalItem
 import com.mp.momentrip.data.KeywordSearchItem
 import com.mp.momentrip.data.LocationBasedItem
@@ -138,6 +139,19 @@ interface TourAPIService {
         @Query("mapinfoYN") mapinfoYN: String = "Y",
         @Query("overviewYN") overviewYN: String = "Y"
     ): ApiResponse<ContentDetailItem>
+
+    @GET("detailInfo1")
+    suspend fun getDetailInfo(
+        @Query("numOfRows") numOfRows: Int = request_num,         // 페이지당 결과 수
+        @Query("pageNo") pageNo: Int = 1,                         // 페이지 번호
+        @Query("MobileOS") mobileOS: String = "ETC",              // OS
+        @Query("MobileApp") mobileApp: String = "APPTest",        // 앱 이름
+        @Query("serviceKey") serviceKey: String,                  // 인증 키
+        @Query("_type") type: String = "json",                    // JSON 응답
+        @Query("contentId") contentId: String,                       // 콘텐츠 ID
+        @Query("contentTypeId") contentTypeId: Int                // 콘텐츠 타입 ID
+    ): ApiResponse<DetailInfoItem>
+
 }
 
 object TourApiClient {
