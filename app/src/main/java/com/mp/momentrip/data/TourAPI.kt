@@ -171,7 +171,6 @@ data class AreaCode(
     val rnum: Int
 )
 
-
 data class AreaBasedItem(
     val addr1: String?, // 주소
     val addr2: String?,           // 상세주소
@@ -188,24 +187,7 @@ data class AreaBasedItem(
     val sigungucode: Int?, // 시군구 코드
     val tel: String?, // 전화번호
     val title: String, // 콘텐츠 제목
-){
-    fun toPlace(): Place=Place(
-        title = title,
-        contentId = contentid,
-        contentTypeId = contenttypeid,
-        addr1 = addr1,
-        addr2 = addr2,
-        areaCode = areacode,
-        cat1 = cat1,
-        cat2 = cat2,
-        cat3 = cat3,
-        firstImage = firstimage,
-        firstImage2 = firstimage2,
-        x = mapx!!,
-        y = mapy!!,
-        tel = tel
-    )
-}
+)
 
 data class LocationBasedItem(
     val addr1: String?,            // 주소
@@ -243,25 +225,7 @@ data class KeywordSearchItem(
     val mapy: Double?,             // GPS Y좌표
     val sigungucode: Int?,         // 시군구코드
     val tel: String?              // 전화번호
-
-){
-    fun toPlace(): Place=Place(
-        title = title,
-        contentTypeId = contenttypeid,
-        addr1 = addr1,
-        addr2 = addr2,
-        areaCode = areacode,
-        sigunguCode = sigungucode,
-        cat1 = cat1,
-        cat2 = cat2,
-        cat3 = cat3,
-        firstImage = firstimage,
-        firstImage2 = firstimage2,
-        x = mapx!!,
-        y = mapy!!,
-        tel = tel
-    )
-}
+)
 
 data class FestivalItem(
     val addr1: String?,            // 주소
@@ -324,22 +288,41 @@ data class ContentDetailItem(
     val mapx: Double?,             // GPS X좌표 (optional)
     val mapy: Double?,             // GPS Y좌표 (optional)
     val overview: String?          // 개요 (optional)
-){
-    fun toPlace(): Place=Place(
-        title = title,
-        contentTypeId = contenttypeid.toInt(),
-        addr1 = addr1,
-        addr2 = addr2,
-        areaCode = areacode,
-        sigunguCode = sigungucode?.toInt(),
-        cat1 = cat1,
-        cat2 = cat2,
-        cat3 = cat3,
-        firstImage = firstimage,
-        firstImage2 = firstimage2,
-        x = mapx!!,
-        y = mapy!!,
-        tel = tel,
-        overview = overview
-    )
-}
+)
+
+
+data class DetailInfoItem(
+    val contentId: String,           // 콘텐츠 ID
+    val contentTypeId: Int,          // 콘텐츠 타입 ID (12: 관광지, 32: 숙박, 39: 음식점)
+
+    // --- 관광지용 필드 (contentTypeId = 12) ---
+    val accomCount: String? = null,       // 수용 인원
+    val expGuide: String? = null,         // 체험 안내
+    val heritage1: String? = null,        // 세계문화유산 여부
+    val infoCenter: String? = null,       // 문의 및 안내
+    val openDate: String? = null,         // 개장일
+    val parking: String? = null,          // 주차 시설
+    val restDate: String? = null,         // 쉬는 날
+    val useTime: String? = null,          // 이용 시간
+
+    // --- 숙박용 필드 (contentTypeId = 32) ---
+    val checkInTime: String? = null,      // 체크인 시간
+    val checkOutTime: String? = null,     // 체크아웃 시간
+    val chkCooking: String? = null,       // 객실 내 취사 가능 여부
+    val infoCenterLodging: String? = null,// 문의 및 안내
+    val parkingLodging: String? = null,   // 주차 시설
+    val roomCount: String? = null,        // 객실 수
+    val roomType: String? = null,         // 객실 유형
+    val reservationUrl: String? = null,   // 예약 안내 홈페이지
+    val subFacility: String? = null,      // 기타 부대시설
+    val refundRegulation: String? = null, // 환불 규정
+
+    // --- 음식점용 필드 (contentTypeId = 39) ---
+    val firstMenu: String? = null,        // 대표 메뉴
+    val treatMenu: String? = null,        // 취급 메뉴
+    val infoCenterFood: String? = null,   // 문의 및 안내
+    val openDateFood: String? = null,     // 개업일
+    val openTimeFood: String? = null,     // 영업 시간
+    val restDateFood: String? = null,     // 쉬는 날
+    val parkingFood: String? = null,      // 주차 시설
+)

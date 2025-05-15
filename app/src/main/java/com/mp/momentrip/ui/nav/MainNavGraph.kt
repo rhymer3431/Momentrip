@@ -18,7 +18,7 @@ fun NavGraphBuilder.mainNavGraph(
     userViewModel: UserViewModel
 ) {
     composable(MainDestinations.FEED_ROUTE) {
-        FeedScreen(navController, userViewModel)
+        FeedScreen(userViewModel)
     }
     composable(MainDestinations.PROFILE_ROUTE) {
         ProfileScreen(navController, userViewModel)

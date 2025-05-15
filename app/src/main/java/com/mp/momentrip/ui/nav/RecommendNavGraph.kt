@@ -18,7 +18,7 @@ fun NavGraphBuilder.recommendNavGraph(
     userViewModel: UserViewModel
 ) {
     composable(MainDestinations.PLACE_DETAIL_ROUTE) {
-        PlaceDetailScreen(userViewModel)
+
     }
     composable(UserDestinations.ANALYZE_RESULT + "/{place}") { backStackEntry ->
         val place = backStackEntry.arguments?.getString("place") ?: return@composable

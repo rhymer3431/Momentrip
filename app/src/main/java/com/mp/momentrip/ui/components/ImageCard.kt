@@ -19,9 +19,12 @@ import coil.request.ImageRequest
 import com.mp.momentrip.R
 
 @Composable
-fun ImageCard(imageUrl: String?) {
+fun ImageCard(
+    imageUrl: String?,
+    modifier: Modifier = Modifier,
+) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
     ) {
         AsyncImage(

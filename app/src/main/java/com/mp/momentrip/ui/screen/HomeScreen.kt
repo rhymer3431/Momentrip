@@ -87,6 +87,11 @@ fun BottomNavBar(navController: NavController) {
             label = "피드"
         ),
         BottomNavItem(
+            route = MainDestinations.SEARCH_ROUTE,
+            icon = Icons.Default.Home,
+            label = "검색"
+        ),
+        BottomNavItem(
             route = UserDestinations.LIKED_ROUTE,
             icon = Icons.Default.Star,
             label = "좋아요"
@@ -107,8 +112,8 @@ fun BottomNavBar(navController: NavController) {
 
         selectedIndex = selectedIndex,
         modifier = Modifier.fillMaxWidth(),
-        barColor = colorScheme.tertiary,
-        ballColor = colorScheme.onTertiary,
+        barColor = colorScheme.primary,
+        ballColor = colorScheme.onPrimary,
         cornerRadius = shapeCornerRadius(
             topLeft = 50.dp,
             topRight = 50.dp,
@@ -133,10 +138,10 @@ fun BottomNavBar(navController: NavController) {
                 Icon(
                     imageVector = item.icon,
                     contentDescription = item.label,
-                    tint = if (selectedIndex == index) {
-                        colorScheme.primary
-                    } else {
-                        colorScheme.onTertiary.copy(alpha = 0.6f)
+                    tint = if (selectedIndex == index) { // 눌렀을 때
+                        colorScheme.secondary
+                    } else { // 안 눌렀을 때
+                        colorScheme.onPrimary
                     }
                 )
             }
@@ -163,8 +168,9 @@ fun BottomNavGraph(
     ) {
         composable(MainDestinations.FEED_ROUTE) {
             FeedScreen(
-                navController = navController,
+
                 userState = userState,
+
             )
         }
         composable(MainDestinations.PROFILE_ROUTE) {
@@ -210,11 +216,12 @@ fun BottomNavGraph(
                 userState = userState
             )
         }
-        composable(MainDestinations.PLACE_DETAIL) {
-            PlaceDetailScreen(userState)
-        }
+
         composable(UserDestinations.LIKED_ROUTE) {
             LikedPlaceScreen(userState)
+        }
+        composable(MainDestinations.SEARCH_ROUTE){
+            SearchScreen()
         }
 
     }

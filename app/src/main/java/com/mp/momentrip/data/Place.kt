@@ -16,12 +16,31 @@ data class Place(
     val x: Double = 0.0,                    // GPS X좌표 (Optional)
     val y: Double = 0.0,                    // GPS Y좌표 (Optional)
     val tel: String? = null,                     // 전화번호 (Optional)
-    // 선택적 확장 속성들 (기본값 null)
-    val dist: Double? = null,                    // 중심좌표로부터 거리 (Optional)
-    val eventStartDate: String? = null,          // 행사시작일 (Optional)
-    val eventEndDate: String? = null,            // 행사종료일 (Optional)
     val hmpg: String? = null,                    // 홈페이지주소 (Optional)
     val overview: String? = null,                 // 개요 (Optional)
+
+    // 관광지 추가 정보
+    val useTime: String? = null, // 이용시간
+    val infoCenter: String? = null, // 문의 전화번호
+
+    // 식당 추가 정보
+    val openTime: String? = null, // 영업시간
+    val firstMenu: String? = null, // 대표 메뉴
+    val treatMenu: String? = null, // 취급 음식
+
+    // 숙소 추가 정보
+    val checkInTime: String? = null,
+    val checkOutTime: String? = null,
+    val roomType: String? = null,
+    val reservation: String? = null, // 예약 방법
+    val reservationUrl: String? = null, // 예약 url
+    val parking: String? = null,
+    val foodPlace: String? = null,
+    val pickup: String? = null,
+
+    val eventStartDate: String? = null,          // 행사시작일 (Optional)
+    val eventEndDate: String? = null,            // 행사종료일 (Optional)
+
 )
 
 data class KakaoPlaceDTO(

@@ -131,7 +131,7 @@ fun ActivityItem(timeSlot: Activity) {
         Spacer(modifier = Modifier.width(16.dp))
 
         Column(modifier = Modifier.weight(1f)) {
-            PlaceCard(timeSlot.place)
+            PlaceCard(timeSlot.place, onClick = {})
         }
     }
 }

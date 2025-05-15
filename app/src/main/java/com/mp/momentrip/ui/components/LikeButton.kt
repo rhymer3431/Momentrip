@@ -41,7 +41,7 @@ fun LikeButton(
 ) {
     val isLiked by userState.isLikedFlow.collectAsState()
     val iconColor by animateColorAsState(
-        targetValue = if (isLiked) Like else  Color(0xFFDCDCDC),
+        targetValue = if (isLiked)Color(0xFF000000)else  Color(0xFFFFFFFF),
         animationSpec = tween(durationMillis = 300)
     )
     val iconScale by animateFloatAsState(
@@ -61,4 +61,10 @@ fun LikeButton(
             modifier = Modifier.size(24.dp)
         )
     }
+}
+
+@Preview
+@Composable
+fun LikeButtonPreview(){
+    LikeButton(UserViewModel())
 }

@@ -76,9 +76,9 @@ class RecommendViewModel : ViewModel() {
             if (region != null && preference != null) {
 
                 // 비동기적으로 병렬 작업을 시작합니다
-                val restaurantDeferred = async { TourService.getRestaurantByRegion(region) }
-                val dormitoryDeferred = async { TourService.getDormitoryByRegion(region) }
-                val tourSpotDeferred = async { TourService.getTourSpotByRegion(region) }
+                val restaurantDeferred = async { TourService.getRestaurantsByRegion(region) }
+                val dormitoryDeferred = async { TourService.getAccommodationsByRegion(region) }
+                val tourSpotDeferred = async { TourService.getTouristSpotsByRegion(region) }
 
                 // 각 작업 완료된 후에 결과값을 받아옵니다
                 _recommendRestaurant.value = restaurantDeferred.await()

@@ -16,9 +16,9 @@ private val DarkColorPalette = darkColorScheme(
 )
 
 private val LightColorPalette = lightColorScheme(
-    primary = Color(0xFF4F9DDE),         // 메인 푸른색
+    primary = Color(0xFF24BAEC),         // 메인 푸른색
     onPrimary = Color(0xFFEAF6FD),        // primary 위 텍스트 (밝은 하늘색)
-    secondary = Color(0xFF6EC1E4),        // 보조 푸른색
+    secondary = Color(0xFF1193BF),        // 보조 푸른색
     onSecondary = Color(0xFFFFFFFF),      // secondary 위 텍스트 (화이트)
     tertiary = Color(0xFF3A8DFF),         // 추가 포인트 블루
     onTertiary = Color(0xFFF0F7FF),        // tertiary 위 텍스트 (밝은 블루)

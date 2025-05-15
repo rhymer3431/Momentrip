@@ -139,7 +139,7 @@ fun ActivityItem(timeSlot: Activity, modifier: Modifier = Modifier) {
         ) {
             Text(text = "🕒 ${timeSlot.startTime}", style = MaterialTheme.typography.titleSmall)
             Spacer(modifier = Modifier.height(4.dp))
-            PlaceCard(timeSlot.place)
+            PlaceCard(timeSlot.place, onClick =  {})
         }
     }
 }
