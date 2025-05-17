@@ -1,4 +1,4 @@
-package com.mp.momentrip.ui.screen
+package com.mp.momentrip.ui.screen.user
 
 import android.widget.Toast
 import androidx.compose.foundation.*
@@ -8,7 +8,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu

@@ -1,4 +1,4 @@
-package com.mp.momentrip.ui.screen
+package com.mp.momentrip.ui.screen.user
 
 
 import androidx.compose.foundation.clickable
@@ -45,6 +45,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.mp.momentrip.data.Answer
 import com.mp.momentrip.ui.components.DotsIndicator
+import com.mp.momentrip.ui.screen.LoadingScreen
 import com.mp.momentrip.ui.theme.MomenTripTheme
 
 import com.mp.momentrip.view.QuestionViewModel

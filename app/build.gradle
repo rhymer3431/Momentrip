@@ -1,4 +1,5 @@
 plugins {
+
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("com.google.gms.google-services")
@@ -17,6 +18,7 @@ android {
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
+        multiDexEnabled true
 
         ndk {
             abiFilters += ["arm64-v8a", "armeabi-v7a"]
@@ -40,12 +42,15 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
+        // Enable support for the new language APIs
+        coreLibraryDesugaringEnabled true
+        // Set Java compatibility (version can be higher if desired)
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
 
     kotlinOptions {
-        jvmTarget = "17"
+        jvmTarget = "1.8"
         freeCompilerArgs += ["-Xuse-experimental=androidx.compose.material.ExperimentalMaterialApi"]
     }
 
@@ -76,8 +81,9 @@ dependencies {
     implementation "androidx.navigation:navigation-compose:2.8.9"
     implementation "androidx.constraintlayout:constraintlayout-compose:1.0.1"
 
-    // Orbital shared transition
-    implementation "com.github.skydoves:orbital:0.4.0"
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.1.5'
+    implementation("com.kizitonwose.calendar:compose:2.5.1")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.1")
 
     // UI 확장 라이브러리
     implementation "org.burnoutcrew.composereorderable:reorderable:0.9.6"
@@ -116,6 +122,13 @@ dependencies {
     implementation "com.kakao.sdk:v2-all:2.14.0"
     implementation "com.kakao.maps.open:android:2.12.8"
 
+
+    implementation "androidx.lifecycle:lifecycle-viewmodel-compose:2.6.2"
+
+
+    // Compose–Hilt 네비게이션
+    implementation "androidx.hilt:hilt-navigation-compose:1.0.0"
+
     // Kotlin & 코루틴
     implementation platform("org.jetbrains.kotlin:kotlin-bom")
     implementation "org.jetbrains.kotlin:kotlin-stdlib"
@@ -131,6 +144,7 @@ dependencies {
     testImplementation "junit:junit:4.13.2"
     androidTestImplementation "androidx.test.ext:junit:1.1.5"
     androidTestImplementation "androidx.test.espresso:espresso-core:3.5.1"
-    androidTestImplementation "androidx.compose.ui:ui-test-junit4:1.5.4"
-    debugImplementation "androidx.compose.ui:ui-tooling:1.5.4"
+    androidTestImplementation "androidx.compose.ui:ui-test-junit4:1.6.1"
+    debugImplementation "androidx.compose.ui:ui-tooling:1.6.1"
+
 }

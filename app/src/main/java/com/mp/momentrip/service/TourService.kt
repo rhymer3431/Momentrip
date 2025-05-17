@@ -49,9 +49,9 @@ object TourService {
                 null
             }
 
-            val repeat = try {
-                service.getDetailInfo(
-                    contentId = item.contentid.toString(),
+            val intro = try {
+                service.getDetailIntro(
+                    contentId = item.contentid,
                     contentTypeId = item.contenttypeid,
                     serviceKey = serviceKey
                 ).response.body.items?.item?.firstOrNull()
@@ -60,7 +60,7 @@ object TourService {
                 null
             }
 
-            mergeToPlace(item, detail, repeat)
+            mergeToPlace(item, detail, intro)
         }
     }
 
@@ -105,9 +105,9 @@ object TourService {
                 null
             }
 
-            val repeat = try {
-                service.getDetailInfo(
-                    contentId = base.contentid.toString(),
+            val intro = try {
+                service.getDetailIntro(
+                    contentId = base.contentid,
                     contentTypeId = base.contenttypeid,
                     serviceKey = serviceKey
                 ).response.body.items?.item?.firstOrNull()
@@ -116,14 +116,14 @@ object TourService {
                 null
             }
 
-            mergeToPlaceFromArea(base, detail, repeat)
+            mergeToPlaceFromArea(base, detail, intro)
         }
     }
 
     private fun mergeToPlace(
         base: KeywordSearchItem,
         detail: ContentDetailItem?,
-        repeat: DetailInfoItem?
+        intro: DetailIntroItem?
     ): Place {
         return Place(
             contentId = base.contentid,
@@ -145,21 +145,21 @@ object TourService {
             overview = detail?.overview,
 
             // 관광지
-            useTime = repeat?.useTime,
-            infoCenter = repeat?.infoCenter ?: repeat?.infoCenterLodging ?: repeat?.infoCenterFood,
+            useTime = intro?.useTime,
+            infoCenter = intro?.infoCenter ?: intro?.infoCenterLodging ?: intro?.infoCenterFood,
 
             // 음식점
-            openTime = repeat?.openTimeFood,
-            firstMenu = repeat?.firstMenu,
-            treatMenu = repeat?.treatMenu,
+            openTime = intro?.openTimeFood,
+            firstMenu = intro?.firstMenu,
+            treatMenu = intro?.treatMenu,
 
             // 숙소
-            checkInTime = repeat?.checkInTime,
-            checkOutTime = repeat?.checkOutTime,
-            roomType = repeat?.roomType,
+            checkInTime = intro?.checkInTime,
+            checkOutTime = intro?.checkOutTime,
+            roomType = intro?.roomType,
             reservation = null,
-            reservationUrl = repeat?.reservationUrl,
-            parking = repeat?.parking ?: repeat?.parkingLodging ?: repeat?.parkingFood,
+            reservationUrl = intro?.reservationUrl,
+            parking = intro?.parking ?: intro?.parkingLodging ?: intro?.parkingFood,
             foodPlace = null,
             pickup = null,
 
@@ -170,7 +170,7 @@ object TourService {
     private fun mergeToPlaceFromArea(
         base: AreaBasedItem,
         detail: ContentDetailItem?,
-        repeat: DetailInfoItem?
+        intro: DetailIntroItem?
     ): Place {
         return Place(
             contentId = base.contentid,
@@ -191,16 +191,16 @@ object TourService {
             hmpg = detail?.hmpg,
             overview = detail?.overview,
 
-            useTime = repeat?.useTime,
-            infoCenter = repeat?.infoCenter ?: repeat?.infoCenterLodging ?: repeat?.infoCenterFood,
-            openTime = repeat?.openTimeFood,
-            firstMenu = repeat?.firstMenu,
-            treatMenu = repeat?.treatMenu,
-            checkInTime = repeat?.checkInTime,
-            checkOutTime = repeat?.checkOutTime,
-            roomType = repeat?.roomType,
-            reservationUrl = repeat?.reservationUrl,
-            parking = repeat?.parking ?: repeat?.parkingLodging ?: repeat?.parkingFood
+            useTime = intro?.useTime,
+            infoCenter = intro?.infoCenter ?: intro?.infoCenterLodging ?: intro?.infoCenterFood,
+            openTime = intro?.openTimeFood,
+            firstMenu = intro?.firstMenu,
+            treatMenu = intro?.treatMenu,
+            checkInTime = intro?.checkInTime,
+            checkOutTime = intro?.checkOutTime,
+            roomType = intro?.roomType,
+            reservationUrl = intro?.reservationUrl,
+            parking = intro?.parking ?: intro?.parkingLodging ?: intro?.parkingFood
         )
     }
 

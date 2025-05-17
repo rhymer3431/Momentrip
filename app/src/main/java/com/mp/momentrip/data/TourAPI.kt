@@ -291,7 +291,7 @@ data class ContentDetailItem(
 )
 
 
-data class DetailInfoItem(
+data class DetailIntroItem(
     val contentId: String,           // 콘텐츠 ID
     val contentTypeId: Int,          // 콘텐츠 타입 ID (12: 관광지, 32: 숙박, 39: 음식점)
 

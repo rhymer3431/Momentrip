@@ -1,4 +1,4 @@
-package com.mp.momentrip.ui.screen
+package com.mp.momentrip.ui.screen.profile
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -18,7 +19,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBox
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Place
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
@@ -36,9 +36,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberAsyncImagePainter
 import com.mp.momentrip.service.AccountService
 import com.mp.momentrip.ui.components.ThemeCard
@@ -201,6 +203,20 @@ fun ProfileMenu(navController: NavController) {
             )
             ProfileMenuItem(
                 icon = Icons.Filled.AccountBox,
+                title = "설정",
+                showDivider = true,
+                onClick = {
+                    AccountService.signOut(navController)}
+            )
+            ProfileMenuItem(
+                icon = Icons.Filled.AccountBox,
+                title = "계정 탈퇴",
+                showDivider = true,
+                onClick = {
+                    AccountService.signOut(navController)}
+            )
+            ProfileMenuItem(
+                icon = Icons.Filled.AccountBox,
                 title = "로그아웃",
                 showDivider = true,
                 onClick = {
@@ -258,8 +274,70 @@ fun ProfileMenuItem(
 
 }
 
+@Composable
+fun ProfileScreen2() {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.White)
+    ) {
 
 
+
+        // Avatar
+        Box(
+            modifier = Modifier
+                .size(width = 89.dp, height = 87.dp)
+                .offset(x = 164.dp, y = 149.dp)
+                .background(Color(0xFFEADDFF), shape = RoundedCornerShape(7.dp))
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+
+                    .background(Color(0xFF4F378A))
+            )
+        }
+
+        // Name
+        Text(
+            text = "Vincent Guillebaud",
+            modifier = Modifier.offset(x = 117.dp, y = 258.dp),
+            color = Color.Black,
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Medium,
+        )
+
+
+
+        // List Items: 여행, 설정, 로그아웃, 계정 탈퇴
+        Column(
+            modifier = Modifier.offset(x = 80.dp, y = 403.dp)
+        ) {
+            Text("여행", fontSize = 18.sp, color = Color(0xFF343A40), )
+            Spacer(modifier = Modifier.height(30.dp))
+            Text("설정", fontSize = 18.sp, color = Color(0xFF343A40))
+            Spacer(modifier = Modifier.height(30.dp))
+            Text("로그아웃", fontSize = 18.sp, color = Color(0xFF343A40))
+            Spacer(modifier = Modifier.height(30.dp))
+            Text("계정 탈퇴", fontSize = 18.sp, color = Color(0xFF343A40),)
+        }
+
+        // Decorative horizontal lines (Line 12/13/14), red icons, etc. can be drawn with Divider or custom Canvas.
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun ProfilePreview(){
+    ProfileScreen(rememberNavController(), UserViewModel())
+}
+
+@Preview(showBackground = true)
+@Composable
+fun ProfilePreview2(){
+    ProfileScreen2()
+}
 @Composable
 fun ProfileImage(userId: String) {
     var imageUrl by remember { mutableStateOf<String?>(null) }

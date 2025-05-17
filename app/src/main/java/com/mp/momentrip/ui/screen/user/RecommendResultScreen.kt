@@ -1,4 +1,4 @@
-package com.mp.momentrip.ui.screen
+package com.mp.momentrip.ui.screen.user
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -20,7 +20,6 @@ import com.mp.momentrip.ui.theme.OrangeNice
 
 import com.mp.momentrip.ui.UserDestinations
 import com.mp.momentrip.view.UserViewModel
-import java.time.LocalDate
 
 
 @Composable

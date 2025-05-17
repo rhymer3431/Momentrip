@@ -41,8 +41,6 @@ class UserViewModel : ViewModel() {
     private val _selectedScheduleIndex = MutableStateFlow<Int?>(null)
     val selectedScheduleIndex: StateFlow<Int?> get() = _selectedScheduleIndex.asStateFlow()
 
-    private val _schedules = MutableStateFlow<List<Schedule>>(emptyList())
-    val schedules: StateFlow<List<Schedule>> get() = _schedules.asStateFlow()
 
     private val _isLoading = MutableStateFlow(false) // 로딩 상태 추가
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
@@ -68,25 +66,11 @@ class UserViewModel : ViewModel() {
             try {
                 val user = AccountService.loadUser(firebaseUser) // suspend 함수로 변경
                 _user.value = user
-                loadSchedules() // 사용자 로드 시 스케줄도 자동 로드
+
                 _isLoggedIn.value = true
             } catch (e: Exception) {
 
                 logOut()
-            } finally {
-                _isLoading.value = false
-            }
-        }
-    }
-    fun loadSchedules() {
-        viewModelScope.launch {
-            _isLoading.value = true
-            try {
-                val schedules = AccountService.loadSchedulesOfUser() // suspend 함수로 변경
-                Log.d("test",schedules.toString())
-                _schedules.value = schedules
-            } catch (e: Exception) {
-
             } finally {
                 _isLoading.value = false
             }
@@ -124,8 +108,8 @@ class UserViewModel : ViewModel() {
 
     fun getSchedule(): Schedule? {
         val index = _selectedScheduleIndex.value
-        return if (index != null && index in schedules.value.indices) {
-            schedules.value[index]
+        return if (index != null && _user.value?.schedules?.indices?.contains(index) == true ) {
+            _user.value?.schedules!![index]
         } else {
             null
         }
@@ -165,7 +149,7 @@ class UserViewModel : ViewModel() {
             val updatedUser = user.copy(schedules = updatedSchedules)
             try {
                 updateUser(updatedUser)
-                loadSchedules()
+
                 onSuccess()
             } catch (e: Exception) {
                 onError("스케줄 저장에 실패했습니다.")
@@ -185,7 +169,7 @@ class UserViewModel : ViewModel() {
     }
 
     fun getScheduleSize(): Int{
-        return schedules.value.size
+        return _user.value?.schedules!!.size
     }
     // 사용자 선호도 가져오기
     fun getUserPreference(): UserPreference? {
@@ -200,10 +184,9 @@ class UserViewModel : ViewModel() {
         _place.value = place
         updateIsLikedState()
     }
-    fun like() {
+    fun like(currentPlace: Place?) {
         viewModelScope.launch {
             val currentUser = _user.value
-            val currentPlace = place.value
             _isLoading.value = true
 
             if (currentUser != null && currentPlace != null) {

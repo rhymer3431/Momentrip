@@ -16,7 +16,7 @@ import kotlinx.coroutines.launch
 class MomenTripApp : Application() {
 
     override fun onCreate() {
-        super.onCreate()
+        super. onCreate()
 
         val applicationScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
         // FirebaseAuth.getInstance().signOut()
