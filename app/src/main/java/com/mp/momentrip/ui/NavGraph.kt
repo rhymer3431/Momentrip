@@ -1,31 +1,24 @@
 package com.mp.momentrip.ui
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.produceState
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.google.firebase.auth.FirebaseAuth
 
 
 import com.mp.momentrip.ui.screen.HomeScreen
 
 
 
-import com.mp.momentrip.ui.screen.ProfileScreen
-import com.mp.momentrip.ui.screen.QuestionScreen
-import com.mp.momentrip.ui.screen.RecommendResult
-import com.mp.momentrip.ui.screen.ScheduleListScreen
-import com.mp.momentrip.ui.screen.ScheduleMapScreen
-import com.mp.momentrip.ui.screen.SearchScreen
-import com.mp.momentrip.ui.screen.SignInScreen
-import com.mp.momentrip.ui.screen.SignUpScreen
+import com.mp.momentrip.ui.screen.profile.ProfileScreen
+import com.mp.momentrip.ui.screen.user.QuestionScreen
+import com.mp.momentrip.ui.screen.user.RecommendResult
+import com.mp.momentrip.ui.screen.schedule.ScheduleListScreen
+import com.mp.momentrip.ui.screen.schedule.ScheduleMapScreen
+import com.mp.momentrip.ui.screen.user.SignInScreen
+import com.mp.momentrip.ui.screen.user.SignUpScreen
 
 
 

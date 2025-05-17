@@ -4,8 +4,8 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import com.mp.momentrip.ui.MainDestinations
-import com.mp.momentrip.ui.screen.SignInScreen
-import com.mp.momentrip.ui.screen.SignUpScreen
+import com.mp.momentrip.ui.screen.user.SignInScreen
+import com.mp.momentrip.ui.screen.user.SignUpScreen
 import com.mp.momentrip.view.UserViewModel
 
 fun NavGraphBuilder.authNavGraph(

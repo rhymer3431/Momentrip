@@ -2,14 +2,9 @@ package com.mp.momentrip.ui.screen
 
 import android.annotation.SuppressLint
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Face
 import androidx.compose.material.icons.filled.Home
@@ -17,47 +12,34 @@ import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme.colorScheme
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import androidx.navigation.NavGraph
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
 import com.exyte.animatednavbar.AnimatedNavigationBar
-import com.exyte.animatednavbar.animation.balltrajectory.Parabolic
 import com.exyte.animatednavbar.animation.balltrajectory.Straight
-import com.exyte.animatednavbar.animation.balltrajectory.Teleport
 import com.exyte.animatednavbar.animation.indendshape.Height
 import com.exyte.animatednavbar.animation.indendshape.shapeCornerRadius
-import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.mp.momentrip.ui.screen.ScheduleListScreen
-import com.mp.momentrip.data.User
-import com.mp.momentrip.ui.theme.BeigeDark
-import com.mp.momentrip.ui.theme.BeigeDeepDark
-import com.mp.momentrip.ui.theme.BeigeLight
-import com.mp.momentrip.ui.theme.MomenTripTheme
 import com.mp.momentrip.ui.MainDestinations
 import com.mp.momentrip.ui.UserDestinations
-import com.mp.momentrip.view.RecommendViewModel
+import com.mp.momentrip.ui.screen.feed.FeedScreen
+import com.mp.momentrip.ui.screen.profile.ProfileScreen
+import com.mp.momentrip.ui.screen.schedule.CalendarScreen
+import com.mp.momentrip.ui.screen.schedule.ScheduleCreationScreen
+import com.mp.momentrip.ui.screen.schedule.ScheduleListScreen
+import com.mp.momentrip.ui.screen.schedule.ScheduleMapScreen
+import com.mp.momentrip.ui.screen.user.RecommendResult
+import com.mp.momentrip.ui.screen.user.SignInScreen
 import com.mp.momentrip.view.UserViewModel
 
 
@@ -221,7 +203,7 @@ fun BottomNavGraph(
             LikedPlaceScreen(userState)
         }
         composable(MainDestinations.SEARCH_ROUTE){
-            SearchScreen()
+            CalendarScreen()
         }
 
     }

@@ -11,9 +11,8 @@ data class Schedule(
     val duration: Long = 0,
     val days: List<Day> = emptyList<Day>(),
     val region: String = "",
-
-    ){
-}
+    val checklistL: List<CheckItem> = emptyList()
+)
 
 data class Day(
     val timeTable : List<Activity> = emptyList<Activity>()
@@ -32,6 +31,10 @@ data class Activity(
     val place: Place = Place()
 )
 
+data class CheckItem(
+    val name: String = "",
+    val checked: Boolean = false
+)
 fun getDuration(startDate: LocalDate, endDate: LocalDate): Long {
     return ChronoUnit.DAYS.between(startDate, endDate)
 }
