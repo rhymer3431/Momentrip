@@ -1,10 +1,24 @@
 package com.mp.momentrip.ui.screen.schedule
 // ScheduleScreen.kt
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.updateTransition
+import androidx.compose.animation.expandIn
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Face
@@ -20,7 +34,10 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -39,79 +56,112 @@ fun ScheduleListScreen(
     userState: UserViewModel,
     navController: NavController
 ) {
-    // ① UserViewModel 에서 User? 를 수집
     val user by userState.user.collectAsState()
-    // ② null 안전호출 + orEmpty 로 빈 리스트 처리
     val schedules = user?.schedules.orEmpty()
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("나의 여행", fontSize = 20.sp) },
-                navigationIcon = {
-                    IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(
-                            painter = IconicsPainter(
-                                image = GoogleMaterial.Icon.gmd_arrow_back_ios
-                            ),
-                            contentDescription = null,
-                            modifier = Modifier.size(24.dp),
-                            tint = Color(0xFF0063F5)
-                        )
-                    }
-                },
-            )
-        },
+    /* 클릭된 스케줄 – null(목록) ↔ Schedule(상세) */
+    var selected by remember { mutableStateOf<Schedule?>(null) }
 
-        floatingActionButton = {
-            FloatingActionButton(
-                onClick = {
-                    // 일정 생성 화면으로 이동
-                    navController.navigate(MainDestinations.SCHEDULE_CREATION)
-                },
-                containerColor = Color.White,
-                elevation = FloatingActionButtonDefaults.elevation(4.dp)
-            ) {
-                Icon(Icons.Default.Add, contentDescription = "스케줄 추가", tint = Color.Black)
-            }
-        }
-    ) { paddingValues ->
-        if (schedules.isEmpty()) {
-            // 아무 일정이 없을 때
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues),
-                contentAlignment = Alignment.Center
-            ) {
-                Text("생성된 스케줄이 없습니다.")
-            }
-        } else {
-            // 일정 리스트
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues)
-                    .padding(horizontal = 16.dp, vertical = 8.dp)
-            ) {
+    /* 전환 정의 ------------------------------------------------------- */
+    val transition = updateTransition(targetState = selected, label = "ZoomTransition")
 
-                // 각 Schedule 아이템
-                items(schedules) { schedule ->
-                    if (schedule != null) {
-                        ScheduleListItem(
-                            schedule = schedule,
-                            onClick = {
-                                // TODO: 상세 화면으로 이동 (예: id 기반으로)
-                                // navController.navigate("${MainDestinations.SCHEDULE_DETAIL}/${schedule.id}")
+    /* 상세 화면 scale·alpha 애니메이션 */
+    val scale by transition.animateFloat(
+        transitionSpec = { tween(durationMillis = 350, easing = FastOutSlowInEasing) },
+        label = "scale"
+    ) { state -> if (state == null) 0.8f else 1f }
+
+    val alpha by transition.animateFloat(
+        transitionSpec = { tween(350) }, label = "alpha"
+    ) { state -> if (state == null) 0f else 1f }
+
+    /* ---------------------------------------------------------------- */
+
+    Box(modifier = Modifier.fillMaxSize()) {
+
+        /* ───────── 목록 화면 ───────── */
+        if (selected == null) {
+            Scaffold(
+                topBar = {
+                    TopAppBar(
+                        title = { Text("나의 여행", fontSize = 20.sp) },
+                        navigationIcon = {
+                            IconButton(onClick = { navController.popBackStack() }) {
+                                Icon(
+                                    painter = IconicsPainter(GoogleMaterial.Icon.gmd_arrow_back_ios),
+                                    contentDescription = null,
+                                    modifier = Modifier.size(24.dp),
+                                    tint = Color(0xFF0063F5)
+                                )
                             }
-                        )
+                        },
+                    )
+                },
+                floatingActionButton = {
+                    FloatingActionButton(
+                        onClick = { navController.navigate(MainDestinations.SCHEDULE_CREATION) },
+                        containerColor = Color.White,
+                        elevation = FloatingActionButtonDefaults.elevation(4.dp)
+                    ) { Icon(Icons.Default.Add, null, tint = Color.Black) }
+                }
+            ) { padding ->
+                if (schedules.isEmpty()) {
+                    Box(Modifier.fillMaxSize().padding(padding), Alignment.Center) {
+                        Text("생성된 스케줄이 없습니다.")
                     }
-                    Spacer(modifier = Modifier.height(12.dp))
+                } else {
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(padding)
+                            .padding(horizontal = 16.dp, vertical = 8.dp)
+                    ) {
+                        items(schedules) { sch ->
+                            sch?.let {
+                                ScheduleListItem(
+                                    schedule = it,
+                                    onClick = { selected = it }      // ▶ 확대 전환 트리거
+                                )
+                                Spacer(Modifier.height(12.dp))
+                            }
+                        }
+                    }
                 }
             }
         }
+
+        /* ───────── 상세 화면 (팝업) ───────── */
+        selected?.let { schedule ->
+            /* 어두운 배경 */
+            Box(
+                Modifier
+                    .fillMaxSize()
+                    .background(Color.Black.copy(alpha = 0.4f * alpha))
+                    .clickable { selected = null }        // 배경 클릭 → 닫기
+            )
+
+            /* 확대되는 카드 */
+            TripOverviewScreen(
+                schedule = schedule,
+                onScheduleClick = { /* TODO: 일정 상세로 이동 */ },
+                onChecklistClick = { /* TODO: 체크리스트로 이동 */ },
+                onClose = { selected = null },    // ← 여기에 닫기 콜백 추가
+                modifier = Modifier
+                    .align(Alignment.Center)
+                    .graphicsLayer {
+                        scaleX = scale
+                        scaleY = scale
+                    }
+                    .fillMaxWidth(0.95f)
+                    .fillMaxHeight(0.85f)
+                    .clip(RoundedCornerShape(24.dp))
+                    .shadow(elevation = 16.dp, shape = RoundedCornerShape(24.dp))
+            )
+
+        }
     }
 }
+
 
 @Composable
 fun ScheduleListItem(
@@ -171,35 +221,12 @@ fun ScheduleListItem(
 // 더미 스케줄 목록
 val dummySchedules = listOf(
     Schedule(
-        user = "jinha@example.com",
+        title = "나의 제주 여행",
         startDate = "20/05/22",
         endDate   = "20/05/27",
         duration  = 5L,
         days      = List(5) { Day() },
         region    = "제주도"
     ),
-    Schedule(
-        user = "jinha@example.com",
-        startDate = "21/03/10",
-        endDate   = "21/03/12",
-        duration  = 2L,
-        days      = List(2) { Day() },
-        region    = "경주"
-    ),
-    Schedule(
-        user = "jinha@example.com",
-        startDate = "21/07/15",
-        endDate   = "21/07/20",
-        duration  = 5L,
-        days      = List(5) { Day() },
-        region    = "강릉"
-    ),
-    Schedule(
-        user = "jinha@example.com",
-        startDate = "21/09/01",
-        endDate   = "21/09/05",
-        duration  = 4L,
-        days      = List(4) { Day() },
-        region    = "진주"
-    )
+
 )

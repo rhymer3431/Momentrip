@@ -137,7 +137,7 @@ class UserViewModel : ViewModel() {
             }
 
             val newSchedule = Schedule(
-                user = user.email,
+
                 startDate = startDate,
                 endDate = endDate,
                 duration = duration,

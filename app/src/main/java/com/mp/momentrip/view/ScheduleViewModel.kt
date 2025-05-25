@@ -16,7 +16,7 @@ class ScheduleViewModel : ViewModel() {
 
     fun loadSchedule(schedule: Schedule) {
         checklistItems.clear()
-        checklistItems.addAll(schedule.checklistL)
+        checklistItems.addAll(schedule.checklist)
     }
 
     fun toggleItem(index: Int) {
