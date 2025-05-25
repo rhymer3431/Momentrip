@@ -11,6 +11,9 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -119,121 +122,36 @@ fun FeedScreen(
                 }
                 when (selected) {
                     FeedCategory.ALL -> {
-                        item { PlaceSection("추천 식당", restaurants) { selectedPlace = it } }
-                        item { PlaceSection("추천 핫플", tourSpots) { selectedPlace = it } }
-                        item { PlaceSection("추천 숙소", dormitories) { selectedPlace = it } }
+                        item { PlaceSection("추천 식당", restaurants, onPlaceClick = { selectedPlace = it }) }
+                        item { PlaceSection("추천 핫플", tourSpots, onPlaceClick = { selectedPlace = it }) }
+                        item { PlaceSection("추천 숙소", dormitories, onPlaceClick = { selectedPlace = it }) }
                     }
                     FeedCategory.RESTAURANT -> item {
-                        PlaceSection("추천 식당", restaurants) { selectedPlace = it }
+                        PlaceSection("추천 식당", restaurants, onPlaceClick = { selectedPlace = it }, isGrid = true)
                     }
                     FeedCategory.TOUR -> item {
-                        PlaceSection("추천 핫플", tourSpots) { selectedPlace = it }
+                        PlaceSection("추천 핫플", tourSpots, onPlaceClick = { selectedPlace = it }, isGrid = true)
                     }
                     FeedCategory.DORMITORY -> item {
-                        PlaceSection("추천 숙소", dormitories) { selectedPlace = it }
+                        PlaceSection("추천 숙소", dormitories, onPlaceClick = { selectedPlace = it }, isGrid = true)
                     }
                 }
+
             }
         }
 
         // 상세 카드 전환
         selectedPlace?.let { place ->
-            Box(
-                Modifier
-                    .fillMaxSize()
-                    .background(Color.Black.copy(alpha = 0.3f)),
-                contentAlignment = Alignment.Center
-            ) {
-                Column(
-                    modifier = Modifier
-                        .size(cardSize)
-                        .clip(RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp))
-                        .background(Color.White)
-                        .verticalScroll(rememberScrollState())
-                ) {
-                    // 상단 이미지
-                    ImageCard(
-                        imageUrl = place.firstImage ?: "",
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(imageHeight)
-                            .graphicsLayer { alpha = imageAlpha }
-                            .clip(RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp))
-                    )
-                    Column(
-                        Modifier
-                            .fillMaxSize()
-                            .padding(horizontal = 24.dp, vertical = 16.dp)
-                    ) {
-                        // 뒤로가기 버튼
-                        Icon(
-                            imageVector = Icons.Default.ArrowBack,
-                            contentDescription = "Back",
-                            modifier = Modifier
-                                .size(24.dp)
-                                .clickable { selectedPlace = null }
-                        )
-                        Spacer(Modifier.height(16.dp))
+            PlaceDetailBottomSheet(
+                place = place,
+                onClose = { selectedPlace = null },
+                userState = userState,
+                imageHeight = imageHeight,
+                cardSize = cardSize,
+                imageAlpha = imageAlpha,
+                textAlpha = textAlpha
 
-                        // 제목 + LikeButton
-                        Row(
-                            Modifier.fillMaxWidth(),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(
-                                text = place.title,
-                                fontSize = 28.sp,
-                                fontWeight = FontWeight.SemiBold,
-                                modifier = Modifier.weight(1f),
-                                textAlign = TextAlign.Center
-                            )
-                            LikeButton(userState, place)
-                        }
-
-                        Spacer(Modifier.height(24.dp))
-
-                        // 아이콘 + 텍스트
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Column(verticalArrangement = Arrangement.spacedBy(24.dp)) {
-                                Image(
-                                    asset = GoogleMaterial.Icon.gmd_schedule,
-                                    contentDescription = "Schedule",
-                                    modifier = Modifier.size(24.dp),
-                                    colorFilter = ColorFilter.tint(Color(0xFF1D1B20))
-                                )
-                                Image(
-                                    asset = GoogleMaterial.Icon.gmd_phone,
-                                    contentDescription = "Phone",
-                                    modifier = Modifier.size(24.dp),
-                                    colorFilter = ColorFilter.tint(Color(0xFF1D1B20))
-                                )
-                            }
-                            Spacer(Modifier.width(16.dp))
-                            Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-                                Text(
-                                    text = "운영시간: ${place.firstMenu ?: "-"}",
-                                    fontSize = 20.sp
-                                )
-                                Text(
-                                    text = "전화번호: ${place.infoCenter ?: "-"}",
-                                    fontSize = 20.sp
-                                )
-                            }
-                        }
-
-                        Spacer(Modifier.height(24.dp))
-
-                        // 설명 텍스트 (스크롤 가능)
-                        Text(
-                            text = place.overview ?: "",
-                            fontSize = 20.sp,
-                            lineHeight = 28.sp,
-                            color = Color(0xFF828282),
-                            modifier = Modifier.alpha(textAlpha)
-                        )
-                    }
-                }
-            }
+            )
         }
     }
 }
@@ -243,7 +161,9 @@ fun FeedScreen(
 fun PlaceSection(
     title: String,
     placeList: List<Place>?,
-    onPlaceClick: (Place) -> Unit) {
+    onPlaceClick: (Place) -> Unit,
+    isGrid: Boolean = false  // 카테고리에 따라 true/false 설정
+) {
     Column {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -260,18 +180,35 @@ fun PlaceSection(
                 painter = painterResource(R.drawable.arrow_sub),
                 contentDescription = title,
                 modifier = Modifier.size(20.dp),
-                tint = Color.Unspecified // SVG 본연의 색상 유지
+                tint = Color.Unspecified
             )
         }
         Spacer(modifier = Modifier.height(8.dp))
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .horizontalScroll(rememberScrollState()),
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            placeList.orEmpty().take(5).forEach { place ->
-                PlaceCard(place = place, onClick = {onPlaceClick(place)})
+
+        if (isGrid) {
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(2),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .heightIn(max = 500.dp), // 최대 높이 제한
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                contentPadding = PaddingValues(vertical = 8.dp)
+            ) {
+                items(placeList.orEmpty()) { place ->
+                    PlaceCard(place = place, onClick = { onPlaceClick(place) })
+                }
+            }
+        } else {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .horizontalScroll(rememberScrollState()),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                placeList.orEmpty().take(5).forEach { place ->
+                    PlaceCard(place = place, onClick = { onPlaceClick(place) })
+                }
             }
         }
     }

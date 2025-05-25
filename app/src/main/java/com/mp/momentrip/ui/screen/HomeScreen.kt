@@ -30,14 +30,21 @@ import com.exyte.animatednavbar.AnimatedNavigationBar
 import com.exyte.animatednavbar.animation.balltrajectory.Straight
 import com.exyte.animatednavbar.animation.indendshape.Height
 import com.exyte.animatednavbar.animation.indendshape.shapeCornerRadius
+import com.mp.momentrip.data.Day
+import com.mp.momentrip.data.Schedule
 import com.mp.momentrip.ui.MainDestinations
 import com.mp.momentrip.ui.UserDestinations
+import com.mp.momentrip.ui.components.CalendarSample3
 import com.mp.momentrip.ui.screen.feed.FeedScreen
 import com.mp.momentrip.ui.screen.profile.ProfileScreen
 import com.mp.momentrip.ui.screen.schedule.CalendarScreen
+
 import com.mp.momentrip.ui.screen.schedule.ScheduleCreationScreen
 import com.mp.momentrip.ui.screen.schedule.ScheduleListScreen
 import com.mp.momentrip.ui.screen.schedule.ScheduleMapScreen
+
+
+
 import com.mp.momentrip.ui.screen.user.RecommendResult
 import com.mp.momentrip.ui.screen.user.SignInScreen
 import com.mp.momentrip.view.UserViewModel
@@ -52,7 +59,9 @@ fun HomeScreen(
     Scaffold(
         bottomBar = { BottomNavBar(navController) }
     ) { paddingValues ->
-        Box(modifier = Modifier.padding(paddingValues)) {
+        Box(modifier = Modifier.padding(
+            bottom = paddingValues.calculateBottomPadding()
+        )) {
             BottomNavGraph(navController, userState)
         }
     }
@@ -200,10 +209,10 @@ fun BottomNavGraph(
         }
 
         composable(UserDestinations.LIKED_ROUTE) {
-            LikedPlaceScreen(userState)
+            LikedPlaceScreen(userState,{})
         }
         composable(MainDestinations.SEARCH_ROUTE){
-            CalendarScreen()
+
         }
 
     }
