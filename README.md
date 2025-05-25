@@ -1,4 +1,4 @@
-# ✈️ MomenTrip - Personalized Travel Planner
+![image](https://github.com/user-attachments/assets/fe286e13-818c-46aa-9589-7292bd78718b)# ✈️ MomenTrip - Personalized Travel Planner
 
 **MomenTrip** is a personalized travel planning Android application built with **Jetpack Compose**, **Kotlin**, and powered by **Kakao Map API** and **KTO TourAPI**. It helps users explore curated recommendations for attractions, food, and accommodations tailored to their preferences.
 
@@ -56,7 +56,8 @@
 
 | Feed | Detail | Map + Schedule |
 |------|--------|----------------|
-| ![](https://user-images.githubusercontent.com/24540801/156146601-3aeeb8b6-44ec-406b-a75c-0c8f8f9a0c12.png) | ![](https://your-detail-url) | ![](https://your-map-url) |
+|![image](https://github.com/user-attachments/assets/6f9458d5-4579-47d2-8934-c8d97464949d)
+|
 
 ---
 
