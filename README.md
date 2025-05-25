@@ -1,6 +1,6 @@
-# ✈️ MomenTrip - 나만의 여행 플래너
+# ✈️ Momentrip - 나만의 여행 플래너
 
-**MomenTrip**은 Jetpack Compose 기반으로 제작된 맞춤형 여행 일정 관리 앱입니다.  
+**Momentrip**은 Jetpack Compose 기반으로 제작된 맞춤형 여행 일정 관리 앱입니다.  
 사용자의 취향과 지역을 바탕으로 관광지, 음식점, 숙소를 추천하고,  
 직관적인 UI를 통해 여행 일정을 만들고 시각적으로 확인할 수 있습니다.
 
@@ -69,9 +69,33 @@
 
 ---
 
-## ⚙️ 실행 방법
+## 📌 개발 과정
 
-1. 저장소 클론
+### 2025년 5월 25일
+- `FeedScreen`에 카드 클릭 시 팝업 애니메이션 적용
+- `PlaceDetailScreen` 내부 통합 및 전환 애니메이션 구현
+- `ScheduleScreen`, `CalendarScreen`, `ChecklistScreen` UI 완성 및 구조 정리
+- 전체 UI/UX 통합 및 경로 구조 `screen/도메인/파일` 방식으로 정비
 
-   ```bash
-   git clone https://github.com/your-username/momentrip.git
+### 2025년 5월 17일
+- `RecommendService`에서 추천 유사도 계산을 `async-awaitAll`로 병렬 처리하여 성능 향상
+- Word2Vec 기반 벡터 유사도 계산 개선
+
+### 2025년 5월 15일
+- `TourAPIService`에서 `detailInfo1` → `detailIntro1`으로 API 호출 변경
+- `Place` 모델에 `intro` 기반 필드(`infoCenter`, `roomType` 등) 추가
+
+### 2025년 5월 10일
+- `Schedule.kt`에 `CheckItem` 리스트 추가
+- `ScheduleCreationScreen`, `ChecklistScreen` 등 일정 생성 및 편집 UI 구현
+
+### 2025년 5월 5일
+- `ScheduleListScreen` 구현 및 기존 `UserViewModel`에서 `loadSchedules` 제거
+
+### 2025년 4월 15일 ~ 17일
+- 사용자 선호도 기반 추천 시스템 초기 설계
+- `Question.kt`, `RecommendService.kt` 등 사용자 취향 분석 구조 구성
+
+### 2025년 3월 24일
+- 프로젝트 초기 커밋
+
