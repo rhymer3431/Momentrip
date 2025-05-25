@@ -1,6 +1,7 @@
 // ✅ 카드 클릭 시 카드가 커지면서 상세 화면으로 자연스럽게 전환되는 애니메이션 적용됨
 package com.mp.momentrip.ui.screen.feed
 
+import android.annotation.SuppressLint
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.animateDp
 import androidx.compose.animation.core.animateFloat
@@ -51,12 +52,13 @@ private enum class FeedCategory(val koLabel: String) {
     ALL("All"), RESTAURANT("맛집"), TOUR("핫플"), DORMITORY("숙소")
 }
 
+@SuppressLint("ConfigurationScreenWidthHeight")
 @Composable
 fun FeedScreen(
     userState: UserViewModel,
     recommendViewModel: RecommendViewModel = viewModel()
 ) {
-    LaunchedEffect(Unit) { recommendViewModel.initialize(userState) }
+    LaunchedEffect(Unit) { recommendViewModel.initialize() }
 
     val isLoading by recommendViewModel.isLoading.collectAsState()
     val restaurants by recommendViewModel.recommendRestaurant.collectAsState()
@@ -65,7 +67,6 @@ fun FeedScreen(
 
     var selected by rememberSaveable { mutableStateOf(FeedCategory.ALL) }
     var selectedPlace by remember { mutableStateOf<Place?>(null) }
-
     // 시스템 뒤로가기 처리
     BackHandler(enabled = selectedPlace != null) {
         selectedPlace = null
@@ -73,22 +74,26 @@ fun FeedScreen(
 
     // 전환 상태 정의
     val transition = updateTransition(targetState = selectedPlace, label = "DetailTransition")
-
+    val screenHeight = LocalConfiguration.current.screenHeightDp.dp
     // 카드 크기 애니메이션: 160.dp → 전체 화면 높이
-    val cardSize by transition.animateDp(
-        transitionSpec = { tween(500) },
-        label = "CardSize"
-    ) {
-        if (it == null) 160.dp else LocalConfiguration.current.screenHeightDp.dp
-    }
 
-    // 이미지 높이 애니메이션: 0 → 화면 절반
+    // 이미지 높이: 화면의 30%
     val imageHeight by transition.animateDp(
         transitionSpec = { tween(500) },
         label = "ImageHeight"
     ) {
-        if (it == null) 0.dp else LocalConfiguration.current.screenHeightDp.dp * 0.5f
+        if (it == null) 0.dp else screenHeight * 0.4f
     }
+
+    // 초기 카드 높이: 화면의 70%
+    val cardSize by transition.animateDp(
+        transitionSpec = { tween(500) },
+        label = "CardSize"
+    ) {
+        if (it == null) 160.dp else screenHeight * 0.6f
+    }
+
+
 
     // 이미지 페이드인
     val imageAlpha by transition.animateFloat(

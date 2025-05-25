@@ -38,15 +38,18 @@ import com.mp.momentrip.ui.components.CalendarSample3
 import com.mp.momentrip.ui.screen.feed.FeedScreen
 import com.mp.momentrip.ui.screen.profile.ProfileScreen
 import com.mp.momentrip.ui.screen.schedule.CalendarScreen
+import com.mp.momentrip.ui.screen.schedule.DayEditScreen
 
 import com.mp.momentrip.ui.screen.schedule.ScheduleCreationScreen
+import com.mp.momentrip.ui.screen.schedule.ScheduleDetailScreen
 import com.mp.momentrip.ui.screen.schedule.ScheduleListScreen
-import com.mp.momentrip.ui.screen.schedule.ScheduleMapScreen
+
 
 
 
 import com.mp.momentrip.ui.screen.user.RecommendResult
 import com.mp.momentrip.ui.screen.user.SignInScreen
+import com.mp.momentrip.view.ScheduleViewModel
 import com.mp.momentrip.view.UserViewModel
 
 
@@ -152,7 +155,7 @@ fun BottomNavGraph(
     navController: NavHostController = rememberNavController(),
     userState: UserViewModel
 ){
-
+    val scheduleViewModel = ScheduleViewModel()
     NavHost(
         navController = navController,
         startDestination = MainDestinations.FEED_ROUTE
@@ -171,15 +174,18 @@ fun BottomNavGraph(
             )
         }
         composable(UserDestinations.SCHEDULE_ROUTE){
-            ScheduleMapScreen(
-                userState = userState,
+            ScheduleDetailScreen(
+                navController,
+                scheduleViewModel,
+                userState
 
-                )
+            )
 
         }
         composable(UserDestinations.SCHEDULE_LIST_ROUTE){
             ScheduleListScreen(
                 navController = navController,
+                scheduleViewModel = scheduleViewModel,
                 userState = userState
             )
         }
@@ -212,7 +218,17 @@ fun BottomNavGraph(
             LikedPlaceScreen(userState,{})
         }
         composable(MainDestinations.SEARCH_ROUTE){
+            SearchScreen(
+                userState = userState
+            )
+        }
+        composable(MainDestinations.DAY_EDIT_ROUTE){
+            DayEditScreen(
+                scheduleViewModel = scheduleViewModel,
+                onDeleteClick = {},
+                onAddClick = {}
 
+            )
         }
 
     }

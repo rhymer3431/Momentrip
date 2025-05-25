@@ -11,15 +11,16 @@ object TourService {
         TourService.serviceKey = serviceKey
     }
     suspend fun getRestaurantsByKeyword(keyword: String): List<Place> {
-        return getPlacesByKeyword(keyword, ContentTypeId.RESTAURANT.code)
+        return getPlacesByKeyword(keyword, ContentType.RESTAURANT.id.toString())
     }
 
+
     suspend fun getAccommodationsByKeyword(keyword: String): List<Place> {
-        return getPlacesByKeyword(keyword, ContentTypeId.ACCOMMODATION.code)
+        return getPlacesByKeyword(keyword, ContentType.ACCOMMODATION.id.toString())
     }
 
     suspend fun getTouristSpotsByKeyword(keyword: String): List<Place> {
-        return getPlacesByKeyword(keyword, ContentTypeId.TOURIST_SPOT.code)
+        return getPlacesByKeyword(keyword, ContentType.TOURIST_SPOT.id.toString())
     }
 
     private suspend fun getPlacesByKeyword(
@@ -67,15 +68,15 @@ object TourService {
 
 
     suspend fun getRestaurantsByRegion(region: String): List<Place> {
-        return getPlacesByRegion(region, ContentTypeId.RESTAURANT.code)
+        return getPlacesByRegion(region, ContentType.RESTAURANT.id.toString())
     }
 
     suspend fun getAccommodationsByRegion(region: String): List<Place> {
-        return getPlacesByRegion(region, ContentTypeId.ACCOMMODATION.code)
+        return getPlacesByRegion(region, ContentType.ACCOMMODATION.id.toString())
     }
 
     suspend fun getTouristSpotsByRegion(region: String): List<Place> {
-        return getPlacesByRegion(region, ContentTypeId.TOURIST_SPOT.code)
+        return getPlacesByRegion(region, ContentType.TOURIST_SPOT.id.toString())
     }
 
     suspend fun getPlacesByRegion(region: String, contentTypeId: String): List<Place> {

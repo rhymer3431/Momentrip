@@ -7,8 +7,10 @@ import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FirebaseFirestore
 import com.mp.momentrip.data.Schedule
 import com.mp.momentrip.data.User
+import com.mp.momentrip.data.UserDto
 import com.mp.momentrip.data.UserPreference
 import com.mp.momentrip.data.UserRegisterForm
+import com.mp.momentrip.data.toModel
 import com.mp.momentrip.ui.MainDestinations
 
 
@@ -71,7 +73,9 @@ object AccountService{
             val document = db.collection("users").document(uid).get().await()
 
             if (document.exists()) {
-                val user = document.toObject(User::class.java)
+                val userDto = document.toObject(UserDto::class.java)
+                val user = userDto?.toModel()
+
 
                 user
             } else {
@@ -87,18 +91,19 @@ object AccountService{
         return auth.currentUser
     }
 
-    suspend fun updateUser(user: User): Boolean {
+    suspend fun updateUser(userDto: UserDto): Boolean {
         return try {
             val uid = getCurrentUser()?.uid ?: return false
             val db = FirebaseFirestore.getInstance()
-            Log.d("test","update success")
-            db.collection("users").document(uid).set(user).await()
+            Log.d("Firebase", "updateUser: ${userDto.email}")
+            db.collection("users").document(uid).set(userDto).await()
             true
         } catch (e: Exception) {
             Log.e("Firebase", "Update failed", e)
             false
         }
     }
+
     suspend fun saveSchedule(schedule: Schedule): String? {
         return try {
             val uid = getCurrentUser()?.uid ?: return null

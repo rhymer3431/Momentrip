@@ -1,24 +1,31 @@
 package com.mp.momentrip.view
 
 import android.util.Log
-import androidx.compose.runtime.State
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mp.momentrip.data.Place
+import com.mp.momentrip.data.UserPreference
 import com.mp.momentrip.service.RecommendService
 import com.mp.momentrip.service.TourService
 import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+
+
+data class RecommendInitData(
+    val region: String,
+    val userPreference: UserPreference
+)
+
+
+
 class RecommendViewModel : ViewModel() {
+
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
-
-    private val _recommendPlace = MutableStateFlow<List<Place>?>(null)
-    val recommendPlace: StateFlow<List<Place>?> = _recommendPlace.asStateFlow()
 
     private val _recommendRestaurant = MutableStateFlow<List<Place>?>(null)
     val recommendRestaurant: StateFlow<List<Place>?> = _recommendRestaurant.asStateFlow()
@@ -26,78 +33,50 @@ class RecommendViewModel : ViewModel() {
     private val _recommendDormitory = MutableStateFlow<List<Place>?>(null)
     val recommendDormitory: StateFlow<List<Place>?> = _recommendDormitory.asStateFlow()
 
-    private val _favoriteFoodType = MutableStateFlow<String?>(null)
-    val favoriteFoodType: StateFlow<String?> = _favoriteFoodType.asStateFlow()
-
     private val _recommendTourSpot = MutableStateFlow<List<Place>?>(null)
     val recommendTourSpot: StateFlow<List<Place>?> = _recommendTourSpot.asStateFlow()
 
-    private val _userState = MutableStateFlow<UserViewModel?>(null)
-    val userState: StateFlow<UserViewModel?> = _userState.asStateFlow()
+    private val _favoriteFoodType = MutableStateFlow<String?>(null)
+    val favoriteFoodType: StateFlow<String?> = _favoriteFoodType.asStateFlow()
 
-    fun setUser(userState: UserViewModel) {
-        _userState.value = userState
-    }
-    fun setLoading(status: Boolean){
-        _isLoading.value = status
-    }
+    private var isInitialized = false
 
-    private val _isInitialized = mutableStateOf(false)
-    val isInitialized: State<Boolean> = _isInitialized
-
-    fun initialize(userState: UserViewModel) {
-        if (!_isInitialized.value) {
-            setUser(userState)
-            recommendRegion()
-            loadRecommendPlaces()
-            _isInitialized.value = true
+    fun initialize(initData: RecommendInitData) {
+        if (!isInitialized) {
+            Log.d("InitCheck", "Initializing with: ${initData.region}")
+            loadRecommendPlaces(initData.region)
+            loadFavoriteFoodType(initData.userPreference)
+            isInitialized = true
         }
     }
 
-    fun recommendRegion(){
-        viewModelScope.launch {
-            val recommended = RecommendService.getRegionByPreference(userState.value?.getUserPreference())
-            userState.value?.setRegion(recommended)
-        }
-    }
-
-    fun getFavoriteFoodType(){
-        viewModelScope.launch {
-            val type = RecommendService.getFavoriteFoodType(userState.value?.getUserPreference())
-            _favoriteFoodType.value = type
-        }
-    }
-    fun loadRecommendPlaces() {
+    private fun loadRecommendPlaces(region: String) {
         viewModelScope.launch {
             _isLoading.value = true
-
-            val region = userState.value?.getRegion()
-            val preference = userState.value?.getUserPreference()
-            if (region != null && preference != null) {
-
-                // 비동기적으로 병렬 작업을 시작합니다
+            try {
                 val restaurantDeferred = async { TourService.getRestaurantsByRegion(region) }
                 val dormitoryDeferred = async { TourService.getAccommodationsByRegion(region) }
                 val tourSpotDeferred = async { TourService.getTouristSpotsByRegion(region) }
 
-                // 각 작업 완료된 후에 결과값을 받아옵니다
-                _recommendRestaurant.value = restaurantDeferred.await()
-                _recommendDormitory.value = dormitoryDeferred.await()
-                _recommendTourSpot.value = tourSpotDeferred.await()
+                val (restaurants, dormitories, tourSpots) = awaitAll(
+                    restaurantDeferred, dormitoryDeferred, tourSpotDeferred
+                )
 
+                _recommendRestaurant.value = restaurants
+                _recommendDormitory.value = dormitories
+                _recommendTourSpot.value = tourSpots
+            } catch (e: Exception) {
+                // 예외 처리
+                Log.e("RecommendViewModel", "Failed to load recommendations", e)
+            } finally {
+                _isLoading.value = false
             }
-
-            _isLoading.value = false
         }
     }
 
-    fun loadRecommendDormitory() {
+    private fun loadFavoriteFoodType(userPreference: UserPreference) {
         viewModelScope.launch {
-            _isLoading.value = true
-
-            // 예시로, 만약 여기에 추가적인 로직이 필요하다면 이곳에 작성합니다.
-
-            _isLoading.value = false
+            _favoriteFoodType.value = RecommendService.getFavoriteFoodType(userPreference)
         }
     }
 }

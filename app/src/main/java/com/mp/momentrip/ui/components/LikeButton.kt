@@ -29,8 +29,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.mp.momentrip.R
 import com.mp.momentrip.data.Place
 import com.mp.momentrip.ui.theme.Like
 import com.mp.momentrip.view.UserViewModel
@@ -38,16 +40,14 @@ import com.mp.momentrip.view.UserViewModel
 @Composable
 fun LikeButton(
     userState: UserViewModel,
-    place:Place?,
+    place: Place?,
     modifier: Modifier = Modifier
 ) {
-    val isLiked by userState.isLikedFlow.collectAsState()
+    val user by userState.user.collectAsState()
+    val isLiked = user?.liked?.any { it?.contentId == place?.contentId } == true
+
     val iconColor by animateColorAsState(
-        targetValue = if (isLiked)Color(0xFFA60B0B) else  Color(0xFFB09B9B),
-        animationSpec = tween(durationMillis = 300)
-    )
-    val iconScale by animateFloatAsState(
-        targetValue = if (isLiked) 1.2f else 1f,
+        targetValue = if (isLiked) Color(0xFFA60B0B) else Color(0xFFB09B9B),
         animationSpec = tween(durationMillis = 300)
     )
 
@@ -57,13 +57,16 @@ fun LikeButton(
         modifier = modifier
     ) {
         Icon(
-            imageVector = if (isLiked) Icons.Filled.Favorite else Icons.Outlined.Favorite,
+            painter = painterResource(
+                id = if (isLiked) R.drawable.liked else R.drawable.liked
+            ),
             contentDescription = if (isLiked) "Liked" else "Not liked",
             tint = iconColor,
             modifier = Modifier.size(24.dp)
         )
     }
 }
+
 
 @Preview
 @Composable

@@ -16,7 +16,7 @@ import com.mp.momentrip.ui.screen.profile.ProfileScreen
 import com.mp.momentrip.ui.screen.user.QuestionScreen
 import com.mp.momentrip.ui.screen.user.RecommendResult
 import com.mp.momentrip.ui.screen.schedule.ScheduleListScreen
-import com.mp.momentrip.ui.screen.schedule.ScheduleMapScreen
+
 import com.mp.momentrip.ui.screen.user.SignInScreen
 import com.mp.momentrip.ui.screen.user.SignUpScreen
 
@@ -36,6 +36,7 @@ object MainDestinations {
     const val PREFERENCE_ANALYZE = "preferenceAnalyze"
     const val FEED_ROUTE = "feed"
     const val SCHEDULE_CREATION = "scheduleCreate"
+    const val DAY_EDIT_ROUTE = "dayEdit"
 }
 
 object UserDestinations {
@@ -85,13 +86,7 @@ fun NavGraph(
                 userState
             )
         }
-        composable(UserDestinations.SCHEDULE_ROUTE){
-            ScheduleMapScreen(
-                userState = userState,
 
-                )
-
-        }
         composable(MainDestinations.PREFERENCE_ANALYZE){
             QuestionScreen(
                 modifier = Modifier,
@@ -99,12 +94,7 @@ fun NavGraph(
                 userState = userState
             )
         }
-        composable(UserDestinations.SCHEDULE_LIST_ROUTE){
-            ScheduleListScreen(
-                navController = navController,
-                userState = userState
-            )
-        }
+
         composable(MainDestinations.PREFERENCE_ANALYZE){
             QuestionScreen(
                 modifier = Modifier,
@@ -123,12 +113,7 @@ fun NavGraph(
                 )
             }
         }
-        composable(UserDestinations.SCHEDULE_ROUTE){
-            ScheduleMapScreen(
-                userState = userState,
-                )
 
-        }
 
 
 

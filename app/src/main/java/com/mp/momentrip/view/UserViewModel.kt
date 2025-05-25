@@ -10,7 +10,9 @@ import com.mp.momentrip.data.Day
 import com.mp.momentrip.data.Place
 import com.mp.momentrip.data.Schedule
 import com.mp.momentrip.data.User
+import com.mp.momentrip.data.UserDto
 import com.mp.momentrip.data.UserPreference
+import com.mp.momentrip.data.toDto
 import com.mp.momentrip.service.AccountService
 import com.mp.momentrip.service.TourService
 import com.mp.momentrip.service.Word2VecModel
@@ -35,12 +37,6 @@ class UserViewModel : ViewModel() {
 
     private val _user = MutableStateFlow<User?>(null)
     val user: StateFlow<User?> = _user.asStateFlow()
-
-
-
-    private val _selectedScheduleIndex = MutableStateFlow<Int?>(null)
-    val selectedScheduleIndex: StateFlow<Int?> get() = _selectedScheduleIndex.asStateFlow()
-
 
     private val _isLoading = MutableStateFlow(false) // 로딩 상태 추가
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
@@ -77,11 +73,9 @@ class UserViewModel : ViewModel() {
         }
     }
 
-    suspend fun updateUser(updater: User?) {
-        if (updater != null) {
-            setUser(updater)
-            AccountService.updateUser(updater)
-        }
+    suspend fun updateUser(user: User) {
+        setUser(user)
+        AccountService.updateUser(user.toDto())
     }
 
 // 사용 예시
@@ -106,20 +100,12 @@ class UserViewModel : ViewModel() {
     }
 
 
-    fun getSchedule(): Schedule? {
-        val index = _selectedScheduleIndex.value
-        return if (index != null && _user.value?.schedules?.indices?.contains(index) == true ) {
-            _user.value?.schedules!![index]
-        } else {
-            null
-        }
-    }
 
 
     fun createSchedule(
         region: String,
-        startDate: String,
-        endDate: String,
+        startDate: LocalDate,
+        endDate: LocalDate,
         onSuccess: () -> Unit,
         onError: (String) -> Unit
     ) {
@@ -137,18 +123,25 @@ class UserViewModel : ViewModel() {
             }
 
             val newSchedule = Schedule(
-
                 startDate = startDate,
                 endDate = endDate,
                 duration = duration,
-                days = List(duration.toInt()) { Day() },
+                days = List(duration.toInt()) { index ->
+                    Day(index = index, date = startDate.plusDays(index.toLong()))
+                },
                 region = region
             )
 
             val updatedSchedules = user.schedules.orEmpty().toMutableList().apply { add(newSchedule) }
             val updatedUser = user.copy(schedules = updatedSchedules)
+
             try {
+                // 🔽 Dto로 변환 후 저장
+
                 updateUser(updatedUser)
+
+                // 🔽 로컬 상태 업데이트
+                _user.value = updatedUser
 
                 onSuccess()
             } catch (e: Exception) {
@@ -157,16 +150,15 @@ class UserViewModel : ViewModel() {
         }
     }
 
-    private fun calculateDuration(startDate: String, endDate: String): Long {
+
+    private fun calculateDuration(startDate: LocalDate, endDate: LocalDate): Long {
         return try {
-            val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-            val start = LocalDate.parse(startDate, formatter)
-            val end = LocalDate.parse(endDate, formatter)
-            ChronoUnit.DAYS.between(start, end) + 1
+            ChronoUnit.DAYS.between(startDate, endDate) + 1
         } catch (e: Exception) {
             0
         }
     }
+
 
     fun getScheduleSize(): Int{
         return _user.value?.schedules!!.size
@@ -224,7 +216,7 @@ class UserViewModel : ViewModel() {
 
                         // 백엔드 동기화 (IO 스레드)
                         withContext(Dispatchers.IO) {
-                            AccountService.updateUser(updatedUser)
+                            AccountService.updateUser(updatedUser.toDto())
                         }
                     }
                 } catch (e: Exception) {
