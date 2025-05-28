@@ -6,7 +6,6 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectVerticalDragGestures
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
@@ -58,6 +57,7 @@ import com.mp.momentrip.ui.components.LikeButton
 import com.mp.momentrip.view.UserViewModel
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
+
 @SuppressLint("UnusedBoxWithConstraintsScope")
 @Composable
 fun PlaceDetailBottomSheet(
@@ -65,7 +65,7 @@ fun PlaceDetailBottomSheet(
     userState: UserViewModel,
     onClose: () -> Unit,
     cardSize: Dp,
-    imageHeight: Dp,
+    imageHeight: Dp, // This is baseImageHeightDp
     imageAlpha: Float,
     textAlpha: Float
 ) {
@@ -77,7 +77,6 @@ fun PlaceDetailBottomSheet(
     var isClosing by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
 
-    // 닫기 애니메이션
     LaunchedEffect(isClosing) {
         if (isClosing) {
             offsetY.animateTo(
@@ -88,11 +87,9 @@ fun PlaceDetailBottomSheet(
         }
     }
 
-    // 이미지 확장 계산
     val currentImageHeightPx = (baseImageHeightPx + offsetY.value).coerceAtLeast(baseImageHeightPx)
     val expandedImageHeight = with(density) { currentImageHeightPx.toDp() }
 
-    // 드래그 제스처
     val dragGesture = Modifier.pointerInput(isClosing) {
         detectVerticalDragGestures(
             onVerticalDrag = { _, dragAmount ->
@@ -113,7 +110,7 @@ fun PlaceDetailBottomSheet(
     }
 
     BoxWithConstraints(Modifier.fillMaxSize()) {
-        // 이미지
+        // Image
         ImageCard(
             imageUrl = place.firstImage ?: "",
             modifier = Modifier
@@ -125,23 +122,26 @@ fun PlaceDetailBottomSheet(
                 .align(Alignment.TopCenter)
         )
 
-        // 이미지와 시트 연결용 오버레이
+        // Gradient Overlay for the top of the image (Photo-like effect)
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(80.dp)
-                .align(Alignment.TopCenter)
+                .height(expandedImageHeight) // Match the image height for colorStops proportion
+                .align(Alignment.TopCenter)  // Align with the image
+                .graphicsLayer { // Apply imageAlpha to the gradient overlay as well
+                    alpha = imageAlpha
+                }
                 .background(
                     Brush.verticalGradient(
-                        colors = listOf(
-                            Color.Black.copy(alpha = 0.35f),
-                            Color.Transparent
+                        colorStops = arrayOf(
+                            0.0f to Color.Black.copy(alpha = 0.6f),  // Darker at the very top
+                            0.4f to Color.Transparent                // Fades to transparent at 40% of image height
                         )
                     )
                 )
         )
 
-        // 시트
+        // Bottom Sheet Content
         Column(
             modifier = dragGesture
                 .offset { IntOffset(0, offsetY.value.roundToInt()) }
@@ -151,7 +151,11 @@ fun PlaceDetailBottomSheet(
                 .background(Color.White)
                 .align(Alignment.BottomCenter)
         ) {
-            Column(Modifier.padding(horizontal = 24.dp, vertical = 16.dp)) {
+            Column(
+                Modifier
+                    .fillMaxSize() // Ensure this Column fills the parent sheet 'cardSize'
+                    .padding(horizontal = 24.dp, vertical = 16.dp)
+            ) {
                 Icon(
                     imageVector = Icons.Default.ArrowBack,
                     contentDescription = "닫기",
@@ -178,36 +182,61 @@ fun PlaceDetailBottomSheet(
 
                 Spacer(Modifier.height(24.dp))
 
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Column(verticalArrangement = Arrangement.spacedBy(24.dp)) {
-                        Image(
-                            GoogleMaterial.Icon.gmd_schedule,
-                            contentDescription = "운영시간",
-                            colorFilter = ColorFilter.tint(Color(0xFF1D1B20)),
-                            modifier = Modifier.size(24.dp)
-                        )
-                        Image(
-                            GoogleMaterial.Icon.gmd_phone,
-                            contentDescription = "전화번호",
-                            colorFilter = ColorFilter.tint(Color(0xFF1D1B20)),
-                            modifier = Modifier.size(24.dp)
-                        )
-                    }
-
+                // Schedule Button
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable {
+                            // TODO: Implement schedule button click action
+                        }
+                        .padding(vertical = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Image(
+                        asset = GoogleMaterial.Icon.gmd_schedule,
+                        contentDescription = "일정",
+                        colorFilter = ColorFilter.tint(Color(0xFF1D1B20)),
+                        modifier = Modifier.size(24.dp)
+                    )
                     Spacer(Modifier.width(16.dp))
+                    Text(
+                        text = "일정 정보: ${place.firstMenu ?: "정보 없음"}",
+                        fontSize = 18.sp
+                    )
+                }
 
-                    Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-                        Text("운영시간: ${place.firstMenu ?: "-"}", fontSize = 18.sp)
-                        Text("전화번호: ${place.infoCenter ?: "-"}", fontSize = 18.sp)
-                    }
+                Spacer(Modifier.height(16.dp)) // Spacer between buttons
+
+                // Checklist Button
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable {
+                            // TODO: Implement checklist button click action
+                        }
+                        .padding(vertical = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Image(
+                        asset = GoogleMaterial.Icon.gmd_web_asset,
+                        contentDescription = "체크리스트",
+                        colorFilter = ColorFilter.tint(Color(0xFF1D1B20)),
+                        modifier = Modifier.size(24.dp)
+                    )
+                    Spacer(Modifier.width(16.dp))
+                    Text(
+                        text = "나의 체크리스트",
+                        fontSize = 18.sp
+                    )
                 }
 
                 Spacer(Modifier.height(24.dp))
 
+                // Overview Text (Scrollable)
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-
+                        .weight(1f) // Takes remaining vertical space
                         .verticalScroll(rememberScrollState())
                 ) {
                     Text(
@@ -218,7 +247,6 @@ fun PlaceDetailBottomSheet(
                         modifier = Modifier.alpha(textAlpha)
                     )
                 }
-
             }
         }
     }

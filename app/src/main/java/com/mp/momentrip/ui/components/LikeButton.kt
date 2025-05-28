@@ -47,7 +47,7 @@ fun LikeButton(
     val isLiked = user?.liked?.any { it?.contentId == place?.contentId } == true
 
     val iconColor by animateColorAsState(
-        targetValue = if (isLiked) Color(0xFFA60B0B) else Color(0xFFB09B9B),
+        targetValue = if (isLiked) Color(0xFFEF1010) else Color(0xFFB09B9B),
         animationSpec = tween(durationMillis = 300)
     )
 
@@ -58,11 +58,11 @@ fun LikeButton(
     ) {
         Icon(
             painter = painterResource(
-                id = if (isLiked) R.drawable.liked else R.drawable.liked
+                id = R.drawable.liked
             ),
             contentDescription = if (isLiked) "Liked" else "Not liked",
             tint = iconColor,
-            modifier = Modifier.size(24.dp)
+            modifier = Modifier.size(36.dp)
         )
     }
 }

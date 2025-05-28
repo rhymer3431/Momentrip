@@ -20,7 +20,7 @@ import retrofit2.http.GET
 import retrofit2.http.Query
 
 
-val request_num = 3
+val request_num = 20
 
 
 interface TourAPIService {
@@ -41,7 +41,7 @@ interface TourAPIService {
         @Query("pageNo") pageNo: Int = 1,
         @Query("MobileOS") mobileOS: String = "AND",
         @Query("MobileApp") mobileApp: String = "MomenTrip",
-        @Query("arrange") arrange: String = "O",
+        @Query("arrange") arrange: String = "Q",
         @Query("_type") type: String = "json",
         @Query("areaCode") areaCode: String? = null,
         @Query("sigunguCode") sigunguCode: String? = null,
@@ -58,7 +58,7 @@ interface TourAPIService {
         @Query("ServiceKey") serviceKey: String,
         @Query("_type") type: String = "json",
         @Query("listYN") listYN: String = "Y",
-        @Query("arrange") arrange: String = "A",
+        @Query("arrange") arrange: String = "Q",
         @Query("contentTypeId") contentTypeId: String? = null,
         @Query("mapX") mapX: Double? = null,
         @Query("mapY") mapY: Double? = null,
@@ -75,7 +75,7 @@ interface TourAPIService {
         @Query("serviceKey") serviceKey: String,
         @Query("_type") type: String = "json",
         @Query("listYN") listYN: String = "Y",
-        @Query("arrange") arrange: String = "C",
+        @Query("arrange") arrange: String = "Q",
         @Query("contentTypeId") contentTypeId: String? = "38",
         @Query("areaCode") areaCode: String? = null,
         @Query("sigunguCode") sigunguCode: String? = null,

@@ -97,6 +97,7 @@ import com.mp.momentrip.data.Place
 import com.mp.momentrip.ui.MainDestinations
 import com.mp.momentrip.ui.components.DayCalendarBar
 import com.mp.momentrip.ui.components.DayItem
+import com.mp.momentrip.view.RecommendViewModel
 import com.mp.momentrip.view.ScheduleViewModel
 import com.mp.momentrip.view.UserViewModel
 import kotlinx.coroutines.launch
@@ -461,7 +462,7 @@ private fun addMarkers(kakaoMap: KakaoMap, schedule: Schedule?, markerText: Stri
 fun convertDaysToDayItems(days: List<Day>, selectedIndex: Int): List<DayItem> {
     return days.mapIndexed { index, day ->
         DayItem(
-            date = day.date?.dayOfMonth.toString(), // ex: "21"
+            index = (day.index+1).toString(), // ex: "21"
             isSelected = index == selectedIndex
         )
     }

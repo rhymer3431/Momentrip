@@ -54,7 +54,7 @@ fun LoadingScreen() {
     ) {
         // Title
         Text(
-            text = "MomenTrip",
+            text = "Momentrip",
             fontFamily = FontFamily(Font(R.font.haru)), // Replace with Rozha One if available
             fontSize = 50.sp,
             lineHeight = 20.sp,

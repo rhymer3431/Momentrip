@@ -47,11 +47,21 @@ object RecommendService {
         }?.key ?: "추천할 지역 없음"
     }
 
+
+    suspend fun getRecommendRestaurants(
+        userPreference: UserPreference,
+        region: String
+    ): List<Place> {
+        val restaurants = TourService.getRestaurantsByRegion(region)
+
+        return calculateTopPlaces(userPreference, restaurants)
+    }
+
     suspend fun getRecommendTourSpots(
         userPreference: UserPreference,
         region: String
     ): List<Place> {
-        val tourSpots = TourService.getTouristSpotsByKeyword(region)
+        val tourSpots = TourService.getTouristSpotsByRegion(region)
 
         return calculateTopPlaces(userPreference, tourSpots)
     }
@@ -59,11 +69,11 @@ object RecommendService {
     /**
      * 숙소 추천
      */
-    suspend fun getRecommendAccommodations(
+    suspend fun getRecommendDormitories(
         userPreference: UserPreference,
         region: String
     ): List<Place> {
-        val accommodations = TourService.getAccommodationsByKeyword(region)
+        val accommodations = TourService.getAccommodationsByRegion(region)
 
         return calculateTopPlaces(userPreference, accommodations)
     }
@@ -76,102 +86,45 @@ object RecommendService {
         places: List<Place>,
         topN: Int = 10
     ): List<Place> = coroutineScope {
-        val placeSimilarities = places.map { place ->
+        val userVec = userPreference.preferenceVector ?: return@coroutineScope emptyList()
+
+        places.map { place ->
             async {
-                val placeVector = Word2VecModel.getVectorByPlace(place)
-                placeVector?.let { vector ->
-                    val similarity = cosineSimilarity(userPreference.preferenceVector!!, vector)
-                    Pair(similarity, place)
+                val placeVec = Word2VecModel.getVectorByPlace(place)
+                if (placeVec == null) {
+                    Log.w("RecommendService", "place vector null: ${place.title}")
+                    null
+                } else {
+                    val similarity = cosineSimilarity(userVec, placeVec)
+                    similarity to place
                 }
             }
-        }.awaitAll()  // 모든 async 완료 대기
-            .filterNotNull()  // 실패한 건 제외
-
-        placeSimilarities
+        }.awaitAll()
+            .filterNotNull()
             .sortedByDescending { it.first }
             .take(topN)
             .map { it.second }
     }
 
-    suspend fun getRecommendRestaurant(userPreference: UserPreference): List<Place> = coroutineScope {
-        val region = getRegionByPreference(userPreference)
-
-        val restaurants = TourService.getRestaurantsByKeyword(region)
-
-        val restaurantSimilarities = restaurants.map { restaurant ->
-            async {
-                val restaurantVector = Word2VecModel.getVectorByPlace(restaurant)
-                if (userPreference.preferenceVector != null && restaurantVector != null) {
-                    val similarity = cosineSimilarity(userPreference.preferenceVector, restaurantVector)
-                    Pair(similarity, restaurant)
-                } else null
-            }
-        }.awaitAll()
-            .filterNotNull()
-
-        restaurantSimilarities
-            .sortedByDescending { it.first }
-            .take(10)
-            .map { it.second }
-    }
-
-
-    suspend fun extractKeywords(text: String): List<String> {
-        return try {
-            // 1. 입력 텍스트 유효성 검사
-            if (text.isBlank()) return emptyList()
-
-            // 2. 텍스트 정규화 (예외 처리 추가)
-            val normalized = try {
-                OpenKoreanTextProcessorJava.normalize(text)
-            } catch (e: Exception) {
-                Log.w("extractKeywords", "Text normalization failed, using original text", e)
-                text
-            }
-
-            // 3. 토큰화 (예외 처리 추가)
-            val tokens = try {
-                OpenKoreanTextProcessorJava.tokenize(normalized)
-            } catch (e: Exception) {
-                Log.e("extractKeywords", "Tokenization failed", e)
-                return emptyList()
-            }
-
-            // 4. 안전한 토큰 변환
-            val tokenList = try {
-                OpenKoreanTextProcessorJava.tokensToJavaKoreanTokenList(tokens)
-                    .filter { token ->
-                        // 안전한 품사 확인
-                        try {
-                            token.pos == KoreanPosJava.Noun
-                        } catch (e: Exception) {
-                            Log.w("extractKeywords", "Invalid POS tag: ${token.pos}", e)
-                            false
-                        }
-                    }
-                    .take(5)
-                    .map { it.text }
-            } catch (e: Exception) {
-                Log.e("extractKeywords", "Token conversion failed", e)
-                emptyList()
-            }
-
-            return tokenList
-        } catch (e: Exception) {
-            Log.e("extractKeywords", "Unexpected error in keyword extraction", e)
-            emptyList()
-        }
-    }
-
     // 코사인 유사도 함수
     private fun cosineSimilarity(vec1: List<Float>, vec2: List<Float>): Float {
-        val dotProduct = vec1.zip(vec2).sumOf { (a, b) -> (a * b).toDouble() }.toFloat()
-        val magnitude1 = kotlin.math.sqrt(vec1.sumOf { (it * it).toDouble() }).toFloat()
-        val magnitude2 = kotlin.math.sqrt(vec2.sumOf { (it * it).toDouble() }).toFloat()
+        if (vec1.size != vec2.size) return 0f
 
-        return if (magnitude1 == 0f || magnitude2 == 0f) 0f
-        else dotProduct / (magnitude1 * magnitude2)
+        var dot = 0f
+        var mag1 = 0f
+        var mag2 = 0f
 
+        for (i in vec1.indices) {
+            val a = vec1[i]
+            val b = vec2[i]
+            dot += a * b
+            mag1 += a * a
+            mag2 += b * b
+        }
+
+        val denom = kotlin.math.sqrt(mag1) * kotlin.math.sqrt(mag2)
+        return if (denom == 0f) 0f else dot / denom
     }
+
 
 }

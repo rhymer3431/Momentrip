@@ -47,21 +47,28 @@ fun LikedPlaceScreen(
 ) {
     val user by userState.user.collectAsState()
     var selectedPlace by remember { mutableStateOf<Place?>(null) }
+    // 전환 상태 정의
     val transition = updateTransition(targetState = selectedPlace, label = "DetailTransition")
-    val cardSize by transition.animateDp(
-        transitionSpec = { tween(500) },
-        label = "CardSize"
-    ) {
-        if (it == null) 160.dp else LocalConfiguration.current.screenHeightDp.dp
-    }
+    val screenHeight = LocalConfiguration.current.screenHeightDp.dp
+    // 카드 크기 애니메이션: 160.dp → 전체 화면 높이
 
-    // 이미지 높이 애니메이션: 0 → 화면 절반
+    // 이미지 높이: 화면의 30%
     val imageHeight by transition.animateDp(
         transitionSpec = { tween(500) },
         label = "ImageHeight"
     ) {
-        if (it == null) 0.dp else LocalConfiguration.current.screenHeightDp.dp * 0.5f
+        if (it == null) 0.dp else screenHeight * 0.4f
     }
+
+    // 초기 카드 높이: 화면의 70%
+    val cardSize by transition.animateDp(
+        transitionSpec = { tween(500) },
+        label = "CardSize"
+    ) {
+        if (it == null) 160.dp else screenHeight * 0.6f
+    }
+
+
 
     // 이미지 페이드인
     val imageAlpha by transition.animateFloat(
@@ -74,7 +81,6 @@ fun LikedPlaceScreen(
         transitionSpec = { tween(500) },
         label = "TextAlpha"
     ) { if (it == null) 0f else 1f }
-
     Column(
         modifier = Modifier
             .fillMaxSize()

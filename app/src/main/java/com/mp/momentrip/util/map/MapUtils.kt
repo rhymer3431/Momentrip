@@ -121,12 +121,3 @@ fun addMarkers(kakaoMap: KakaoMap, schedule: Schedule?, markerText: String) {
     }
 }
 
-
-fun convertDaysToDayItems(days: List<Day>, selectedIndex: Int): List<DayItem> {
-    return days.mapIndexed { index, day ->
-        DayItem(
-            date = day.date?.dayOfMonth.toString(), // ex: "21"
-            isSelected = index == selectedIndex
-        )
-    }
-}

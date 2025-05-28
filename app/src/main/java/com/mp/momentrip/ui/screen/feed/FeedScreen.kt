@@ -12,10 +12,16 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PageSize
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -34,6 +40,8 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -41,12 +49,17 @@ import com.mikepenz.iconics.compose.Image
 import com.mikepenz.iconics.typeface.library.googlematerial.GoogleMaterial
 import com.mp.momentrip.R
 import com.mp.momentrip.data.Place
+import com.mp.momentrip.data.User
+import com.mp.momentrip.ui.components.FeedPlaceCard
 import com.mp.momentrip.ui.components.ImageCard
+import com.mp.momentrip.ui.components.LargePlaceCard
 import com.mp.momentrip.ui.components.LikeButton
 import com.mp.momentrip.ui.components.PlaceCard
 import com.mp.momentrip.ui.screen.LoadingScreen
+import com.mp.momentrip.view.RecommendInitData
 import com.mp.momentrip.view.RecommendViewModel
 import com.mp.momentrip.view.UserViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
 
 private enum class FeedCategory(val koLabel: String) {
     ALL("All"), RESTAURANT("맛집"), TOUR("핫플"), DORMITORY("숙소")
@@ -58,8 +71,16 @@ fun FeedScreen(
     userState: UserViewModel,
     recommendViewModel: RecommendViewModel = viewModel()
 ) {
-    LaunchedEffect(Unit) { recommendViewModel.initialize() }
-
+    val user by userState.user.collectAsState()
+    LaunchedEffect(Unit) {
+        // 이 블록 안의 코드가 컴포넌트 최초 렌더링 시에만 실행됩니다.
+        recommendViewModel.initialize(
+            RecommendInitData(
+            userPreference = user!!.userPreference,
+            region = userState.region.value!!
+        )
+        )
+    }
     val isLoading by recommendViewModel.isLoading.collectAsState()
     val restaurants by recommendViewModel.recommendRestaurant.collectAsState()
     val tourSpots by recommendViewModel.recommendTourSpot.collectAsState()
@@ -127,18 +148,65 @@ fun FeedScreen(
                 }
                 when (selected) {
                     FeedCategory.ALL -> {
-                        item { PlaceSection("추천 식당", restaurants, onPlaceClick = { selectedPlace = it }) }
-                        item { PlaceSection("추천 핫플", tourSpots, onPlaceClick = { selectedPlace = it }) }
-                        item { PlaceSection("추천 숙소", dormitories, onPlaceClick = { selectedPlace = it }) }
+                        item {
+                            Text(
+                                text = "${user?.name}님 취향에 딱 맞는 곳",
+                                modifier = Modifier
+                                    .padding(start = 20.dp, bottom = 12.dp),
+                                fontSize = 20.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                color = Color(0xFF1B1E28), // MomenTrip 다크 네이비 or 기본 텍스트 컬러
+                                letterSpacing = 0.5.sp
+                            )
+                        }
+                        item {
+                            // ✅ 대형 대표 카드 추가 (예: 첫 번째 추천 장소 사용)
+                            if (tourSpots?.isNotEmpty() == true) {
+                                LargePlaceCardCarouselSection(
+                                    userState = userState,
+                                    places = tourSpots!!,
+                                    onPlaceClick = { selectedPlace = it }
+                                )
+                                Spacer(Modifier.height(24.dp))
+                            }
+                        }
+
+                        item {
+                            Text(
+                                text = "인기 많은 장소",
+                                modifier = Modifier.padding(horizontal = 16.dp),
+                                fontSize = 18.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                            Spacer(Modifier.height(12.dp))
+                        }
+
+                        item {
+                            // ✅ 추천 리스트 수평 스크롤로 표시
+                            LazyRow(
+                                contentPadding = PaddingValues(horizontal = 16.dp),
+                                horizontalArrangement = Arrangement.spacedBy(12.dp)
+                            ) {
+                                tourSpots?.let {
+                                    items(it.take(5)) { place ->
+                                        FeedPlaceCard(
+                                            userState = userState,
+                                            place = place,
+                                            onClick = { selectedPlace = place }
+                                        )
+                                    }
+                                }
+                            }
+                        }
                     }
                     FeedCategory.RESTAURANT -> item {
-                        PlaceSection("추천 식당", restaurants, onPlaceClick = { selectedPlace = it }, isGrid = true)
+                        PlaceSection(userState,"추천 식당", restaurants, onPlaceClick = { selectedPlace = it }, isGrid = true)
                     }
                     FeedCategory.TOUR -> item {
-                        PlaceSection("추천 핫플", tourSpots, onPlaceClick = { selectedPlace = it }, isGrid = true)
+                        PlaceSection(userState,"추천 핫플", tourSpots, onPlaceClick = { selectedPlace = it }, isGrid = true)
                     }
                     FeedCategory.DORMITORY -> item {
-                        PlaceSection("추천 숙소", dormitories, onPlaceClick = { selectedPlace = it }, isGrid = true)
+                        PlaceSection(userState,"추천 숙소", dormitories, onPlaceClick = { selectedPlace = it }, isGrid = true)
                     }
                 }
 
@@ -164,6 +232,7 @@ fun FeedScreen(
 
 @Composable
 fun PlaceSection(
+    userState: UserViewModel,
     title: String,
     placeList: List<Place>?,
     onPlaceClick: (Place) -> Unit,
@@ -201,7 +270,11 @@ fun PlaceSection(
                 contentPadding = PaddingValues(vertical = 8.dp)
             ) {
                 items(placeList.orEmpty()) { place ->
-                    PlaceCard(place = place, onClick = { onPlaceClick(place) })
+                    FeedPlaceCard(
+                        userState = userState,
+                        place = place,
+                        onClick = { onPlaceClick(place) }
+                    )
                 }
             }
         } else {
@@ -212,7 +285,11 @@ fun PlaceSection(
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 placeList.orEmpty().take(5).forEach { place ->
-                    PlaceCard(place = place, onClick = { onPlaceClick(place) })
+                    FeedPlaceCard(
+                        userState = userState,
+                        place = place,
+                        onClick = { onPlaceClick(place) }
+                    )
                 }
             }
         }
@@ -246,6 +323,81 @@ private fun CategorySection(
 
 }
 
+
+@Composable
+fun LargePlaceCardCarouselSection(
+    userState: UserViewModel,
+    places: List<Place>,
+    modifier: Modifier = Modifier,
+    onPlaceClick: (Place) -> Unit
+) {
+    val actualPlaces = places.take(5)
+    val pageCount = actualPlaces.size
+
+    val pagerState = rememberPagerState(
+        initialPage = 0,
+        pageCount = { Int.MAX_VALUE }
+    )
+
+    val screenWidth = LocalConfiguration.current.screenWidthDp.dp
+    val cardHeight = screenWidth * 1.15f
+
+    Column(modifier = modifier) {
+        HorizontalPager(
+            state = pagerState,
+            pageSize = PageSize.Fill,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(cardHeight)
+        ) { index ->
+            val realIndex = index % pageCount
+            LargePlaceCard(
+                userState = userState,
+                place = actualPlaces[realIndex],
+                onClick = { onPlaceClick(actualPlaces[realIndex]) },
+                modifier = Modifier
+                    .padding(horizontal = 8.dp)
+                    .fillMaxWidth()
+            )
+        }
+
+        Spacer(modifier = Modifier.height(10.dp))
+
+        PagerDotsIndicator(
+            currentPage = pagerState.currentPage % pageCount,
+            totalDots = pageCount,
+            modifier = Modifier.align(Alignment.CenterHorizontally)
+        )
+    }
+}
+
+@Composable
+fun PagerDotsIndicator(
+    currentPage: Int,
+    totalDots: Int,
+    modifier: Modifier = Modifier,
+    activeColor: Color = Color(0xFF4F8EDA),
+    inactiveColor: Color = Color(0xFFCCCCCC),
+    dotSize: Dp = 8.dp,
+    spacing: Dp = 6.dp
+) {
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(spacing),
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier
+    ) {
+        repeat(totalDots) { index ->
+            Box(
+                modifier = Modifier
+                    .size(dotSize)
+                    .clip(CircleShape)
+                    .background(if (index == currentPage) activeColor else inactiveColor)
+            )
+        }
+    }
+}
+
+
 @Composable
 fun CategoryItem(
     icon: GoogleMaterial.Icon,
@@ -275,3 +427,5 @@ fun CategoryItem(
         )
     }
 }
+
+

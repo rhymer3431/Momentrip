@@ -49,12 +49,12 @@ class UserViewModel : ViewModel() {
 
     private var currentEditingDayIndex: Int = 0
 
-    fun setEditingDayIndex(index: Int) {
-        currentEditingDayIndex = index
-    }
+    private val _schedules = MutableStateFlow<List<Schedule>?>(null)
+    val schedules: StateFlow<List<Schedule>?> = _schedules.asStateFlow()
 
+    private val _region = MutableStateFlow<String?>(null)
+    val region: StateFlow<String?> = _region.asStateFlow()
 
-    private val region = MutableStateFlow<String?>(null)
 
     fun loadUser(firebaseUser: FirebaseUser) {
         viewModelScope.launch {
@@ -88,11 +88,9 @@ class UserViewModel : ViewModel() {
         _isLoggedIn.value = true // 사용자 설정 시 로그인 상태로 변경
     }
     suspend fun setRegion(region : String){
-        this.region.value = region
+        _region.value = region
     }
-    fun getRegion() : String?{
-        return this.region.value
-    }
+
 
     // 유효한 사용자 정보 가져오기
     fun getUser(): User? {

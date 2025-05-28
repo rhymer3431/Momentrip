@@ -69,6 +69,7 @@ import com.mp.momentrip.ui.MainDestinations
 import com.mp.momentrip.ui.UserDestinations
 import com.mp.momentrip.ui.components.ScheduleCard
 import com.mp.momentrip.util.formatDateRange
+import com.mp.momentrip.view.RecommendViewModel
 import com.mp.momentrip.view.ScheduleViewModel
 
 import com.mp.momentrip.view.UserViewModel

@@ -2,12 +2,19 @@ package com.mp.momentrip.ui.screen
 
 import android.annotation.SuppressLint
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Face
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -17,6 +24,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -77,24 +86,25 @@ fun BottomNavBar(navController: NavController) {
     val items = listOf(
         BottomNavItem(
             route = MainDestinations.FEED_ROUTE,
-            icon = Icons.Default.Home,
+            icon = Icons.Default.Home, // 홈
             label = "피드"
         ),
         BottomNavItem(
             route = MainDestinations.SEARCH_ROUTE,
-            icon = Icons.Default.Home,
+            icon = Icons.Default.Search, // 검색
             label = "검색"
         ),
         BottomNavItem(
             route = UserDestinations.LIKED_ROUTE,
-            icon = Icons.Default.Star,
+            icon = Icons.Default.FavoriteBorder, // 좋아요
             label = "좋아요"
         ),
         BottomNavItem(
             route = MainDestinations.PROFILE_ROUTE,
-            icon = Icons.Default.Face,
+            icon = Icons.Default.Person, // 프로필
             label = "프로필"
         )
+
     )
 
     // Find the current selected index
@@ -103,10 +113,15 @@ fun BottomNavBar(navController: NavController) {
     }
 
     AnimatedNavigationBar(
-
         selectedIndex = selectedIndex,
-        modifier = Modifier.fillMaxWidth(),
-        barColor = colorScheme.primary,
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(
+                color = colorScheme.primary,
+                shape = RoundedCornerShape(topStart = 50.dp, topEnd = 50.dp)
+            )
+            .clip(RoundedCornerShape(topStart = 50.dp, topEnd = 50.dp)), // 실제 모양 clip
+        barColor = Color.Transparent, // 내부 색 제거
         ballColor = colorScheme.onPrimary,
         cornerRadius = shapeCornerRadius(
             topLeft = 50.dp,

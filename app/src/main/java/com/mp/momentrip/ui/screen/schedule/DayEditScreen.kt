@@ -26,12 +26,14 @@ import com.mp.momentrip.data.Day
 import com.mp.momentrip.data.Place
 import com.mp.momentrip.data.dummy_place
 import com.mp.momentrip.ui.components.ActivityCard
+import com.mp.momentrip.view.RecommendViewModel
 import com.mp.momentrip.view.ScheduleViewModel
 import java.time.LocalTime
 
 @Composable
 fun DayEditScreen(
     scheduleViewModel: ScheduleViewModel,
+    recommendViewModel: RecommendViewModel,
     onAddClick: () -> Unit,       // ★ 인자를 제거
     onDeleteClick: (Activity) -> Unit,
     modifier: Modifier = Modifier

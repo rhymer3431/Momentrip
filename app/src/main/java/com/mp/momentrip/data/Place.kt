@@ -72,7 +72,7 @@ enum class Region(val code: Int, val locationName: String) {
     JEONNAM(36, "전남"),
     GYEONGBUK(37, "경북"),
     GYEONGNAM(38, "경남"),
-    JEJU(39, "제주");
+    JEJU(39, "제주도");
 
     companion object {
         private val codeMap = entries.associateBy { it.code }

@@ -116,7 +116,7 @@ object TourService {
                 Log.w("TourService", "detailInfo 실패: ${e.message}")
                 null
             }
-
+            Log.d("test",intro.toString())
             mergeToPlaceFromArea(base, detail, intro)
         }
     }
@@ -146,21 +146,21 @@ object TourService {
             overview = detail?.overview,
 
             // 관광지
-            useTime = intro?.useTime,
-            infoCenter = intro?.infoCenter ?: intro?.infoCenterLodging ?: intro?.infoCenterFood,
+            useTime = intro?.usetime,
+            infoCenter = intro?.infocenter ?: intro?.infocenterlodging ?: intro?.infocenterfood,
 
-            // 음식점
-            openTime = intro?.openTimeFood,
-            firstMenu = intro?.firstMenu,
-            treatMenu = intro?.treatMenu,
+            openTime = intro?.opentimefood,
+            firstMenu = intro?.firstmenu,
+            treatMenu = intro?.treatmenu,
 
-            // 숙소
-            checkInTime = intro?.checkInTime,
-            checkOutTime = intro?.checkOutTime,
-            roomType = intro?.roomType,
+
+            checkInTime = intro?.checkintime,
+            checkOutTime = intro?.checkouttime,
+            roomType = intro?.roomtype,
             reservation = null,
-            reservationUrl = intro?.reservationUrl,
-            parking = intro?.parking ?: intro?.parkingLodging ?: intro?.parkingFood,
+            reservationUrl = intro?.reservationurl,
+            parking = intro?.parking ?: intro?.parkinglodging ?: intro?.parkingfood,
+
             foodPlace = null,
             pickup = null,
 
@@ -192,16 +192,17 @@ object TourService {
             hmpg = detail?.hmpg,
             overview = detail?.overview,
 
-            useTime = intro?.useTime,
-            infoCenter = intro?.infoCenter ?: intro?.infoCenterLodging ?: intro?.infoCenterFood,
-            openTime = intro?.openTimeFood,
-            firstMenu = intro?.firstMenu,
-            treatMenu = intro?.treatMenu,
-            checkInTime = intro?.checkInTime,
-            checkOutTime = intro?.checkOutTime,
-            roomType = intro?.roomType,
-            reservationUrl = intro?.reservationUrl,
-            parking = intro?.parking ?: intro?.parkingLodging ?: intro?.parkingFood
+            useTime = intro?.usetime,
+            infoCenter = intro?.infocenter ?: intro?.infocenterlodging ?: intro?.infocenterfood,
+            openTime = intro?.opentimefood,
+            firstMenu = intro?.firstmenu,
+            treatMenu = intro?.treatmenu,
+            checkInTime = intro?.checkintime,
+            checkOutTime = intro?.checkouttime,
+            roomType = intro?.roomtype,
+            reservationUrl = intro?.reservationurl,
+            parking = intro?.parking ?: intro?.parkinglodging ?: intro?.parkingfood
+
         )
     }
 

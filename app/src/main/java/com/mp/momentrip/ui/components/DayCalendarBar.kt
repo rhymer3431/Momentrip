@@ -26,7 +26,7 @@ import androidx.compose.ui.unit.sp
 
 
 data class DayItem(
-    val date: String,   // 날짜 (예: "21", "22", ...)
+    val index: String,   // 날짜 (예: "21", "22", ...)
     val isSelected: Boolean = false
 )
 
@@ -76,7 +76,7 @@ private fun DayColumn(
         )
         Spacer(modifier = Modifier.height(4.dp))
         Text(
-            text = day.date,
+            text = day.index,
             fontSize = 16.sp,
             fontWeight = FontWeight.SemiBold,
             color = if (day.isSelected) Color(0xFFEBEAEA) else Color(0xFF212525)

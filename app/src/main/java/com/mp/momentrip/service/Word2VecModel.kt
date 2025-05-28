@@ -3,7 +3,7 @@ package com.mp.momentrip.service
 import android.content.Context
 import android.util.Log
 import com.mp.momentrip.data.Place
-import com.mp.momentrip.service.RecommendService.extractKeywords
+
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -62,12 +62,6 @@ object Word2VecModel {
         // 우선 카테고리로 시도
         val categoryVector = getVectorByCategories(place)
         if (categoryVector != null) return categoryVector
-
-        // 카테고리가 없으면 fallback으로 overview 키워드로
-        if (place.overview != null) {
-            val keywords = extractKeywords(place.overview)
-            return getVectorByList(keywords)
-        }
 
         return null
     }

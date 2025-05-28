@@ -1,5 +1,6 @@
 package com.mp.momentrip.ui.screen.profile
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -92,6 +93,7 @@ fun ProfileHeader() {
     }
 }
 
+@SuppressLint("StateFlowValueCalledInComposition")
 @Composable
 fun UserStats(
     userState: UserViewModel
@@ -149,7 +151,7 @@ fun UserStats(
                     horizontalArrangement = Arrangement.SpaceEvenly,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    userState.getRegion()?.let { StatItem(title = "추천 여행지", value = it) }
+                    userState.region.value?.let { StatItem(title = "추천 여행지", value = it) }
 
                     StatItem(title = "다녀온 여행 횟수", value = userState.getScheduleSize().toString())
 
@@ -248,7 +250,7 @@ fun ProfileMenuItem(
                 Icon(
                     imageVector = icon,
                     contentDescription = title,
-                    tint = MaterialTheme.colorScheme.onPrimary,
+                    tint = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.size(24.dp)
                 )
                 Spacer(modifier = Modifier.width(16.dp))

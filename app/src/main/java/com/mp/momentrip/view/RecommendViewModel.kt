@@ -44,19 +44,35 @@ class RecommendViewModel : ViewModel() {
     fun initialize(initData: RecommendInitData) {
         if (!isInitialized) {
             Log.d("InitCheck", "Initializing with: ${initData.region}")
-            loadRecommendPlaces(initData.region)
+            loadRecommendPlaces(
+                userPreference = initData.userPreference,
+                region = initData.region)
             loadFavoriteFoodType(initData.userPreference)
             isInitialized = true
         }
     }
 
-    private fun loadRecommendPlaces(region: String) {
+    private fun loadRecommendPlaces(
+        userPreference: UserPreference,
+        region: String) {
         viewModelScope.launch {
             _isLoading.value = true
             try {
-                val restaurantDeferred = async { TourService.getRestaurantsByRegion(region) }
-                val dormitoryDeferred = async { TourService.getAccommodationsByRegion(region) }
-                val tourSpotDeferred = async { TourService.getTouristSpotsByRegion(region) }
+                val restaurantDeferred = async {
+                    RecommendService.getRecommendRestaurants(
+                        userPreference = userPreference,
+                        region = region)
+                }
+                val dormitoryDeferred = async {
+                    RecommendService.getRecommendDormitories(
+                        userPreference = userPreference,
+                        region = region)
+                }
+                val tourSpotDeferred = async {
+                    RecommendService.getRecommendTourSpots(
+                        userPreference = userPreference,
+                        region = region)
+                }
 
                 val (restaurants, dormitories, tourSpots) = awaitAll(
                     restaurantDeferred, dormitoryDeferred, tourSpotDeferred

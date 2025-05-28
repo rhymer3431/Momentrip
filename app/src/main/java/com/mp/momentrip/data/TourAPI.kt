@@ -299,37 +299,38 @@ data class ContentDetailItem(
 
 
 data class DetailIntroItem(
-    val contentId: String,           // 콘텐츠 ID
-    val contentTypeId: Int,          // 콘텐츠 타입 ID (12: 관광지, 32: 숙박, 39: 음식점)
+    val contentid: String,           // 콘텐츠 ID
+    val contenttypeid: Int,          // 콘텐츠 타입 ID (12: 관광지, 32: 숙박, 39: 음식점)
 
-    // --- 관광지용 필드 (contentTypeId = 12) ---
-    val accomCount: String? = null,       // 수용 인원
-    val expGuide: String? = null,         // 체험 안내
+    // --- 관광지용 필드 (contenttypeid = 12) ---
+    val accomcount: String? = null,       // 수용 인원
+    val expguide: String? = null,         // 체험 안내
     val heritage1: String? = null,        // 세계문화유산 여부
-    val infoCenter: String? = null,       // 문의 및 안내
-    val openDate: String? = null,         // 개장일
+    val infocenter: String? = null,       // 문의 및 안내
+    val opendate: String? = null,         // 개장일
     val parking: String? = null,          // 주차 시설
-    val restDate: String? = null,         // 쉬는 날
-    val useTime: String? = null,          // 이용 시간
+    val restdate: String? = null,         // 쉬는 날
+    val usetime: String? = null,          // 이용 시간
 
-    // --- 숙박용 필드 (contentTypeId = 32) ---
-    val checkInTime: String? = null,      // 체크인 시간
-    val checkOutTime: String? = null,     // 체크아웃 시간
-    val chkCooking: String? = null,       // 객실 내 취사 가능 여부
-    val infoCenterLodging: String? = null,// 문의 및 안내
-    val parkingLodging: String? = null,   // 주차 시설
-    val roomCount: String? = null,        // 객실 수
-    val roomType: String? = null,         // 객실 유형
-    val reservationUrl: String? = null,   // 예약 안내 홈페이지
-    val subFacility: String? = null,      // 기타 부대시설
-    val refundRegulation: String? = null, // 환불 규정
+    // --- 숙박용 필드 (contenttypeid = 32) ---
+    val checkintime: String? = null,      // 체크인 시간
+    val checkouttime: String? = null,     // 체크아웃 시간
+    val chkcooking: String? = null,       // 객실 내 취사 가능 여부
+    val infocenterlodging: String? = null,// 문의 및 안내
+    val parkinglodging: String? = null,   // 주차 시설
+    val roomcount: String? = null,        // 객실 수
+    val roomtype: String? = null,         // 객실 유형
+    val reservationurl: String? = null,   // 예약 안내 홈페이지
+    val subfacility: String? = null,      // 기타 부대시설
+    val refundregulation: String? = null, // 환불 규정
 
-    // --- 음식점용 필드 (contentTypeId = 39) ---
-    val firstMenu: String? = null,        // 대표 메뉴
-    val treatMenu: String? = null,        // 취급 메뉴
-    val infoCenterFood: String? = null,   // 문의 및 안내
-    val openDateFood: String? = null,     // 개업일
-    val openTimeFood: String? = null,     // 영업 시간
-    val restDateFood: String? = null,     // 쉬는 날
-    val parkingFood: String? = null,      // 주차 시설
+    // --- 음식점용 필드 (contenttypeid = 39) ---
+    val firstmenu: String? = null,        // 대표 메뉴
+    val treatmenu: String? = null,        // 취급 메뉴
+    val infocenterfood: String? = null,   // 문의 및 안내
+    val opendatefood: String? = null,     // 개업일
+    val opentimefood: String? = null,     // 영업 시간
+    val restdatefood: String? = null,     // 쉬는 날
+    val parkingfood: String? = null       // 주차 시설
 )
+
