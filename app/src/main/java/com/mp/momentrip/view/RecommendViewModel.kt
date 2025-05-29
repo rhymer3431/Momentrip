@@ -23,6 +23,8 @@ data class RecommendInitData(
 
 
 class RecommendViewModel : ViewModel() {
+    private val _preference = MutableStateFlow<UserPreference?>(null)
+    val preference: StateFlow<UserPreference?> = _preference.asStateFlow()
 
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
@@ -44,33 +46,32 @@ class RecommendViewModel : ViewModel() {
     fun initialize(initData: RecommendInitData) {
         if (!isInitialized) {
             Log.d("InitCheck", "Initializing with: ${initData.region}")
+            _preference.value = initData.userPreference
             loadRecommendPlaces(
-                userPreference = initData.userPreference,
                 region = initData.region)
             loadFavoriteFoodType(initData.userPreference)
             isInitialized = true
         }
     }
 
-    private fun loadRecommendPlaces(
-        userPreference: UserPreference,
+    fun loadRecommendPlaces(
         region: String) {
         viewModelScope.launch {
             _isLoading.value = true
             try {
                 val restaurantDeferred = async {
                     RecommendService.getRecommendRestaurants(
-                        userPreference = userPreference,
+                        userPreference = _preference.value!!,
                         region = region)
                 }
                 val dormitoryDeferred = async {
                     RecommendService.getRecommendDormitories(
-                        userPreference = userPreference,
+                        userPreference = _preference.value!!,
                         region = region)
                 }
                 val tourSpotDeferred = async {
                     RecommendService.getRecommendTourSpots(
-                        userPreference = userPreference,
+                        userPreference = _preference.value!!,
                         region = region)
                 }
 

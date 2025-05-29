@@ -2,12 +2,11 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/AndroidStudioProjects.MomenTrip.app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/AndroidStudioProjects.MomenTrip.app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/AndroidStudioProjects.MomenTrip.app.androidTest.iml" filepath="$PROJECT_DIR$/.idea/modules/app/AndroidStudioProjects.MomenTrip.app.androidTest.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/AndroidStudioProjects.MomenTrip.app.main.iml" filepath="$PROJECT_DIR$/.idea/modules/app/AndroidStudioProjects.MomenTrip.app.main.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/AndroidStudioProjects.MomenTrip.app.unitTest.iml" filepath="$PROJECT_DIR$/.idea/modules/app/AndroidStudioProjects.MomenTrip.app.unitTest.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/MomenTrip.iml" filepath="$PROJECT_DIR$/.idea/MomenTrip.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/MomenTrip.app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/MomenTrip.app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/MomenTrip.app.androidTest.iml" filepath="$PROJECT_DIR$/.idea/modules/app/MomenTrip.app.androidTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/MomenTrip.app.main.iml" filepath="$PROJECT_DIR$/.idea/modules/app/MomenTrip.app.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/MomenTrip.app.unitTest.iml" filepath="$PROJECT_DIR$/.idea/modules/app/MomenTrip.app.unitTest.iml" />
     </modules>
   </component>
 </project>

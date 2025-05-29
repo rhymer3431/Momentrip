@@ -1,9 +1,11 @@
 // ScheduleViewModel.kt
 package com.mp.momentrip.view
 
+import androidx.compose.runtime.collectAsState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mp.momentrip.data.Activity
+import com.mp.momentrip.data.CheckItem
 import com.mp.momentrip.data.Day
 import com.mp.momentrip.data.Schedule
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -52,6 +54,23 @@ class ScheduleViewModel : ViewModel() {
 
     fun getCurrentActivity(): Activity? =
         getCurrentDay()?.timeTable?.getOrNull(_selectedActivityIndex.value ?: -1)
+
+    fun updateChecklist(
+        updatedChecklist: List<CheckItem>,
+        userVM: UserViewModel
+    ) {
+        val currentSchedule = _schedule.value
+        val userSchedules = userVM.user.value?.schedules?.filterNotNull()
+
+        if (currentSchedule != null && userSchedules != null) {
+            val newSchedule = currentSchedule.copy(checklist = updatedChecklist)
+            saveSchedule(
+                newSchedule,
+                userSchedules,
+                userVM
+            )
+        }
+    }
 
     fun updateScheduleById(
         schedules: List<Schedule>,

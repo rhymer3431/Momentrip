@@ -1,8 +1,6 @@
 package com.mp.momentrip.ui.screen
 
 
-
-
 import android.annotation.SuppressLint
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
@@ -41,13 +39,17 @@ import com.exyte.animatednavbar.animation.indendshape.shapeCornerRadius
 import com.mp.momentrip.ui.MainDestinations
 import com.mp.momentrip.ui.ScheduleDestinations
 import com.mp.momentrip.ui.UserDestinations
+import com.mp.momentrip.ui.schedule.ScheduleChecklistScreen
 import com.mp.momentrip.ui.screen.feed.FeedScreen
 import com.mp.momentrip.ui.screen.profile.ProfileScreen
+import com.mp.momentrip.ui.screen.schedule.ActivitySelectScreen
 import com.mp.momentrip.ui.screen.schedule.DayEditScreen
-import com.mp.momentrip.ui.screen.schedule.ScheduleChecklistScreen
+
+
 import com.mp.momentrip.ui.screen.schedule.ScheduleCreationScreen
 import com.mp.momentrip.ui.screen.schedule.ScheduleDetailScreen
 import com.mp.momentrip.ui.screen.schedule.ScheduleListScreen
+
 
 import com.mp.momentrip.ui.screen.user.RecommendResult
 import com.mp.momentrip.ui.screen.user.SignInScreen
@@ -199,7 +201,14 @@ fun BottomNavGraph(
             ScheduleListScreen(
                 navController = navController,
                 scheduleViewModel = scheduleViewModel,
-                userState = userState
+                userState = userState,
+                onClick = {
+                    scheduleViewModel.setSchedule(it)
+                    recommendViewModel.loadRecommendPlaces(
+                        region = it.region
+                    )
+                    navController.navigate(ScheduleDestinations.SCHEDULE_ROUTE)
+                }
             )
         }
         composable(ScheduleDestinations.SCHEDULE_CREATION){
@@ -240,12 +249,26 @@ fun BottomNavGraph(
                 recommendViewModel = recommendViewModel,
                 scheduleViewModel = scheduleViewModel,
                 onDeleteClick = {},
-                onAddClick = {}
+                onAddClick = {navController.navigate(ScheduleDestinations.ACTIVITY_SELECT_ROUTE)}
 
             )
         }
         composable(ScheduleDestinations.CHECK_LIST_ROUTE){
-            ScheduleChecklistScreen()
+            ScheduleChecklistScreen(
+                scheduleViewModel = scheduleViewModel,
+                {scheduleViewModel.updateChecklist(
+                    updatedChecklist = it,
+                    userVM = userState
+                )}
+            )
+        }
+        composable(ScheduleDestinations.ACTIVITY_SELECT_ROUTE){
+            ActivitySelectScreen(
+                scheduleViewModel = scheduleViewModel,
+                recommendViewModel = recommendViewModel,
+                onPlaceSelected = { },
+                onCancel = { navController.popBackStack() }
+            )
         }
 
     }

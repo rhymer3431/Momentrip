@@ -51,7 +51,8 @@ import com.mp.momentrip.view.UserViewModel
 fun ScheduleListScreen(
     userState: UserViewModel,
     scheduleViewModel: ScheduleViewModel,
-    navController: NavController
+    navController: NavController,
+    onClick: (Schedule) -> Unit
 ) {
     val user by userState.user.collectAsState()
     val schedules = user?.schedules.orEmpty()
@@ -95,9 +96,7 @@ fun ScheduleListScreen(
                         sch?.let {
                             ScheduleListItem(
                                 schedule = it,
-                                onClick = {
-                                    scheduleViewModel.setSchedule(it)
-                                    navController.navigate(ScheduleDestinations.SCHEDULE_ROUTE)}
+                                onClick = {onClick(it)}
                             )
                             Spacer(Modifier.height(12.dp))
                         }

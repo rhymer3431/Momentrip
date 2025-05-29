@@ -38,6 +38,7 @@ object ScheduleDestinations{
     const val SCHEDULE_CREATION = "scheduleCreate"
     const val CHECK_LIST_ROUTE = "checklist"
     const val DAY_EDIT_ROUTE = "dayEdit"
+    const val ACTIVITY_SELECT_ROUTE = "activitySelect"
 }
 
 object UserDestinations {
