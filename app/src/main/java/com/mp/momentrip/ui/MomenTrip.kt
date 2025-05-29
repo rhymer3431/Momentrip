@@ -1,6 +1,5 @@
 package com.mp.momentrip.ui
 
-import android.util.Log
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -12,14 +11,16 @@ import com.google.firebase.auth.FirebaseAuth
 import com.mp.momentrip.service.AccountService
 import com.mp.momentrip.service.RecommendService
 import com.mp.momentrip.ui.screen.LoadingScreen
-import com.mp.momentrip.ui.MainDestinations
-import com.mp.momentrip.ui.NavGraph
 import com.mp.momentrip.view.AuthViewModel
+import com.mp.momentrip.view.RecommendViewModel
+import com.mp.momentrip.view.ScheduleViewModel
 import com.mp.momentrip.view.UserViewModel
 
 @Composable
-fun MomenTrip(
-    userState: UserViewModel,
+fun Momentrip(
+    userState: UserViewModel = viewModel(),
+    scheduleViewModel: ScheduleViewModel = viewModel(),
+    recommendViewModel: RecommendViewModel = viewModel(),
     authViewModel: AuthViewModel = viewModel(),
     ) {
     val navController = rememberNavController()
@@ -57,6 +58,8 @@ fun MomenTrip(
             navController = navController,
             modifier = Modifier.fillMaxSize(),
             userState = userState,
+            scheduleViewModel = scheduleViewModel,
+            recommendViewModel = recommendViewModel,
             startDestination = startDestination
         )
     }

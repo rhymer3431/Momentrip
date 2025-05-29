@@ -11,17 +11,3 @@ import com.mp.momentrip.ui.screen.schedule.ScheduleListScreen
 import com.mp.momentrip.view.UserViewModel
 
 
-// ScheduleNavGraph.kt
-fun NavGraphBuilder.scheduleNavGraph(
-    navController: NavController,
-    userViewModel: UserViewModel
-) {
-    composable(UserDestinations.SCHEDULE_ROUTE) {
-    }
-
-    composable(MainDestinations.SCHEDULE_CREATION) {
-        ScheduleCreationScreen(userViewModel) {
-            navController.navigate(UserDestinations.SCHEDULE_ROUTE)
-        }
-    }
-}

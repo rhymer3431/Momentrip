@@ -1,9 +1,9 @@
 package com.mp.momentrip.data
 
-import android.graphics.Picture
-import kotlin.collections.map
+import java.util.UUID
 
 data class User(
+    val id: String = UUID.randomUUID().toString(),
     val email: String = "none",
     val name: String = "none",
     val gender: Int = 0,
@@ -13,6 +13,7 @@ data class User(
     val schedules: List<Schedule?> = emptyList()
 )
 data class UserDto(
+    val id: String = "",
     val email: String = "none",
     val name: String = "none",
     val gender: Int = 0,
@@ -22,6 +23,7 @@ data class UserDto(
     val schedules: List<ScheduleDto> = emptyList()           // ✅ 변환 대상
 )
 fun User.toDto(): UserDto = UserDto(
+    id = id,
     email = email,
     name = name,
     gender = gender,

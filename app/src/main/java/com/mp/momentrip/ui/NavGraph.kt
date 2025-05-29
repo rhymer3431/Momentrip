@@ -1,4 +1,7 @@
 package com.mp.momentrip.ui
+
+
+
 import android.annotation.SuppressLint
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -6,22 +9,14 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-
-
 import com.mp.momentrip.ui.screen.HomeScreen
-
-
-
 import com.mp.momentrip.ui.screen.profile.ProfileScreen
 import com.mp.momentrip.ui.screen.user.QuestionScreen
 import com.mp.momentrip.ui.screen.user.RecommendResult
-import com.mp.momentrip.ui.screen.schedule.ScheduleListScreen
-
 import com.mp.momentrip.ui.screen.user.SignInScreen
 import com.mp.momentrip.ui.screen.user.SignUpScreen
-
-
-
+import com.mp.momentrip.view.RecommendViewModel
+import com.mp.momentrip.view.ScheduleViewModel
 import com.mp.momentrip.view.UserViewModel
 
 
@@ -35,14 +30,18 @@ object MainDestinations {
     const val SIGN_UP_ROUTE = "signUp"
     const val PREFERENCE_ANALYZE = "preferenceAnalyze"
     const val FEED_ROUTE = "feed"
+}
+
+object ScheduleDestinations{
+    const val SCHEDULE_ROUTE = "schedule"
+    const val SCHEDULE_LIST_ROUTE = "scheduleList"
     const val SCHEDULE_CREATION = "scheduleCreate"
+    const val CHECK_LIST_ROUTE = "checklist"
     const val DAY_EDIT_ROUTE = "dayEdit"
 }
 
 object UserDestinations {
     const val ANALYZE_RESULT = "analyzeResult"
-    const val SCHEDULE_ROUTE = "schedule"
-    const val SCHEDULE_LIST_ROUTE = "scheduleList"
     const val LIKED_ROUTE = "liked"
 }
 
@@ -52,11 +51,10 @@ fun NavGraph(
     modifier: Modifier = Modifier,
     navController: NavHostController = rememberNavController(),
     userState: UserViewModel,
+    scheduleViewModel: ScheduleViewModel,
+    recommendViewModel: RecommendViewModel,
     startDestination : String
 )  {
-
-
-
     NavHost(
         navController = navController,
         startDestination = startDestination
@@ -76,7 +74,9 @@ fun NavGraph(
         }
         composable(MainDestinations.HOME_ROUTE) {
             HomeScreen(
-                userState = userState
+                userState = userState,
+                scheduleViewModel = scheduleViewModel,
+                recommendViewModel = recommendViewModel
             )
         }
 

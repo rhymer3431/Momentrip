@@ -1,18 +1,16 @@
 buildscript {
     ext {
-        agp_version    = '8.8.0'        // Android Gradle Plugin
-        kotlin_version = '1.9.23'       // Kotlin
+        agp_version    = '8.8.0'
+        kotlin_version = '1.9.23'
     }
     repositories {
-
         google()
         mavenCentral()
     }
     dependencies {
         classpath "com.android.tools.build:gradle:$agp_version"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-
-
         classpath "com.google.gms:google-services:4.3.15"
+        classpath "com.google.dagger:hilt-android-gradle-plugin:2.51.1" // ✅ 추가
     }
 }

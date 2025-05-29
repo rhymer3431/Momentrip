@@ -10,18 +10,3 @@ import com.mp.momentrip.ui.screen.feed.FeedScreen
 import com.mp.momentrip.ui.screen.profile.ProfileScreen
 import com.mp.momentrip.view.UserViewModel
 
-// MainNavGraph.kt
-fun NavGraphBuilder.mainNavGraph(
-    navController: NavController,
-    userViewModel: UserViewModel
-) {
-    composable(MainDestinations.FEED_ROUTE) {
-        FeedScreen(userViewModel)
-    }
-    composable(MainDestinations.PROFILE_ROUTE) {
-        ProfileScreen(navController, userViewModel)
-    }
-    composable(UserDestinations.LIKED_ROUTE) {
-
-    }
-}

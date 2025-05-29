@@ -1,11 +1,11 @@
 package com.mp.momentrip.data
 
-import com.kakao.vectormap.LatLng
 import java.time.LocalDate
 import java.time.LocalTime
-import java.time.temporal.ChronoUnit
+import java.util.UUID
 
 data class Schedule(
+    val id: String = UUID.randomUUID().toString(),
     val title: String = "",
     val startDate: LocalDate? = null,
     val endDate: LocalDate? = null,
@@ -16,17 +16,20 @@ data class Schedule(
 )
 
 data class Day(
+    val id: String = UUID.randomUUID().toString(),
     val index: Int = 0,
     val date: LocalDate? = null,
     val timeTable : List<Activity> = emptyList<Activity>()
 )
 data class Activity(
+    val id: String = UUID.randomUUID().toString(),
     val startTime: LocalTime? = null,
     val endTime: LocalTime? = null,
     val place: Place = Place()
 )
 
 data class ScheduleDto(
+    val id: String = "",
     val title: String = "",
     val startDate: String = "",
     val endDate: String = "",
@@ -37,18 +40,20 @@ data class ScheduleDto(
 )
 
 data class DayDto(
+    val id: String = "",
     val index: Int = 0,
     val date: String = "",
     val timeTable: List<ActivityDto> = emptyList()
 )
 
 data class ActivityDto(
+    val id: String = "",
     val startTime: String = "",
     val endTime: String = "",
-    val place: Place = Place()  // ⚠️ Place도 직렬화 가능한지 확인
+    val place: Place = Place()
 )
-
 fun Schedule.toDto(): ScheduleDto = ScheduleDto(
+    id = id,
     title = title,
     startDate = startDate?.toString() ?: "",
     endDate = endDate?.toString() ?: "",
@@ -59,6 +64,7 @@ fun Schedule.toDto(): ScheduleDto = ScheduleDto(
 )
 
 fun ScheduleDto.toModel(): Schedule = Schedule(
+    id = id,
     title = title,
     startDate = startDate.takeIf { it.isNotBlank() }?.let { LocalDate.parse(it) },
     endDate = endDate.takeIf { it.isNotBlank() }?.let { LocalDate.parse(it) },
@@ -69,31 +75,37 @@ fun ScheduleDto.toModel(): Schedule = Schedule(
 )
 
 fun Day.toDto(): DayDto = DayDto(
+    id = id,
     index = index,
     date = date?.toString() ?: "",
     timeTable = timeTable.map { it.toDto() }
 )
 
 fun DayDto.toModel(): Day = Day(
+    id = id,
     index = index,
     date = date.takeIf { it.isNotBlank() }?.let { LocalDate.parse(it) },
     timeTable = timeTable.map { it.toModel() }
 )
 
 fun Activity.toDto(): ActivityDto = ActivityDto(
+    id = id,
     startTime = startTime?.toString() ?: "",
     endTime = endTime?.toString() ?: "",
     place = place
 )
 
 fun ActivityDto.toModel(): Activity = Activity(
+    id = id,
     startTime = startTime.takeIf { it.isNotBlank() }?.let { LocalTime.parse(it) },
     endTime = endTime.takeIf { it.isNotBlank() }?.let { LocalTime.parse(it) },
     place = place
 )
 
 
+
 data class CheckItem(
+    val id: String = UUID.randomUUID().toString(),
     val name: String = "",
     val checked: Boolean = false
 )

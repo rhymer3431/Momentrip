@@ -10,7 +10,6 @@ import androidx.compose.foundation.gestures.detectVerticalDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -22,27 +21,19 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material3.BottomSheetScaffold
-
-import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.material3.rememberBottomSheetScaffoldState
-import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -60,7 +51,6 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -90,14 +80,13 @@ import com.kakao.vectormap.route.RouteLineStylesSet
 import com.kakao.vectormap.route.animation.ProgressAnimation
 import com.kakao.vectormap.route.animation.ProgressDirection
 import com.kakao.vectormap.route.animation.ProgressType
-import com.mp.momentrip.data.Day
-import com.mp.momentrip.data.Schedule
 import com.mp.momentrip.data.Activity
+import com.mp.momentrip.data.Day
 import com.mp.momentrip.data.Place
-import com.mp.momentrip.ui.MainDestinations
+import com.mp.momentrip.data.Schedule
+import com.mp.momentrip.ui.ScheduleDestinations
 import com.mp.momentrip.ui.components.DayCalendarBar
 import com.mp.momentrip.ui.components.DayItem
-import com.mp.momentrip.view.RecommendViewModel
 import com.mp.momentrip.view.ScheduleViewModel
 import com.mp.momentrip.view.UserViewModel
 import kotlinx.coroutines.launch
@@ -105,7 +94,6 @@ import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import kotlin.math.roundToInt
-import kotlin.time.Duration.Companion.days
 
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -199,7 +187,7 @@ fun ScheduleOverviewScreen(
                 Icon(Icons.Default.ArrowBack, contentDescription = "뒤로가기")
             }
             IconButton(onClick = {
-                navController.navigate(MainDestinations.DAY_EDIT_ROUTE)
+                navController.navigate(ScheduleDestinations.DAY_EDIT_ROUTE)
             }) {
                 Icon(Icons.Default.Edit, contentDescription = "수정하기")
             }

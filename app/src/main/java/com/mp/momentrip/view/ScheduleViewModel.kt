@@ -1,21 +1,14 @@
 // ScheduleViewModel.kt
 package com.mp.momentrip.view
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mp.momentrip.data.Activity
-import com.mp.momentrip.data.CheckItem
 import com.mp.momentrip.data.Day
-import com.mp.momentrip.data.Place
 import com.mp.momentrip.data.Schedule
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 
@@ -59,4 +52,28 @@ class ScheduleViewModel : ViewModel() {
 
     fun getCurrentActivity(): Activity? =
         getCurrentDay()?.timeTable?.getOrNull(_selectedActivityIndex.value ?: -1)
+
+    fun updateScheduleById(
+        schedules: List<Schedule>,
+        updated: Schedule
+    ): List<Schedule> {
+        return schedules.map { if (it.id == updated.id) updated else it }
+    }
+    fun deleteScheduleById(
+        schedules: List<Schedule>,
+        targetId: String
+    ): List<Schedule> {
+        return schedules.filterNot { it.id == targetId }
+    }
+    fun saveSchedule(
+        updated: Schedule,
+        allSchedules: List<Schedule>,
+        userVM: UserViewModel
+    ) {
+        val replaced = updateScheduleById(allSchedules, updated)
+        userVM.updateSchedules(replaced)
+    }
+
+
+
 }

@@ -1,8 +1,6 @@
 package com.mp.momentrip.data
 
 import com.google.gson.annotations.SerializedName
-import kotlin.String
-import kotlin.text.toInt
 
 
 // 카테고리 코드만 정의하는 Enum 클래스
@@ -24,16 +22,9 @@ enum class ContentType(val id: Int, val label: String) {
     }
 }
 
-
 enum class Category(val categoryName: String) {
     A01("자연"),
-    A02("인문(문화/예술/역사)"),
-    A03("레포츠"),
-    A04("쇼핑"),
-    A05("음식"),
-    B02("숙박"),
-    C01("추천코스"),
-
+    A0101("자연관광지"),
     A01010100("국립공원"),
     A01010200("도립공원"),
     A01010300("군립공원"),
@@ -44,71 +35,145 @@ enum class Category(val categoryName: String) {
     A01010800("폭포"),
     A01010900("계곡"),
     A01011000("약수터"),
-    A01011100("해안절경"),
-    A01011200("해수욕장"),
-    A01011300("섬"),
-    A01011400("항구/포구"),
-    A01011500("등대"),
-    A01011600("호수"),
-    A01011700("강"),
-    A01011800("동굴"),
+    A0102("관광자원"),
+    A01020100("희귀동.식물"),
+    A01020200("기암괴석"),
 
+    A02("인문(문화/예술/역사)"),
+    A0201("역사관광지"),
     A02010100("고궁"),
     A02010200("성"),
-    A02010300("사찰"),
-    A02010400("종교성지"),
-    A02010500("사적지"),
-    A02010600("기념탑/전망대"),
-    A02010700("유적지"),
-    A02020100("휴양림"),
-    A02020200("수련장"),
-    A02020300("관광농원"),
-    A02020400("이색체험"),
-    A02030100("산업관광지"),
-    A02030200("발전소"),
-    A02030300("광산"),
-    A02030400("공장"),
-    A02040100("문화원"),
-    A02040200("전통공방"),
-    A02040300("전통시장"),
-    A02050100("박물관"),
-    A02050200("미술관"),
-    A02060100("종교시설"),
-    A02060200("교회"),
-    A02060300("성당"),
-    A02070100("공연장"),
-    A02070200("전시관"),
+    A02010300("문"),
+    A02010400("고택"),
+    A02010500("생가"),
+    A02010600("민속마을"),
+    A02010700("유적지/사적지"),
+    A02010800("사찰"),
+    A02010900("종교성지"),
+    A02011000("안보관광"),
 
-    A03010100("등산"),
-    A03010200("자전거"),
-    A03020100("래프팅"),
-    A03020200("카약"),
-    A03020300("서핑"),
-    A03030100("패러글라이딩"),
-    A03030200("열기구"),
-    A03040100("스키"),
-    A03040200("눈썰매"),
-    A03040300("스케이트장"),
-    A03040400("골프장"),
+    A0202("휴양관광지"),
+    A02020200("관광단지"),
+    A02020300("온천/욕장/스파"),
+    A02020400("이색찜질방"),
+    A02020500("헬스투어"),
+    A02020600("테마공원"),
+    A02020700("공원"),
+    A02020800("유람선/잠수함관광"),
 
+    A0203("체험관광지"),
+    A02030100("농.산.어촌 체험"),
+    A02030200("전통체험"),
+    A02030300("산사체험"),
+    A02030400("이색체험"),
+    A02030600("이색거리"),
+
+    A0204("산업관광지"),
+    A02040400("발전소"),
+    A02040600("식음료"),
+    A02040800("기타"),
+    A02040900("전자-반도체"),
+    A02041000("자동차"),
+
+    A0205("건축/조형물"),
+    A02050100("다리/대교"),
+    A02050200("기념탑/기념비/전망대"),
+    A02050300("분수"),
+    A02050400("동상"),
+    A02050500("터널"),
+    A02050600("유명건물"),
+
+    A0206("문화시설"),
+    A02060100("박물관"),
+    A02060200("기념관"),
+    A02060300("전시관"),
+    A02060400("컨벤션센터"),
+    A02060500("미술관/화랑"),
+    A02060600("공연장"),
+    A02060700("문화원"),
+    A02060800("외국문화원"),
+    A02060900("도서관"),
+    A02061000("대형서점"),
+
+    A0207("축제"),
+    A02070100("문화관광축제"),
+    A02070200("일반축제"),
+
+    A0208("공연/행사"),
+    A02080100("전통공연"),
+    A02080200("연극"),
+    A02080300("뮤지컬"),
+    A02080400("오페라"),
+    A02080500("전시회"),
+    A02080600("박람회"),
+    A02080800("무용"),
+    A02080900("클래식음악회"),
+    A02081000("대중콘서트"),
+    A02081100("영화"),
+
+    A03("레포츠"),
+    A0301("레포츠소개"),
+    A03010200("수상레포츠"),
+    A03010300("항공레포츠"),
+
+    A0302("육상 레포츠"),
+    A03020200("수련시설"),
+    A03020300("경기장"),
+    A03020400("인라인(실내 인라인 포함)"),
+    A03020500("자전거하이킹"),
+    A03020600("카트"),
+    A03020700("골프"),
+    A03020800("경마"),
+    A03020900("경륜"),
+    A03021000("카지노"),
+    A03021100("승마"),
+
+    A0303("수상 레포츠"),
+    A03030100("윈드서핑/제트스키"),
+    A03030200("카약/카누"),
+    A03030300("요트"),
+    A03030400("스노쿨링/스킨스쿠버다이빙"),
+    A03030500("민물낚시"),
+    A03030600("바다낚시"),
+    A03030700("수영"),
+    A03030800("래프팅"),
+
+    A0304("항공 레포츠"),
+    A03040100("스카이다이빙"),
+    A03040200("초경량비행"),
+    A03040300("헹글라이딩/패러글라이딩"),
+    A03040400("열기구"),
+
+    A0305("복합 레포츠"),
+    A03050100("복합 레포츠"),
+
+    A04("쇼핑"),
+    A0401("쇼핑"),
     A04010100("5일장"),
-    A04010200("상설시장"),
+    A04010200("상설 시장"),
     A04010300("백화점"),
     A04010400("면세점"),
-    A04010500("아울렛"),
-    A04010600("전통공예상점"),
-    A04010700("특산물판매점"),
+    A04010500("대형마트"),
+    A04010600("전문매장/상가"),
+    A04010700("공예/공방"),
+    A04010900("특산물 판매점"),
+    A04011000("사후면세점"),
+    A04011200("스키 렌탈샵"),
 
+    A05("음식"),
+    A0502("음식점"),
     A05020100("한식"),
     A05020200("양식"),
     A05020300("일식"),
     A05020400("중식"),
     A05020700("이색 음식점"),
-    A05020900("카페"),
+    A05020900("카페 & 찻집"),
     A05021000("클럽"),
 
+    B02("숙박"),
+    B0201("숙박시설"),
     B02010100("관광호텔"),
-    B02010500("콘도미니엄"),
+    B02010500("콘도"),
     B02010600("유스호스텔"),
     B02010700("펜션"),
     B02010900("모텔"),
@@ -116,13 +181,27 @@ enum class Category(val categoryName: String) {
     B02011100("게스트하우스"),
     B02011200("홈스테이"),
     B02011300("서비스드레지던스"),
-    B02011600("한옥");
+    B02011600("한옥"),
 
+    C01("추천코스"),
+    C0112("가족코스"),
+    C01120001("가족코스"),
+    C0113("나홀로코스"),
+    C01130001("나홀로코스"),
+    C0114("힐링코스"),
+    C01140001("힐링코스"),
+    C0115("도보코스"),
+    C01150001("도보코스"),
+    C0116("캠핑코스"),
+    C01160001("캠핑코스"),
+    C0117("맛코스"),
+    C01170001("맛코스");
 
     companion object {
         fun fromCode(code: String): Category? = entries.find { it.name == code }
     }
 }
+
 
 enum class FoodCategory(val code: String, val description: String) {
     KOREAN("A05020100", "한식"),
@@ -299,38 +378,72 @@ data class ContentDetailItem(
 
 
 data class DetailIntroItem(
-    val contentid: String,           // 콘텐츠 ID
-    val contenttypeid: Int,          // 콘텐츠 타입 ID (12: 관광지, 32: 숙박, 39: 음식점)
+    val contentid: Int,              // 콘텐츠 ID
+    val contenttypeid: Int,             // 콘텐츠 타입 ID
 
-    // --- 관광지용 필드 (contenttypeid = 12) ---
-    val accomcount: String? = null,       // 수용 인원
-    val expguide: String? = null,         // 체험 안내
-    val heritage1: String? = null,        // 세계문화유산 여부
-    val infocenter: String? = null,       // 문의 및 안내
-    val opendate: String? = null,         // 개장일
-    val parking: String? = null,          // 주차 시설
-    val restdate: String? = null,         // 쉬는 날
-    val usetime: String? = null,          // 이용 시간
+    // --- 관광지 (12) ---
+    val expguide: String? = null,       // 체험 안내
+    val infocenter: String? = null,     // 문의 및 안내
+    val opendate: String? = null,       // 개장일
+    val parking: String? = null,        // 주차 시설
+    val restdate: String? = null,       // 쉬는 날
+    val useseason: String? = null,      // 이용 시기
+    val usetime: String? = null,        // 이용 시간
 
-    // --- 숙박용 필드 (contenttypeid = 32) ---
-    val checkintime: String? = null,      // 체크인 시간
-    val checkouttime: String? = null,     // 체크아웃 시간
-    val chkcooking: String? = null,       // 객실 내 취사 가능 여부
-    val infocenterlodging: String? = null,// 문의 및 안내
-    val parkinglodging: String? = null,   // 주차 시설
-    val roomcount: String? = null,        // 객실 수
-    val roomtype: String? = null,         // 객실 유형
-    val reservationurl: String? = null,   // 예약 안내 홈페이지
-    val subfacility: String? = null,      // 기타 부대시설
-    val refundregulation: String? = null, // 환불 규정
+    // --- 문화시설 (14) ---
+    val infocenterculture: String? = null,       // 문의 및 안내
+    val parkingculture: String? = null,          // 주차 시설
+    val parkingfee: String? = null,              // 주차 요금
+    val restdateculture: String? = null,         // 쉬는 날
+    val usefee: String? = null,                  // 이용 요금
+    val usetimeculture: String? = null,          // 이용 시간
+    val spendtime: String? = null,               // 관람 소요 시간
 
-    // --- 음식점용 필드 (contenttypeid = 39) ---
-    val firstmenu: String? = null,        // 대표 메뉴
-    val treatmenu: String? = null,        // 취급 메뉴
-    val infocenterfood: String? = null,   // 문의 및 안내
-    val opendatefood: String? = null,     // 개업일
-    val opentimefood: String? = null,     // 영업 시간
-    val restdatefood: String? = null,     // 쉬는 날
-    val parkingfood: String? = null       // 주차 시설
+    // --- 축제/공연/행사 (15) ---
+    val bookingplace: String? = null,            // 예매처
+    val eventenddate: String? = null,            // 행사 종료일
+    val eventhomepage: String? = null,           // 행사 홈페이지
+    val eventplace: String? = null,              // 행사 장소
+    val eventstartdate: String? = null,          // 행사 시작일
+    val playtime: String? = null,                // 공연 시간
+    val program: String? = null,                 // 행사 프로그램
+    val spendtimefestival: String? = null,       // 관람 소요 시간
+    val usetimefestival: String? = null,         // 이용 요금
+
+    // --- 레포츠 (28) ---
+    val infocenterleports: String? = null,       // 문의 및 안내
+    val openperiod: String? = null,              // 개장 기간
+    val parkingfeeleports: String? = null,       // 주차 요금
+    val parkingleports: String? = null,          // 주차 시설
+    val reservation: String? = null,             // 예약 안내
+    val restdateleports: String? = null,         // 쉬는 날
+    val usefeeleports: String? = null,           // 입장료
+    val usetimeleports: String? = null,          // 이용 시간
+
+    // --- 숙박 (32) ---
+    val checkintime: String? = null,             // 입실 시간
+    val checkouttime: String? = null,            // 퇴실 시간
+    val infocenterlodging: String? = null,       // 문의 및 안내
+    val parkinglodging: String? = null,          // 주차 시설
+    val roomcount: String? = null,               // 객실 수
+    val reservationlodging: String? = null,      // 예약 안내
+    val reservationurl: String? = null,          // 예약 안내 홈페이지
+    val roomtype: String? = null,                // 객실 유형
+
+    // --- 쇼핑 (38) ---
+    val infocentershopping: String? = null,      // 문의 및 안내
+    val opentime: String? = null,                // 영업 시간
+    val parkingshopping: String? = null,         // 주차 시설
+    val saleitem: String? = null,                // 판매 품목
+    val saleitemcost: String? = null,            // 판매 품목별 가격
+    val scaleshopping: String? = null,           // 규모
+    val shopguide: String? = null,               // 매장 안내
+
+    // --- 음식점 (39) ---
+    val discountinfofood: String? = null,        // 할인 정보
+    val firstmenu: String? = null,               // 대표 메뉴
+    val infocenterfood: String? = null,          // 문의 및 안내
+    val opentimefood: String? = null,            // 영업 시간
+    val restdatefood: String? = null,            // 쉬는 날
+    val treatmenu: String? = null,               // 취급 메뉴
 )
-

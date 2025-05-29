@@ -5,27 +5,22 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.google.firebase.auth.FirebaseUser
-import com.mp.momentrip.data.Activity
 import com.mp.momentrip.data.Day
 import com.mp.momentrip.data.Place
 import com.mp.momentrip.data.Schedule
 import com.mp.momentrip.data.User
-import com.mp.momentrip.data.UserDto
 import com.mp.momentrip.data.UserPreference
 import com.mp.momentrip.data.toDto
 import com.mp.momentrip.service.AccountService
-import com.mp.momentrip.service.TourService
 import com.mp.momentrip.service.Word2VecModel
 import com.mp.momentrip.ui.MainDestinations
 import kotlinx.coroutines.Dispatchers
-
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 
 class UserViewModel : ViewModel() {
@@ -147,6 +142,13 @@ class UserViewModel : ViewModel() {
             }
         }
     }
+    fun updateSchedules(updated: List<Schedule>) {
+        viewModelScope.launch {
+            val current = _user.value ?: return@launch
+            updateUser(current.copy(schedules = updated))
+        }
+    }
+
 
 
     private fun calculateDuration(startDate: LocalDate, endDate: LocalDate): Long {

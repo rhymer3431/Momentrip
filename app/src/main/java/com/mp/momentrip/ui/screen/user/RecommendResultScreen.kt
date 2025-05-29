@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
-
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -16,9 +15,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.mp.momentrip.ui.ScheduleDestinations
 import com.mp.momentrip.ui.theme.OrangeNice
-
-import com.mp.momentrip.ui.UserDestinations
 import com.mp.momentrip.view.UserViewModel
 
 
@@ -56,7 +54,7 @@ fun RecommendResult(
                 onClick = {
                     // viewModelScope를 사용하여 ViewModel에서 비동기 작업 처리
 
-                    navController.navigate(UserDestinations.SCHEDULE_ROUTE)
+                    navController.navigate(ScheduleDestinations.SCHEDULE_ROUTE)
                 },
                 modifier = Modifier.padding(top = 16.dp)
             ) {

@@ -1,5 +1,6 @@
 package com.mp.momentrip.ui.screen.profile
 
+
 import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -23,7 +24,6 @@ import androidx.compose.material.icons.filled.AccountBox
 import androidx.compose.material.icons.filled.Place
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
-
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -44,10 +44,8 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberAsyncImagePainter
 import com.mp.momentrip.service.AccountService
+import com.mp.momentrip.ui.ScheduleDestinations
 import com.mp.momentrip.ui.components.ThemeCard
-import com.mp.momentrip.ui.UserDestinations
-
-
 import com.mp.momentrip.view.UserViewModel
 
 
@@ -201,7 +199,7 @@ fun ProfileMenu(navController: NavController) {
                 icon = Icons.Default.Place,
                 title = "나의 여행",
                 showDivider = true,
-                onClick = {navController.navigate(UserDestinations.SCHEDULE_LIST_ROUTE)}
+                onClick = {navController.navigate(ScheduleDestinations.SCHEDULE_LIST_ROUTE)}
             )
             ProfileMenuItem(
                 icon = Icons.Filled.AccountBox,

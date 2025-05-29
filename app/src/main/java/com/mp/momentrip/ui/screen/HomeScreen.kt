@@ -1,21 +1,20 @@
 package com.mp.momentrip.ui.screen
 
+
+
+
 import android.annotation.SuppressLint
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Face
-import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme.colorScheme
@@ -39,25 +38,20 @@ import com.exyte.animatednavbar.AnimatedNavigationBar
 import com.exyte.animatednavbar.animation.balltrajectory.Straight
 import com.exyte.animatednavbar.animation.indendshape.Height
 import com.exyte.animatednavbar.animation.indendshape.shapeCornerRadius
-import com.mp.momentrip.data.Day
-import com.mp.momentrip.data.Schedule
 import com.mp.momentrip.ui.MainDestinations
+import com.mp.momentrip.ui.ScheduleDestinations
 import com.mp.momentrip.ui.UserDestinations
-import com.mp.momentrip.ui.components.CalendarSample3
 import com.mp.momentrip.ui.screen.feed.FeedScreen
 import com.mp.momentrip.ui.screen.profile.ProfileScreen
-import com.mp.momentrip.ui.screen.schedule.CalendarScreen
 import com.mp.momentrip.ui.screen.schedule.DayEditScreen
-
+import com.mp.momentrip.ui.screen.schedule.ScheduleChecklistScreen
 import com.mp.momentrip.ui.screen.schedule.ScheduleCreationScreen
 import com.mp.momentrip.ui.screen.schedule.ScheduleDetailScreen
 import com.mp.momentrip.ui.screen.schedule.ScheduleListScreen
 
-
-
-
 import com.mp.momentrip.ui.screen.user.RecommendResult
 import com.mp.momentrip.ui.screen.user.SignInScreen
+import com.mp.momentrip.view.RecommendViewModel
 import com.mp.momentrip.view.ScheduleViewModel
 import com.mp.momentrip.view.UserViewModel
 
@@ -66,7 +60,9 @@ import com.mp.momentrip.view.UserViewModel
 @Composable
 fun HomeScreen(
     navController: NavHostController = rememberNavController(),
-    userState: UserViewModel
+    userState: UserViewModel,
+    scheduleViewModel: ScheduleViewModel,
+    recommendViewModel: RecommendViewModel
 ){
     Scaffold(
         bottomBar = { BottomNavBar(navController) }
@@ -74,7 +70,7 @@ fun HomeScreen(
         Box(modifier = Modifier.padding(
             bottom = paddingValues.calculateBottomPadding()
         )) {
-            BottomNavGraph(navController, userState)
+            BottomNavGraph(navController, userState,scheduleViewModel,recommendViewModel)
         }
     }
 }
@@ -168,18 +164,20 @@ data class BottomNavItem(
 @Composable
 fun BottomNavGraph(
     navController: NavHostController = rememberNavController(),
-    userState: UserViewModel
+    userState: UserViewModel,
+    scheduleViewModel: ScheduleViewModel,
+    recommendViewModel: RecommendViewModel
 ){
-    val scheduleViewModel = ScheduleViewModel()
+
+
     NavHost(
         navController = navController,
         startDestination = MainDestinations.FEED_ROUTE
     ) {
         composable(MainDestinations.FEED_ROUTE) {
             FeedScreen(
-
                 userState = userState,
-
+                recommendViewModel = recommendViewModel
             )
         }
         composable(MainDestinations.PROFILE_ROUTE) {
@@ -188,7 +186,7 @@ fun BottomNavGraph(
                 userState
             )
         }
-        composable(UserDestinations.SCHEDULE_ROUTE){
+        composable(ScheduleDestinations.SCHEDULE_ROUTE){
             ScheduleDetailScreen(
                 navController,
                 scheduleViewModel,
@@ -197,17 +195,17 @@ fun BottomNavGraph(
             )
 
         }
-        composable(UserDestinations.SCHEDULE_LIST_ROUTE){
+        composable(ScheduleDestinations.SCHEDULE_LIST_ROUTE){
             ScheduleListScreen(
                 navController = navController,
                 scheduleViewModel = scheduleViewModel,
                 userState = userState
             )
         }
-        composable(MainDestinations.SCHEDULE_CREATION){
+        composable(ScheduleDestinations.SCHEDULE_CREATION){
             ScheduleCreationScreen(
                 userViewModel = userState,
-                onScheduleCreated = {navController.navigate(UserDestinations.SCHEDULE_ROUTE)}
+                onScheduleCreated = {navController.navigate(ScheduleDestinations.SCHEDULE_ROUTE)}
 
             )
         }
@@ -237,13 +235,17 @@ fun BottomNavGraph(
                 userState = userState
             )
         }
-        composable(MainDestinations.DAY_EDIT_ROUTE){
+        composable(ScheduleDestinations.DAY_EDIT_ROUTE){
             DayEditScreen(
+                recommendViewModel = recommendViewModel,
                 scheduleViewModel = scheduleViewModel,
                 onDeleteClick = {},
                 onAddClick = {}
 
             )
+        }
+        composable(ScheduleDestinations.CHECK_LIST_ROUTE){
+            ScheduleChecklistScreen()
         }
 
     }

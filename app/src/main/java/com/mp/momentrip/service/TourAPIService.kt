@@ -45,8 +45,8 @@ interface TourAPIService {
         @Query("_type") type: String = "json",
         @Query("areaCode") areaCode: String? = null,
         @Query("sigunguCode") sigunguCode: String? = null,
-        @Query("contentTypeId") contentTypeId: String? = null,
-        @Query("ServiceKey") serviceKey: String,
+        @Query("contentTypeId") contentTypeId: Int,
+        @Query("serviceKey") serviceKey: String,
     ): ApiResponse<AreaBasedItem>
 
     @GET("locationBasedList1")
@@ -131,7 +131,7 @@ interface TourAPIService {
         @Query("serviceKey") serviceKey: String,
         @Query("_type") type: String = "json",
         @Query("contentId") contentId: Int,
-        @Query("contentTypeId") contentTypeId: String? = null,
+        @Query("contentTypeId") contentTypeId: Int,
         @Query("defaultYN") defaultYN: String = "Y",
         @Query("firstImageYN") firstImageYN: String = "Y",
         @Query("areacodeYN") areacodeYN: String = "Y",
@@ -159,14 +159,16 @@ object TourApiClient {
     private const val BASE_URL = "http://apis.data.go.kr/B551011/KorService1/"
 
     private val loggingInterceptor = HttpLoggingInterceptor().apply {
-        level = HttpLoggingInterceptor.Level.BODY
+        level = HttpLoggingInterceptor.Level.BODY  // 요청/응답 바디 포함 전체 로그 출력
     }
 
-    private val okHttpClient = OkHttpClient.Builder().build()
+    private val okHttpClient = OkHttpClient.Builder()
+        .addInterceptor(loggingInterceptor)        // 🚨 이 줄이 반드시 필요함!
+        .build()
 
     private val retrofit = Retrofit.Builder()
         .baseUrl(BASE_URL)
-        .client(okHttpClient)
+        .client(okHttpClient)                      // 위에서 설정한 client 사용
         .addConverterFactory(GsonConverterFactory.create())
         .build()
 

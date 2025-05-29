@@ -42,7 +42,7 @@ object TourService {
             val detail = try {
                 service.getContentDetail(
                     contentId = item.contentid,
-                    contentTypeId = item.contenttypeid.toString(),
+                    contentTypeId = item.contenttypeid,
                     serviceKey = serviceKey
                 ).response.body.items?.item?.firstOrNull()
             } catch (e: Exception) {
@@ -68,18 +68,18 @@ object TourService {
 
 
     suspend fun getRestaurantsByRegion(region: String): List<Place> {
-        return getPlacesByRegion(region, ContentType.RESTAURANT.id.toString())
+        return getPlacesByRegion(region, ContentType.RESTAURANT.id)
     }
 
     suspend fun getAccommodationsByRegion(region: String): List<Place> {
-        return getPlacesByRegion(region, ContentType.ACCOMMODATION.id.toString())
+        return getPlacesByRegion(region, ContentType.ACCOMMODATION.id)
     }
 
     suspend fun getTouristSpotsByRegion(region: String): List<Place> {
-        return getPlacesByRegion(region, ContentType.TOURIST_SPOT.id.toString())
+        return getPlacesByRegion(region, ContentType.TOURIST_SPOT.id)
     }
 
-    suspend fun getPlacesByRegion(region: String, contentTypeId: String): List<Place> {
+    suspend fun getPlacesByRegion(region: String, contentTypeId: Int): List<Place> {
         val areaCode = Region.fromName(region)?.code?.toString()
             ?: return emptyList()
 
@@ -94,14 +94,15 @@ object TourService {
             null
         } ?: return emptyList()
 
-        return items.mapNotNull { base ->
+        return items.map { base ->
             val detail = try {
                 service.getContentDetail(
                     contentId = base.contentid,
-                    contentTypeId = base.contenttypeid.toString(),
+                    contentTypeId = base.contenttypeid,
                     serviceKey = serviceKey
                 ).response.body.items?.item?.firstOrNull()
             } catch (e: Exception) {
+
                 Log.w("TourService", "detailCommon 실패: ${e.message}")
                 null
             }
@@ -121,89 +122,189 @@ object TourService {
         }
     }
 
+    /* ────────────────────────────────
+       ① KeywordSearch → Place 변환
+       ──────────────────────────────── */
     private fun mergeToPlace(
         base: KeywordSearchItem,
         detail: ContentDetailItem?,
         intro: DetailIntroItem?
-    ): Place {
-        return Place(
-            contentId = base.contentid,
-            contentTypeId = base.contenttypeid,
-            title = detail?.title ?: base.title,
-            addr1 = detail?.addr1 ?: base.addr1,
-            addr2 = detail?.addr2 ?: base.addr2,
-            areaCode = detail?.areacode ?: base.areacode,
-            sigunguCode = base.sigungucode,
-            cat1 = detail?.cat1 ?: base.cat1,
-            cat2 = detail?.cat2 ?: base.cat2,
-            cat3 = detail?.cat3 ?: base.cat3,
-            firstImage = detail?.firstimage ?: base.firstimage,
-            firstImage2 = detail?.firstimage2 ?: base.firstimage2,
-            x = detail?.mapx ?: base.mapx ?: 0.0,
-            y = detail?.mapy ?: base.mapy ?: 0.0,
-            tel = detail?.tel ?: base.tel,
-            hmpg = detail?.hmpg,
-            overview = detail?.overview,
+    ): Place = Place(
+        /* ─ 기본 공통 정보 ─ */
+        contentId      = base.contentid,
+        contentTypeId  = base.contenttypeid,
+        title          = detail?.title ?: base.title,
+        addr1          = detail?.addr1 ?: base.addr1,
+        addr2          = detail?.addr2 ?: base.addr2,
+        areaCode       = detail?.areacode ?: base.areacode,
+        sigunguCode    = base.sigungucode,
+        cat1           = detail?.cat1 ?: base.cat1,
+        cat2           = detail?.cat2 ?: base.cat2,
+        cat3           = detail?.cat3 ?: base.cat3,
+        firstImage     = detail?.firstimage  ?: base.firstimage,
+        firstImage2    = detail?.firstimage2 ?: base.firstimage2,
+        x              = detail?.mapx ?: base.mapx ?: 0.0,
+        y              = detail?.mapy ?: base.mapy ?: 0.0,
+        tel            = detail?.tel ?: base.tel,
+        hmpg           = detail?.hmpg,
+        overview       = detail?.overview,
 
-            // 관광지
-            useTime = intro?.usetime,
-            infoCenter = intro?.infocenter ?: intro?.infocenterlodging ?: intro?.infocenterfood,
+        /* ─ 관광지 (12) ─ */
+        expguide       = intro?.expguide,
+        infocenter     = intro?.infocenter,
+        opendate       = intro?.opendate,
+        parking        = intro?.parking,
+        restdate       = intro?.restdate,
+        useseason      = intro?.useseason,
+        usetime        = intro?.usetime,
 
-            openTime = intro?.opentimefood,
-            firstMenu = intro?.firstmenu,
-            treatMenu = intro?.treatmenu,
+        /* ─ 문화시설 (14) ─ */
+        infocenterculture = intro?.infocenterculture,
+        parkingculture    = intro?.parkingculture,
+        parkingfee        = intro?.parkingfee,
+        restdateculture   = intro?.restdateculture,
+        usefee            = intro?.usefee,
+        usetimeculture    = intro?.usetimeculture,
+        spendtime         = intro?.spendtime,
+
+        /* ─ 축제/공연/행사 (15) ─ */
+        bookingplace      = intro?.bookingplace,
+        eventenddate      = intro?.eventenddate,
+        eventhomepage     = intro?.eventhomepage,
+        eventplace        = intro?.eventplace,
+        eventstartdate    = intro?.eventstartdate,
+        playtime          = intro?.playtime,
+        program           = intro?.program,
+        spendtimefestival = intro?.spendtimefestival,
+        usetimefestival   = intro?.usetimefestival,
+
+        /* ─ 레포츠 (28) ─ */
+        infocenterleports = intro?.infocenterleports,
+        openperiod        = intro?.openperiod,
+        parkingfeeleports = intro?.parkingfeeleports,
+        parkingleports    = intro?.parkingleports,
+        reservation       = intro?.reservation,
+        restdateleports   = intro?.restdateleports,
+        usefeeleports     = intro?.usefeeleports,
+        usetimeleports    = intro?.usetimeleports,
+
+        /* ─ 숙박 (32) ─ */
+        checkintime       = intro?.checkintime,
+        checkouttime      = intro?.checkouttime,
+        infocenterlodging = intro?.infocenterlodging,
+        parkinglodging    = intro?.parkinglodging,
+        roomcount         = intro?.roomcount,
+        reservationlodging= intro?.reservationlodging,
+        reservationurl    = intro?.reservationurl,
+        roomtype          = intro?.roomtype,
+
+        /* ─ 쇼핑 (38) ─ */
+        infocentershopping= intro?.infocentershopping,
+        opentime          = intro?.opentime,
+        parkingshopping   = intro?.parkingshopping,
+        saleitem          = intro?.saleitem,
+        saleitemcost      = intro?.saleitemcost,
+        scaleshopping     = intro?.scaleshopping,
+        shopguide         = intro?.shopguide,
+
+        /* ─ 음식점 (39) ─ */
+        discountinfofood  = intro?.discountinfofood,
+        firstmenu         = intro?.firstmenu,
+        infocenterfood    = intro?.infocenterfood,
+        opentimefood      = intro?.opentimefood,
+        restdatefood      = intro?.restdatefood,
+        treatmenu         = intro?.treatmenu
+    )
 
 
-            checkInTime = intro?.checkintime,
-            checkOutTime = intro?.checkouttime,
-            roomType = intro?.roomtype,
-            reservation = null,
-            reservationUrl = intro?.reservationurl,
-            parking = intro?.parking ?: intro?.parkinglodging ?: intro?.parkingfood,
-
-            foodPlace = null,
-            pickup = null,
-
-            eventStartDate = null,
-            eventEndDate = null
-        )
-    }
+    /* ───────────────────────────────────────────────
+       ② AreaBasedList → Place 변환 (구조 동일)
+       ─────────────────────────────────────────────── */
     private fun mergeToPlaceFromArea(
         base: AreaBasedItem,
         detail: ContentDetailItem?,
         intro: DetailIntroItem?
-    ): Place {
-        return Place(
-            contentId = base.contentid,
-            contentTypeId = base.contenttypeid,
-            title = detail?.title ?: base.title,
-            addr1 = detail?.addr1 ?: base.addr1,
-            addr2 = detail?.addr2 ?: base.addr2,
-            areaCode = detail?.areacode ?: base.areacode,
-            sigunguCode = base.sigungucode,
-            cat1 = detail?.cat1 ?: base.cat1,
-            cat2 = detail?.cat2 ?: base.cat2,
-            cat3 = detail?.cat3 ?: base.cat3,
-            firstImage = detail?.firstimage ?: base.firstimage,
-            firstImage2 = detail?.firstimage2 ?: base.firstimage2,
-            x = detail?.mapx ?: base.mapx ?: 0.0,
-            y = detail?.mapy ?: base.mapy ?: 0.0,
-            tel = detail?.tel ?: base.tel,
-            hmpg = detail?.hmpg,
-            overview = detail?.overview,
+    ): Place = Place(
+        /* ─ 기본 공통 정보 ─ */
+        contentId      = base.contentid,
+        contentTypeId  = base.contenttypeid,
+        title          = detail?.title ?: base.title,
+        addr1          = detail?.addr1 ?: base.addr1,
+        addr2          = detail?.addr2 ?: base.addr2,
+        areaCode       = detail?.areacode ?: base.areacode,
+        sigunguCode    = base.sigungucode,
+        cat1           = detail?.cat1 ?: base.cat1,
+        cat2           = detail?.cat2 ?: base.cat2,
+        cat3           = detail?.cat3 ?: base.cat3,
+        firstImage     = detail?.firstimage  ?: base.firstimage,
+        firstImage2    = detail?.firstimage2 ?: base.firstimage2,
+        x              = detail?.mapx ?: base.mapx ?: 0.0,
+        y              = detail?.mapy ?: base.mapy ?: 0.0,
+        tel            = detail?.tel ?: base.tel,
+        hmpg           = detail?.hmpg,
+        overview       = detail?.overview,
 
-            useTime = intro?.usetime,
-            infoCenter = intro?.infocenter ?: intro?.infocenterlodging ?: intro?.infocenterfood,
-            openTime = intro?.opentimefood,
-            firstMenu = intro?.firstmenu,
-            treatMenu = intro?.treatmenu,
-            checkInTime = intro?.checkintime,
-            checkOutTime = intro?.checkouttime,
-            roomType = intro?.roomtype,
-            reservationUrl = intro?.reservationurl,
-            parking = intro?.parking ?: intro?.parkinglodging ?: intro?.parkingfood
+        /* 이하 섹션별 매핑은 위 mergeToPlace 와 동일 */
+        expguide           = intro?.expguide,
+        infocenter         = intro?.infocenter,
+        opendate           = intro?.opendate,
+        parking            = intro?.parking,
+        restdate           = intro?.restdate,
+        useseason          = intro?.useseason,
+        usetime            = intro?.usetime,
 
-        )
-    }
+        infocenterculture  = intro?.infocenterculture,
+        parkingculture     = intro?.parkingculture,
+        parkingfee         = intro?.parkingfee,
+        restdateculture    = intro?.restdateculture,
+        usefee             = intro?.usefee,
+        usetimeculture     = intro?.usetimeculture,
+        spendtime          = intro?.spendtime,
+
+        bookingplace       = intro?.bookingplace,
+        eventenddate       = intro?.eventenddate,
+        eventhomepage      = intro?.eventhomepage,
+        eventplace         = intro?.eventplace,
+        eventstartdate     = intro?.eventstartdate,
+        playtime           = intro?.playtime,
+        program            = intro?.program,
+        spendtimefestival  = intro?.spendtimefestival,
+        usetimefestival    = intro?.usetimefestival,
+
+        infocenterleports  = intro?.infocenterleports,
+        openperiod         = intro?.openperiod,
+        parkingfeeleports  = intro?.parkingfeeleports,
+        parkingleports     = intro?.parkingleports,
+        reservation        = intro?.reservation,
+        restdateleports    = intro?.restdateleports,
+        usefeeleports      = intro?.usefeeleports,
+        usetimeleports     = intro?.usetimeleports,
+
+        checkintime        = intro?.checkintime,
+        checkouttime       = intro?.checkouttime,
+        infocenterlodging  = intro?.infocenterlodging,
+        parkinglodging     = intro?.parkinglodging,
+        roomcount          = intro?.roomcount,
+        reservationlodging = intro?.reservationlodging,
+        reservationurl     = intro?.reservationurl,
+        roomtype           = intro?.roomtype,
+
+        infocentershopping = intro?.infocentershopping,
+        opentime           = intro?.opentime,
+        parkingshopping    = intro?.parkingshopping,
+        saleitem           = intro?.saleitem,
+        saleitemcost       = intro?.saleitemcost,
+        scaleshopping      = intro?.scaleshopping,
+        shopguide          = intro?.shopguide,
+
+        discountinfofood   = intro?.discountinfofood,
+        firstmenu          = intro?.firstmenu,
+        infocenterfood     = intro?.infocenterfood,
+        opentimefood       = intro?.opentimefood,
+        restdatefood       = intro?.restdatefood,
+        treatmenu          = intro?.treatmenu
+    )
+
+
 
 }
