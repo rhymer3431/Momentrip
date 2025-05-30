@@ -15,6 +15,7 @@ import androidx.compose.material3.Divider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -39,8 +40,9 @@ fun DayEditScreen(
     modifier: Modifier = Modifier
 ) {
 
+
     val day = scheduleViewModel.currentDay.collectAsState()
-    val activities = day.value?.timeTable
+    val activities = remember(day) { day.value?.timeTable.orEmpty() }
 
     Column(
         modifier = modifier
@@ -59,39 +61,27 @@ fun DayEditScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // 2) activities가 없으면 중앙에 AddButton
-        if (activities!!.isEmpty()) {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
+        LazyColumn(
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+            modifier = Modifier.fillMaxSize()
+        ) {
+            items(activities) { activity ->
+                Column {
+                    ActivityCard(
+                        activity = activity,
+                        onDeleteClick = { onDeleteClick(activity) }
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                }
+            }
+            item{
                 AddButton(
                     onClick = onAddClick
                 )
-            }
-        } else {
-            // 3) items가 있을 때만 리스트와 각 AddButton
-            LazyColumn(
-                verticalArrangement = Arrangement.spacedBy(16.dp),
-                modifier = Modifier.fillMaxSize()
-            ) {
-                items(activities) { activity ->
-                    Column {
-                        ActivityCard(
-                            activity = activity,
-                            onDeleteClick = { onDeleteClick(activity) }
-                        )
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Divider(modifier = Modifier.padding(vertical = 16.dp))
-                        AddButton(
-                            modifier = Modifier.align(Alignment.CenterHorizontally),
-                            onClick = onAddClick
-                        )
-                        Divider(modifier = Modifier.padding(top = 16.dp))
-                    }
-                }
+
             }
         }
+
     }
 }
 

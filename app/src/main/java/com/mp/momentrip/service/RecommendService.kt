@@ -125,6 +125,20 @@ object RecommendService {
         val denom = kotlin.math.sqrt(mag1) * kotlin.math.sqrt(mag2)
         return if (denom == 0f) 0f else dot / denom
     }
+    fun getFavoriteFood(userPreference: UserPreference): Pair<String?, String?> {
+        val typeMap = userPreference.foodPreference.foodTypeId
+        val nameMap = userPreference.foodPreference.foodNameId
+
+        val topType = typeMap
+            ?.maxByOrNull { it.value }
+            ?.key
+
+        val topName = nameMap
+            ?.maxByOrNull { it.value }
+            ?.key
+
+        return Pair(topType, topName)
+    }
 
 
 }

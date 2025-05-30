@@ -33,7 +33,7 @@ private val LightColorPalette = lightColorScheme(
     surface = Color(0xFFF6F6F6),         // 카드/섹션 배경: primary의 옅은 버전
     onSurface = Color(0xFF1B2D3C),       // surface 위 텍스트 (가독성 높은 진한 컬러)
 
-    surfaceVariant = Color(0xFFC1E3F3),  // 변형된 서피스 색 (살짝 채도 낮춘 블루)
+    surfaceVariant = Color(0xFFECECEC),  // 변형된 서피스 색 (살짝 채도 낮춘 블루)
     onSurfaceVariant = Color(0xFF1B2D3C),// 변형 surface 위 텍스트
 
     outline = Color(0xFF7EB6E9),         // 테두리 (중간 톤 블루)

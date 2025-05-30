@@ -24,6 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -49,6 +50,8 @@ import com.mp.momentrip.ui.screen.schedule.DayEditScreen
 import com.mp.momentrip.ui.screen.schedule.ScheduleCreationScreen
 import com.mp.momentrip.ui.screen.schedule.ScheduleDetailScreen
 import com.mp.momentrip.ui.screen.schedule.ScheduleListScreen
+import com.mp.momentrip.ui.screen.setting.ChangePasswordScreen
+import com.mp.momentrip.ui.screen.setting.SettingsScreen
 
 
 import com.mp.momentrip.ui.screen.user.RecommendResult
@@ -56,6 +59,7 @@ import com.mp.momentrip.ui.screen.user.SignInScreen
 import com.mp.momentrip.view.RecommendViewModel
 import com.mp.momentrip.view.ScheduleViewModel
 import com.mp.momentrip.view.UserViewModel
+import java.time.LocalTime
 
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -256,20 +260,43 @@ fun BottomNavGraph(
         composable(ScheduleDestinations.CHECK_LIST_ROUTE){
             ScheduleChecklistScreen(
                 scheduleViewModel = scheduleViewModel,
-                {scheduleViewModel.updateChecklist(
+                onChecklistChange = { it ->
+                    scheduleViewModel.updateChecklist(
                     updatedChecklist = it,
-                    userVM = userState
-                )}
+                    userVM = userState)
+                }
             )
         }
         composable(ScheduleDestinations.ACTIVITY_SELECT_ROUTE){
             ActivitySelectScreen(
                 scheduleViewModel = scheduleViewModel,
                 recommendViewModel = recommendViewModel,
-                onPlaceSelected = { },
+                onPlaceTimeSelected = {place, start, end ->
+                    scheduleViewModel.addActivity(place, start, end, userState)
+                },
                 onCancel = { navController.popBackStack() }
             )
         }
+        composable(MainDestinations.SETTINGS_ROUTE) {
+            SettingsScreen(
+                onBackClick = { navController.popBackStack() },
+                onPersonalityClick = {
+                    navController.navigate(MainDestinations.PREFERENCE_ANALYZE)
+                },
+                onChangePasswordClick = {
+                    navController.navigate(MainDestinations.CHANGE_PASSWORD_ROUTE)
+                }
+            )
+        }
+
+        // 🔒 비밀번호 변경 화면
+        composable(MainDestinations.CHANGE_PASSWORD_ROUTE) {
+            ChangePasswordScreen(
+                onBackClick = { navController.popBackStack() }
+            )
+        }
+
+
 
     }
 }

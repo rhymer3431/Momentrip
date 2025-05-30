@@ -18,7 +18,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconToggleButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -104,11 +109,16 @@ fun PlaceDetailBottomSheet(
                         },
                         onDragEnd = {
                             scope.launch {
-                                offsetY.animateTo(0f, tween(300))
+                                if (offsetY.value > screenHeightPx * 0.25f) {
+                                    isClosing = true
+                                } else {
+                                    offsetY.animateTo(0f, tween(300))
+                                }
                             }
                         }
                     )
                 }
+
                 // 이미지 바로 아래
                 .offset(y = dynamicImageHeight)
                 .fillMaxWidth()
@@ -120,26 +130,22 @@ fun PlaceDetailBottomSheet(
                 .padding(horizontal = 20.dp, vertical = 16.dp)
                 .graphicsLayer { alpha = textAlpha }
         ) {
-            var selectedTab by remember { mutableStateOf(DetailTab.Description) }
+            var selectedTab by remember { mutableStateOf(DetailTab.Detail) }
 
-            // 닫기 버튼
-            Box(
-                Modifier
-                    .size(27.dp)
-                    .align(Alignment.End)
-                    .clickable {
-                        scope.launch { isClosing = true }
-                    }
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = place.title,
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color(0xFF121212)
+                )
+                Spacer(modifier = Modifier.weight(1f)) // ← 왼쪽과 오른쪽 요소 분리
+                LikeButton(userState, place)
+            }
 
-            LikeButton(userState, place)
-
-            Text(
-                text = place.title,
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color(0xFF121212)
-            )
             Spacer(Modifier.height(8.dp))
 
             Row(verticalAlignment = Alignment.CenterVertically) {

@@ -2,6 +2,7 @@ package com.mp.momentrip.service
 
 import android.util.Log
 import androidx.navigation.NavController
+import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FirebaseFirestore
@@ -103,41 +104,27 @@ object AccountService{
             false
         }
     }
-
-    suspend fun saveSchedule(schedule: Schedule): String? {
+    suspend fun changePassword(currentPassword: String, newPassword: String): Result<Unit> {
         return try {
-            val uid = getCurrentUser()?.uid ?: return null
-            val db = FirebaseFirestore.getInstance()
-            val document = db.collection("users")
-                .document(uid)
-                .collection("schedules")
-                .add(schedule)
-                .await()
-            document.id
+            val user = FirebaseAuth.getInstance().currentUser
+                ?: return Result.failure(Exception("로그인된 사용자가 없습니다."))
+
+            val email = user.email
+                ?: return Result.failure(Exception("이메일 정보를 찾을 수 없습니다."))
+
+            // 1. 현재 비밀번호로 재인증
+            val credential = EmailAuthProvider.getCredential(email, currentPassword)
+            user.reauthenticate(credential).await()
+
+            // 2. 새 비밀번호로 업데이트
+            user.updatePassword(newPassword).await()
+
+            Log.d("Firebase", "비밀번호 변경 성공")
+            Result.success(Unit)
         } catch (e: Exception) {
-            Log.e("Firebase", "Save schedule failed", e)
-            null
+            Log.e("Firebase", "비밀번호 변경 실패", e)
+            Result.failure(e)
         }
     }
-    suspend fun loadSchedulesOfUser(): List<Schedule> {
-        return try {
-            val uid = getCurrentUser()?.uid ?: return emptyList()
-            val db = FirebaseFirestore.getInstance()
-            val result = db.collection("users")
-                .document(uid)
-                .collection("schedules")
-                .get()
-                .await()
-            result.documents.mapNotNull { it.toObject(Schedule::class.java) }
-
-        } catch (e: Exception) {
-            Log.e("Firebase", "Load schedules failed", e)
-            emptyList()
-        }
-    }
-
-
-
-
 
 }

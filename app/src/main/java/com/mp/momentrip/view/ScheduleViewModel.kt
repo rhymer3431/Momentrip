@@ -7,12 +7,14 @@ import androidx.lifecycle.viewModelScope
 import com.mp.momentrip.data.Activity
 import com.mp.momentrip.data.CheckItem
 import com.mp.momentrip.data.Day
+import com.mp.momentrip.data.Place
 import com.mp.momentrip.data.Schedule
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
+import java.time.LocalTime
 
 class ScheduleViewModel : ViewModel() {
 
@@ -69,7 +71,45 @@ class ScheduleViewModel : ViewModel() {
                 userSchedules,
                 userVM
             )
+            _schedule.value = newSchedule
         }
+    }
+
+    fun addActivity(
+        place: Place,
+        start: LocalTime,
+        end: LocalTime,
+        userVM: UserViewModel
+    ) {
+        val current = _schedule.value ?: return
+        val allSchedules = userVM.user.value?.schedules?.filterNotNull() ?: return
+
+        if (end <= start) return
+
+        val newActivity = Activity(
+            startTime = start,
+            endTime = end,
+            place = place
+        )
+
+        val dayIdx = _selectedDayIndex.value
+        val days = current.days.toMutableList()
+        val today = days.getOrNull(dayIdx) ?: return
+
+        val overlap = today.timeTable.any { exist ->
+            val es = exist.startTime ?: return@any false
+            val ee = exist.endTime ?: return@any false
+            start.isBefore(ee) && end.isAfter(es)
+        }
+        if (overlap) return
+
+        val updatedTable = (today.timeTable + newActivity)
+            .sortedBy { it.startTime ?: LocalTime.MIN } // 정렬 추가
+
+        days[dayIdx] = today.copy(timeTable = updatedTable)
+        val updatedSchedule = current.copy(days = days)
+
+        saveSchedule(updatedSchedule, allSchedules, userVM)
     }
 
     fun updateScheduleById(

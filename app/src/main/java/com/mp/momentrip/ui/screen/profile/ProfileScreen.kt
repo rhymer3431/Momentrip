@@ -21,7 +21,10 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBox
+import androidx.compose.material.icons.filled.DeleteForever
+import androidx.compose.material.icons.filled.Logout
 import androidx.compose.material.icons.filled.Place
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
@@ -44,6 +47,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberAsyncImagePainter
 import com.mp.momentrip.service.AccountService
+import com.mp.momentrip.ui.MainDestinations
 import com.mp.momentrip.ui.ScheduleDestinations
 import com.mp.momentrip.ui.components.ThemeCard
 import com.mp.momentrip.view.UserViewModel
@@ -196,31 +200,33 @@ fun ProfileMenu(navController: NavController) {
     ) {
         Column {
             ProfileMenuItem(
-                icon = Icons.Default.Place,
+                icon = Icons.Default.Place, // 여행
                 title = "나의 여행",
                 showDivider = true,
-                onClick = {navController.navigate(ScheduleDestinations.SCHEDULE_LIST_ROUTE)}
+                onClick = { navController.navigate(ScheduleDestinations.SCHEDULE_LIST_ROUTE) }
             )
+
             ProfileMenuItem(
-                icon = Icons.Filled.AccountBox,
+                icon = Icons.Default.Settings, // 설정
                 title = "설정",
                 showDivider = true,
-                onClick = {
-                    AccountService.signOut(navController)}
+                onClick = { navController.navigate(MainDestinations.SETTINGS_ROUTE) }
             )
+
             ProfileMenuItem(
-                icon = Icons.Filled.AccountBox,
+                icon = Icons.Default.DeleteForever, // 계정 탈퇴
                 title = "계정 탈퇴",
                 showDivider = true,
                 onClick = {
-                    AccountService.signOut(navController)}
+                    // 계정 탈퇴 로직 별도 처리 필요
+                }
             )
+
             ProfileMenuItem(
-                icon = Icons.Filled.AccountBox,
+                icon = Icons.Default.Logout, // 로그아웃
                 title = "로그아웃",
                 showDivider = true,
-                onClick = {
-                    AccountService.signOut(navController)}
+                onClick = { AccountService.signOut(navController) }
             )
         }
     }

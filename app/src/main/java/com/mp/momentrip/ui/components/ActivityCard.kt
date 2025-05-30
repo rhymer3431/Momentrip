@@ -45,7 +45,7 @@ fun ActivityCard(
     onDeleteClick: () -> Unit
 ) {
     val place = activity.place
-    val imageUrl = place.firstImage2 ?: ""
+    val imageUrl = place.firstImage ?: ""
 
     Row(
         verticalAlignment = Alignment.CenterVertically,

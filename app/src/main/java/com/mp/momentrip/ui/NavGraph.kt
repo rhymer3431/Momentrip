@@ -30,7 +30,12 @@ object MainDestinations {
     const val SIGN_UP_ROUTE = "signUp"
     const val PREFERENCE_ANALYZE = "preferenceAnalyze"
     const val FEED_ROUTE = "feed"
+
+    // ✅ 추가된 라우트
+    const val SETTINGS_ROUTE = "settings"
+    const val CHANGE_PASSWORD_ROUTE = "changePassword"
 }
+
 
 object ScheduleDestinations{
     const val SCHEDULE_ROUTE = "schedule"
@@ -39,6 +44,7 @@ object ScheduleDestinations{
     const val CHECK_LIST_ROUTE = "checklist"
     const val DAY_EDIT_ROUTE = "dayEdit"
     const val ACTIVITY_SELECT_ROUTE = "activitySelect"
+    const val ACTIVITY_TIME_ROUTE = "activityTime"
 }
 
 object UserDestinations {

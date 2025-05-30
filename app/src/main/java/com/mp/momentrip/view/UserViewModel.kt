@@ -183,7 +183,7 @@ class UserViewModel : ViewModel() {
 
             if (currentUser != null && currentPlace != null) {
                 try {
-                    // 좋아요 상태 변경 (UI 스레드)
+                    // 좋아요 상태 변경
                     val updatedLiked = currentUser.liked.toMutableList()
                     val isNowLiked = if (updatedLiked.contains(currentPlace)) {
                         updatedLiked.remove(currentPlace)
@@ -193,36 +193,40 @@ class UserViewModel : ViewModel() {
                         true
                     }
 
-                    // 사용자 정보 업데이트 (UI 스레드)
+                    // 좋아요 반영된 사용자 객체 생성
                     val updatedUser = currentUser.copy(liked = updatedLiked)
                     _user.value = updatedUser
                     _isLiked.value = isNowLiked
 
-                    // 무거운 연산을 백그라운드로 이동
+                    // 백그라운드에서 벡터/선호도 처리
                     withContext(Dispatchers.Default) {
                         if (isNowLiked) {
-                            // 벡터 계산은 백그라운드에서 수행
+                            // 음식점인 경우 FoodPreference에 반영
+                            if (currentPlace.contentTypeId == 39) {
+                                val foodPref = currentUser.userPreference.foodPreference
+                                currentPlace.cat3?.let { foodPref.addFoodTypeCount(it) }
+                                currentPlace.title.let { foodPref.addFoodNameCount(it) }
+                            }
+
+                            // Word2Vec 벡터 업데이트
                             Word2VecModel.like(
                                 currentUser.userPreference.preferenceVector,
                                 currentPlace
                             )
-                        }
-                        else{
+                        } else {
                             Word2VecModel.dislike(
                                 currentUser.userPreference.preferenceVector,
                                 currentPlace
                             )
                         }
 
-                        // 백엔드 동기화 (IO 스레드)
+                        // 백엔드 동기화 (IO)
                         withContext(Dispatchers.IO) {
                             AccountService.updateUser(updatedUser.toDto())
                         }
                     }
                 } catch (e: Exception) {
-                    // 오류 발생 시 롤백
                     _user.value = currentUser
-
                     Log.e("UserViewModel", "Like failed", e)
                 } finally {
                     _isLoading.value = false
@@ -232,6 +236,7 @@ class UserViewModel : ViewModel() {
             }
         }
     }
+
 
     fun isLiked(): Boolean {
         val currentPlace = place.value ?: return false

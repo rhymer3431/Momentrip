@@ -7,9 +7,11 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.DragHandle
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Save
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
@@ -62,16 +64,17 @@ fun ScheduleChecklistScreen(
         )
     } else {
         // Display mode for checklist
+        // 전체 Column 패딩 조정
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(vertical = 16.dp)
+                .padding(horizontal = 16.dp, vertical = 24.dp) // ← 변경됨
         ) {
+            // 제목 및 버튼 행
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
-                    .padding(bottom = 12.dp),
+                    .padding(bottom = 16.dp), // ← 여유 있게 변경
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -81,108 +84,87 @@ fun ScheduleChecklistScreen(
                     modifier = Modifier.weight(1f)
                 )
                 Row {
-                    Button(
+                    IconButton(
                         onClick = { isInEditMode = true },
-                        shape = RoundedCornerShape(8.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF007AFF)),
+                        modifier = Modifier.padding(end = 4.dp) // ← 아이콘 간 여백
                     ) {
-                        Text("편집", color = Color.White)
+                        Icon(
+                            imageVector = Icons.Default.Edit,
+                            contentDescription = "편집",
+                            tint = Color(0xFF373538)
+                        )
                     }
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Button(
+                    IconButton(
                         onClick = {
                             onChecklistChange(checklist)
+                            scheduleViewModel.setSchedule(schedule!!)
+
                             Toast.makeText(context, "저장되었습니다", Toast.LENGTH_SHORT).show()
-                        },
-                        shape = RoundedCornerShape(8.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF34C759)),
+                        }
                     ) {
-                        Text("저장", color = Color.White)
+                        Icon(
+                            imageVector = Icons.Default.Save,
+                            contentDescription = "저장",
+                            tint = Color(0xFF34C759)
+                        )
                     }
                 }
             }
 
+            // 항목 없을 때 안내문
             if (checklist.isEmpty()) {
                 Box(
                     modifier = Modifier
                         .weight(1f)
                         .fillMaxWidth()
-                        .padding(horizontal = 16.dp),
+                        .padding(horizontal = 8.dp), // ← 좌우 여백 축소
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
                         "체크리스트 항목이 없습니다. 항목을 추가해주세요.",
                         style = MaterialTheme.typography.bodyMedium,
-                        color = Color.Gray
+                        color = Color.Gray,
+                        modifier = Modifier.padding(8.dp)
                     )
                 }
             } else {
                 LazyColumn(
                     verticalArrangement = Arrangement.spacedBy(12.dp),
                     modifier = Modifier.weight(1f),
-                    contentPadding = PaddingValues(horizontal = 16.dp)
+                    contentPadding = PaddingValues(horizontal = 4.dp, vertical = 4.dp) // ← 여백 추가
                 ) {
                     items(checklist, key = { it.id }) { item ->
-                        val cardShape = RoundedCornerShape(14.dp)
-                        Surface(
-                            shape = cardShape,
-                            color = MaterialTheme.colorScheme.surfaceVariant,
-                            shadowElevation = 2.dp,
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .clickable {
-                                        val updatedItem = item.copy(checked = !item.checked)
-                                        checklist = checklist.map {
-                                            if (it.id == item.id) updatedItem else it
-                                        }
-                                        onChecklistChange(checklist)
-                                    }
-                            ) {
-                                Checkbox(
-                                    checked = item.checked,
-                                    onCheckedChange = { isChecked ->
-                                        val updatedItem = item.copy(checked = isChecked)
-                                        checklist = checklist.map {
-                                            if (it.id == item.id) updatedItem else it
-                                        }
-                                        onChecklistChange(checklist)
-                                    },
-                                    colors = CheckboxDefaults.colors(
-                                        checkedColor = Color(0xFF007AFF),
-                                        uncheckedColor = Color(0xFF8E8E93)
-                                    )
-                                )
-                                Spacer(modifier = Modifier.width(12.dp))
-                                Text(
-                                    text = item.name,
-                                    style = MaterialTheme.typography.bodyLarge.copy(
-                                        fontSize = 16.sp,
-                                        color = if (item.checked) Color(0xFF8E8E93) else MaterialTheme.colorScheme.onSurfaceVariant
-                                    ),
-                                    modifier = Modifier.alpha(if (item.checked) 0.6f else 1f)
-                                )
+                        ScheduleChecklistItem(
+                            item = item,
+                            onItemCheckedChange = { updatedItem ->
+                                checklist = checklist.map {
+                                    if (it.id == updatedItem.id) updatedItem else it
+                                }
+                                onChecklistChange(checklist)
                             }
-                        }
+                        )
                     }
                 }
             }
-            Spacer(modifier = Modifier.height(16.dp))
 
-            Button(
+            Spacer(modifier = Modifier.height(24.dp)) // ← 추가 버튼 강조 위해 여백 확대
+
+            // 항목 추가 버튼
+            IconButton(
                 onClick = { showAddItemDialog = true },
-                shape = RoundedCornerShape(12.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF007AFF)),
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
+                    .align(Alignment.CenterHorizontally)
+                    .padding(8.dp)
             ) {
-                Text("항목 추가", color = Color.White, fontSize = 16.sp)
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = "항목 추가",
+                    tint = Color(0xFF007AFF),
+                    modifier = Modifier.size(32.dp)
+                )
             }
         }
+
 
         if (showAddItemDialog) {
             AlertDialog(
@@ -196,7 +178,7 @@ fun ScheduleChecklistScreen(
                         value = newItemText,
                         onValueChange = { newItemText = it },
                         singleLine = true,
-                        placeholder = { Text("예: 여권 챙기기") },
+                        placeholder = { Text("칫솔 챙기기") },
                         modifier = Modifier.fillMaxWidth()
                     )
                 },
@@ -233,6 +215,51 @@ fun ScheduleChecklistScreen(
         }
     }
 }
+
+@Composable
+fun ScheduleChecklistItem(
+    item: CheckItem,
+    onItemCheckedChange: (CheckItem) -> Unit
+) {
+    val cardShape = RoundedCornerShape(14.dp)
+    Surface(
+        shape = cardShape,
+        color = MaterialTheme.colorScheme.surfaceVariant,
+        shadowElevation = 2.dp,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable {
+                    onItemCheckedChange(item.copy(checked = !item.checked))
+                }
+                .padding(horizontal = 12.dp, vertical = 8.dp)
+        ) {
+            Checkbox(
+                checked = item.checked,
+                onCheckedChange = { isChecked ->
+                    onItemCheckedChange(item.copy(checked = isChecked))
+                },
+                colors = CheckboxDefaults.colors(
+                    checkedColor = Color(0xFF007AFF),
+                    uncheckedColor = Color(0xFF8E8E93)
+                )
+            )
+            Spacer(modifier = Modifier.width(12.dp))
+            Text(
+                text = item.name,
+                style = MaterialTheme.typography.bodyLarge.copy(
+                    fontSize = 16.sp,
+                    color = if (item.checked) Color(0xFF8E8E93) else MaterialTheme.colorScheme.onSurfaceVariant
+                ),
+                modifier = Modifier.alpha(if (item.checked) 0.6f else 1f)
+            )
+        }
+    }
+}
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
