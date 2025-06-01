@@ -71,30 +71,59 @@
 
 ## 📌 개발 과정
 
+### 2025년 6월 1일
+- `PostCreateScreen`에 장소 선택 UI, 태그 입력, 설명 필드 구현
+- `AiLoadingScreen`에 Lottie 애니메이션 적용 및 텍스트 구성
+
+### 2025년 5월 31일
+- `FeedScreen`에 검색 기능 추가 (`query`, `searchResult` 상태 관리)
+- `PostCard`에 대표 이미지, 장소명, 좋아요 버튼 구성
+
+### 2025년 5월 28일
+- `ActivitySelectScreen` 구현
+- `Place` 모델에 `DetailIntroItem` 필드 통합
+
+### 2025년 5월 26일
+- `ScheduleOverviewScreen`에서 지도 구성 분리 (`ScheduleMapView`)
+- 카드, 시트, 버튼 레이아웃 수정
+
 ### 2025년 5월 25일
-- `FeedScreen`에 카드 클릭 시 팝업 애니메이션 적용
-- `PlaceDetailScreen` 내부 통합 및 전환 애니메이션 구현
-- `ScheduleScreen`, `CalendarScreen`, `ChecklistScreen` UI 완성 및 구조 정리
-- 전체 UI/UX 통합 및 경로 구조 `screen/도메인/파일` 방식으로 정비
+- `FeedScreen` 카드 클릭 시 팝업 전환 애니메이션 구현
+- `PlaceDetailScreen`에 BottomSheet 구조 적용
+- `ScheduleScreen`, `CalendarScreen`, `ChecklistScreen` 구조 정비
+- 전체 UI 디렉터리 구조 `screen/도메인/파일` 형식 정리
+
+### 2025년 5월 20일
+- `ScheduleListScreen`에서 `TripOverviewScreen` 전환 구현
 
 ### 2025년 5월 17일
-- `RecommendService`에서 추천 유사도 계산을 `async-awaitAll`로 병렬 처리하여 성능 향상
-- Word2Vec 기반 벡터 유사도 계산 개선
+- `RecommendService`에서 유사도 계산 병렬 처리 (`async-awaitAll`)
+- Word2Vec 벡터 연산 최적화
+
+### 2025년 5월 16일
+- DateRangePicker 형태의 달력 UI 구현
 
 ### 2025년 5월 15일
-- `TourAPIService`에서 `detailInfo1` → `detailIntro1`으로 API 호출 변경
-- `Place` 모델에 `intro` 기반 필드(`infoCenter`, `roomType` 등) 추가
+- `TourAPIService`에서 `detailIntro1` 필드 사용
+- `Place`에 `infoCenter`, `roomType` 등 필드 추가
+
+### 2025년 5월 12일
+- `FeedScreen`에서 `PlaceDetailScreen` 팝업 애니메이션 구현
+- `Orbital`, `updateTransition` 적용
 
 ### 2025년 5월 10일
-- `Schedule.kt`에 `CheckItem` 리스트 추가
-- `ScheduleCreationScreen`, `ChecklistScreen` 등 일정 생성 및 편집 UI 구현
+- `Schedule.kt`에 `CheckItem` 리스트 필드 추가
+- `ScheduleCreationScreen`, `ChecklistScreen` 구현
+
+### 2025년 5월 7일
+- 일정 클릭 시 `TripOverviewScreen` 전환 기능 구현
 
 ### 2025년 5월 5일
-- `ScheduleListScreen` 구현 및 기존 `UserViewModel`에서 `loadSchedules` 제거
+- `ScheduleListScreen` 구현
+- `UserViewModel`에서 `loadSchedules` 제거
 
-### 2025년 4월 15일 ~ 17일
-- 사용자 선호도 기반 추천 시스템 초기 설계
-- `Question.kt`, `RecommendService.kt` 등 사용자 취향 분석 구조 구성
+### 2025년 4월 15~17일
+- 사용자 선호 기반 추천 구조 설계 (`Question`, `RecommendService` 등)
 
 ### 2025년 3월 24일
 - 프로젝트 초기 커밋
