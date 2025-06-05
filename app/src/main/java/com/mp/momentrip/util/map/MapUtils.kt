@@ -18,9 +18,7 @@ import com.kakao.vectormap.route.RouteLineStylesSet
 import com.kakao.vectormap.route.animation.ProgressAnimation
 import com.kakao.vectormap.route.animation.ProgressDirection
 import com.kakao.vectormap.route.animation.ProgressType
-import com.mp.momentrip.data.Day
-import com.mp.momentrip.data.Schedule
-import com.mp.momentrip.ui.components.DayItem
+import com.mp.momentrip.data.schedule.Schedule
 
 
 fun updateMapPosition(

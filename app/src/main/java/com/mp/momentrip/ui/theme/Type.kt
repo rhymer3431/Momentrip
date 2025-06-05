@@ -1,12 +1,12 @@
 package com.mp.momentrip.ui.theme
 
-import com.mp.momentrip.R
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
+import com.mp.momentrip.R
 
 val Typography = Typography(
     displayLarge = TextStyle(
@@ -52,7 +52,7 @@ val Typography = Typography(
     titleSmall = TextStyle(
         fontFamily = FontFamily(Font(R.font.pretendar)),
         fontWeight = FontWeight.Medium,
-        fontSize = 18.sp // 기존 14.sp
+        fontSize = 15.sp // 기존 14.sp
     ),
     bodyLarge = TextStyle(
         fontFamily = FontFamily(Font(R.font.pretendar)),

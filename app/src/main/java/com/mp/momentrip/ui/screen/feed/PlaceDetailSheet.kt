@@ -17,13 +17,10 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconToggleButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -47,7 +44,8 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.mp.momentrip.R
-import com.mp.momentrip.data.Place
+import com.mp.momentrip.data.place.Place
+import com.mp.momentrip.data.tourAPI.Category
 import com.mp.momentrip.ui.components.ImageCard
 import com.mp.momentrip.ui.components.LikeButton
 import com.mp.momentrip.view.UserViewModel
@@ -98,6 +96,7 @@ fun PlaceDetailBottomSheet(
         // Bottom Sheet (항상 이미지 바로 아래)
         Column(
             modifier = Modifier
+                .verticalScroll(rememberScrollState()) // 🔹 스크롤 가능하게 추가
                 // Drag gesture: offsetY 값만 변경
                 .pointerInput(Unit) {
                     detectVerticalDragGestures(
@@ -158,14 +157,14 @@ fun PlaceDetailBottomSheet(
                 Spacer(Modifier.width(6.dp))
                 Text(
                     text = place.addr1 ?: "주소 정보 없음",
-                    fontSize = 12.sp,
+                    fontSize = 15.sp,
                     color = Color(0xFF6F7789)
                 )
             }
             Spacer(Modifier.height(8.dp))
 
             Text(
-                text = "# ${place.cat1 ?: "카테고리 없음"}",
+                text = "# ${place.cat1?.let { Category.fromCode(it)}}",
                 fontSize = 14.sp,
                 fontWeight = FontWeight.SemiBold,
                 color = Color(0xFF6F7789)
@@ -184,11 +183,11 @@ fun PlaceDetailBottomSheet(
             when (selectedTab) {
                 DetailTab.Detail -> PlaceDetailContent(place, selectedTab)
                 DetailTab.Description -> {
-                    Text(text = "소개글", fontSize = 15.sp, fontWeight = FontWeight.Bold)
+                    Text(text = "소개글", fontSize = 18.sp, fontWeight = FontWeight.Bold)
                     Spacer(Modifier.height(8.dp))
                     Text(
                         text = place.overview ?: "설명 정보 없음",
-                        fontSize = 12.sp,
+                        fontSize = 15.sp,
                         lineHeight = 18.sp
                     )
                 }

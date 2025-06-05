@@ -14,7 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.mp.momentrip.data.Place
+import com.mp.momentrip.data.place.Place
 
 @Composable
 fun PlaceItemCard(place: Place, onSelect: () -> Unit) {

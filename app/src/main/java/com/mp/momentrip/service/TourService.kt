@@ -1,7 +1,16 @@
 package com.mp.momentrip.service
 
 import android.util.Log
-import com.mp.momentrip.data.*
+import com.mp.momentrip.data.place.Place
+import com.mp.momentrip.data.place.Region
+import com.mp.momentrip.data.tourAPI.AreaBasedItem
+import com.mp.momentrip.data.tourAPI.ContentDetailItem
+import com.mp.momentrip.data.tourAPI.ContentType
+import com.mp.momentrip.data.tourAPI.DetailIntroItem
+import com.mp.momentrip.data.tourAPI.KeywordSearchItem
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 
 object TourService {
     private lateinit var serviceKey: String
@@ -67,16 +76,40 @@ object TourService {
 
 
 
-    suspend fun getRestaurantsByRegion(region: String): List<Place> {
-        return getPlacesByRegion(region, ContentType.RESTAURANT.id)
+    suspend fun getCulturalFacilitiesByRegion(region: String): List<Place> {
+        return getPlacesByRegion(region, ContentType.CULTURAL_FACILITY.id)
+    }
+
+    suspend fun getFestivalsByRegion(region: String): List<Place> {
+        return getPlacesByRegion(region, ContentType.FESTIVAL_EVENT.id)
+    }
+
+
+    suspend fun getLeisureSportsByRegion(region: String): List<Place> {
+        return getPlacesByRegion(region, ContentType.LEISURE_SPORTS.id)
     }
 
     suspend fun getAccommodationsByRegion(region: String): List<Place> {
         return getPlacesByRegion(region, ContentType.ACCOMMODATION.id)
     }
 
+    suspend fun getShoppingPlacesByRegion(region: String): List<Place> {
+        return getPlacesByRegion(region, ContentType.SHOPPING.id)
+    }
+
+    suspend fun getRestaurantsByRegion(region: String): List<Place> {
+        return getPlacesByRegion(region, ContentType.RESTAURANT.id)
+    }
+
     suspend fun getTouristSpotsByRegion(region: String): List<Place> {
         return getPlacesByRegion(region, ContentType.TOURIST_SPOT.id)
+    }
+    suspend fun getAllPlacesByRegion(region: String): List<Place> = coroutineScope {
+        ContentType.entries.map { type ->
+            async {
+                getPlacesByRegion(region, type.id)
+            }
+        }.awaitAll().flatten()
     }
 
     suspend fun getPlacesByRegion(region: String, contentTypeId: Int): List<Place> {

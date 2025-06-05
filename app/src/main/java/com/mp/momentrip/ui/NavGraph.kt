@@ -10,11 +10,11 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.mp.momentrip.ui.screen.HomeScreen
-import com.mp.momentrip.ui.screen.profile.ProfileScreen
 import com.mp.momentrip.ui.screen.user.QuestionScreen
 import com.mp.momentrip.ui.screen.user.RecommendResult
 import com.mp.momentrip.ui.screen.user.SignInScreen
 import com.mp.momentrip.ui.screen.user.SignUpScreen
+import com.mp.momentrip.view.CommunityViewModel
 import com.mp.momentrip.view.RecommendViewModel
 import com.mp.momentrip.view.ScheduleViewModel
 import com.mp.momentrip.view.UserViewModel
@@ -30,15 +30,19 @@ object MainDestinations {
     const val SIGN_UP_ROUTE = "signUp"
     const val PREFERENCE_ANALYZE = "preferenceAnalyze"
     const val FEED_ROUTE = "feed"
+    const val COMMUNITY_ROUTE = "community"
 
     // ✅ 추가된 라우트
     const val SETTINGS_ROUTE = "settings"
     const val CHANGE_PASSWORD_ROUTE = "changePassword"
 }
 
-
+object CommunityDestinations{
+    const val POST_CREATE_ROUTE = "postCreate"
+}
 object ScheduleDestinations{
     const val SCHEDULE_ROUTE = "schedule"
+    const val SCHEDULE_OVERVIEW_ROUTE = "scheduleOverview"
     const val SCHEDULE_LIST_ROUTE = "scheduleList"
     const val SCHEDULE_CREATION = "scheduleCreate"
     const val CHECK_LIST_ROUTE = "checklist"
@@ -60,6 +64,7 @@ fun NavGraph(
     userState: UserViewModel,
     scheduleViewModel: ScheduleViewModel,
     recommendViewModel: RecommendViewModel,
+    communityViewModel: CommunityViewModel,
     startDestination : String
 )  {
     NavHost(
@@ -81,18 +86,14 @@ fun NavGraph(
         }
         composable(MainDestinations.HOME_ROUTE) {
             HomeScreen(
+                mainNavController = navController,
                 userState = userState,
                 scheduleViewModel = scheduleViewModel,
-                recommendViewModel = recommendViewModel
+                recommendViewModel = recommendViewModel,
+                communityViewModel = communityViewModel
             )
         }
 
-        composable(MainDestinations.PROFILE_ROUTE) {
-            ProfileScreen(
-                navController,
-                userState
-            )
-        }
 
         composable(MainDestinations.PREFERENCE_ANALYZE){
             QuestionScreen(
@@ -116,7 +117,7 @@ fun NavGraph(
                     navController = navController,
                     modifier = Modifier,
                     resultRegion = place,
-                    userState = userState
+                    onClick = {navController.navigate(MainDestinations.HOME_ROUTE)}
                 )
             }
         }

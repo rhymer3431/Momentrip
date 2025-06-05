@@ -20,7 +20,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.mp.momentrip.data.CheckItem // Assuming: data class CheckItem(val id: String, val name: String, var checked: Boolean)
+import com.mp.momentrip.data.schedule.CheckItem // Assuming: data class CheckItem(val id: String, val name: String, var checked: Boolean)
 import com.mp.momentrip.view.ScheduleViewModel
 import me.saket.swipe.SwipeAction
 import me.saket.swipe.SwipeableActionsBox

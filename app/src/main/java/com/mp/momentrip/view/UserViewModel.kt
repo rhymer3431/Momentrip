@@ -4,13 +4,16 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
+import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseUser
-import com.mp.momentrip.data.Day
-import com.mp.momentrip.data.Place
-import com.mp.momentrip.data.Schedule
-import com.mp.momentrip.data.User
-import com.mp.momentrip.data.UserPreference
-import com.mp.momentrip.data.toDto
+import com.google.firebase.auth.auth
+import com.google.firebase.firestore.firestore
+import com.mp.momentrip.data.place.Place
+import com.mp.momentrip.data.schedule.Day
+import com.mp.momentrip.data.schedule.Schedule
+import com.mp.momentrip.data.user.User
+
+import com.mp.momentrip.data.user.dto.UserDto
 import com.mp.momentrip.service.AccountService
 import com.mp.momentrip.service.Word2VecModel
 import com.mp.momentrip.ui.MainDestinations
@@ -19,6 +22,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
@@ -96,6 +100,7 @@ class UserViewModel : ViewModel() {
 
 
     fun createSchedule(
+        title: String,
         region: String,
         startDate: LocalDate,
         endDate: LocalDate,
@@ -116,11 +121,12 @@ class UserViewModel : ViewModel() {
             }
 
             val newSchedule = Schedule(
+                title = title,
                 startDate = startDate,
                 endDate = endDate,
                 duration = duration,
                 days = List(duration.toInt()) { index ->
-                    Day(index = index, date = startDate.plusDays(index.toLong()))
+                    Day(index = index.toLong(), date = startDate.plusDays(index.toLong()))
                 },
                 region = region
             )
@@ -148,7 +154,46 @@ class UserViewModel : ViewModel() {
             updateUser(current.copy(schedules = updated))
         }
     }
+    fun refreshSchedules() {
+        val uid = Firebase.auth.currentUser?.uid ?: return
 
+        viewModelScope.launch {
+            try {
+                val snapshot = Firebase.firestore
+                    .collection("users")
+                    .document(uid)
+                    .get()
+                    .await()
+
+                val user = snapshot.toObject(UserDto::class.java)
+                _user.value = user?.toModel()
+            } catch (e: Exception) {
+                Log.e("UserViewModel", "스케줄 새로고침 실패", e)
+            }
+        }
+    }
+
+
+    fun addScheduleToUser(newSchedule: Schedule, onSuccess: () -> Unit, onError: (String) -> Unit) {
+        val user = _user.value
+        if (user == null) {
+            onError("유저 정보가 없습니다.")
+            return
+        }
+
+        val updatedSchedules = user.schedules.orEmpty().toMutableList().apply { add(newSchedule) }
+        val updatedUser = user.copy(schedules = updatedSchedules)
+
+        viewModelScope.launch {
+            try {
+                updateUser(updatedUser) // Firebase 저장
+                _user.value = updatedUser // 로컬 상태 반영
+                onSuccess()
+            } catch (e: Exception) {
+                onError("스케줄 저장에 실패했습니다.")
+            }
+        }
+    }
 
 
     private fun calculateDuration(startDate: LocalDate, endDate: LocalDate): Long {
@@ -163,13 +208,10 @@ class UserViewModel : ViewModel() {
     fun getScheduleSize(): Int{
         return _user.value?.schedules!!.size
     }
-    // 사용자 선호도 가져오기
-    fun getUserPreference(): UserPreference? {
-        return getUser()?.userPreference
-    }
-    fun isValidUserPreference(): Boolean? {
 
-        return _user.value?.userPreference?.preferenceVector?.isNotEmpty()
+
+    fun isValidUserVector(): Boolean? {
+        return _user.value?.userVector?.isNotEmpty()
     }
 
     fun setPlace(place: Place?){
@@ -183,7 +225,6 @@ class UserViewModel : ViewModel() {
 
             if (currentUser != null && currentPlace != null) {
                 try {
-                    // 좋아요 상태 변경
                     val updatedLiked = currentUser.liked.toMutableList()
                     val isNowLiked = if (updatedLiked.contains(currentPlace)) {
                         updatedLiked.remove(currentPlace)
@@ -193,37 +234,35 @@ class UserViewModel : ViewModel() {
                         true
                     }
 
-                    // 좋아요 반영된 사용자 객체 생성
-                    val updatedUser = currentUser.copy(liked = updatedLiked)
+                    // ✅ FoodPreference와 userVector 복사본 준비
+                    val newFoodPref = currentUser.foodPreference.copy()
+                    val newVector = currentUser.userVector?.toMutableList() ?: MutableList(100) { 0f }
+
+                    withContext(Dispatchers.Default) {
+                        if (isNowLiked) {
+                            // 음식점인 경우 음식 선호도 반영
+                            if (currentPlace.contentTypeId == 39) {
+                                currentPlace.cat3?.let { newFoodPref.addFoodTypeCount(it) }
+                                currentPlace.title.let { newFoodPref.addFoodNameCount(it) }
+                            }
+
+                            // 벡터 업데이트
+                            Word2VecModel.like(newVector, currentPlace)
+                        } else {
+                            Word2VecModel.dislike(newVector, currentPlace)
+                        }
+                    }
+
+                    val updatedUser = currentUser.copy(
+                        liked = updatedLiked,
+                        foodPreference = newFoodPref,
+                        userVector = newVector
+                    )
                     _user.value = updatedUser
                     _isLiked.value = isNowLiked
 
-                    // 백그라운드에서 벡터/선호도 처리
-                    withContext(Dispatchers.Default) {
-                        if (isNowLiked) {
-                            // 음식점인 경우 FoodPreference에 반영
-                            if (currentPlace.contentTypeId == 39) {
-                                val foodPref = currentUser.userPreference.foodPreference
-                                currentPlace.cat3?.let { foodPref.addFoodTypeCount(it) }
-                                currentPlace.title.let { foodPref.addFoodNameCount(it) }
-                            }
-
-                            // Word2Vec 벡터 업데이트
-                            Word2VecModel.like(
-                                currentUser.userPreference.preferenceVector,
-                                currentPlace
-                            )
-                        } else {
-                            Word2VecModel.dislike(
-                                currentUser.userPreference.preferenceVector,
-                                currentPlace
-                            )
-                        }
-
-                        // 백엔드 동기화 (IO)
-                        withContext(Dispatchers.IO) {
-                            AccountService.updateUser(updatedUser.toDto())
-                        }
+                    withContext(Dispatchers.IO) {
+                        AccountService.updateUser(updatedUser.toDto())
                     }
                 } catch (e: Exception) {
                     _user.value = currentUser

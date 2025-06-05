@@ -2,8 +2,6 @@ package com.mp.momentrip.service
 
 
 import com.mp.momentrip.data.KakaoImageSearchResponse
-import com.mp.momentrip.data.KakaoPlace
-import com.mp.momentrip.data.Place
 import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Header

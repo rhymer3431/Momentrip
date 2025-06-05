@@ -15,41 +15,52 @@ private val DarkColorPalette = darkColorScheme(
     surface = BlueDark
 )
 private val LightColorPalette = lightColorScheme(
-    primary = Color(0xFF24BAEC),         // 메인 푸른색
-    onPrimary = Color(0xFFFFFFFF),       // primary 위 텍스트 (화이트, 대비 확보)
+    primary = Color(0xFF24BAEC),             // 메인 푸른색
+    onPrimary = Color.White,
 
-    secondary = Color(0xFF1385B6),       // primary보다 살짝 어두운 보조 블루
-    onSecondary = Color(0xFFFFFFFF),     // 보조색 위 텍스트 (화이트)
+    primaryContainer = Color(0xFFD9F3FF),    // 밝은 하늘색 배경
+    onPrimaryContainer = Color(0xFF002D3A),  // 대비 높은 텍스트
 
-    tertiary = Color(0xFF3A8DFF),        // 푸른색과 조화로운 포인트 블루
-    onTertiary = Color(0xFFFFFFFF),      // tertiary 위 텍스트 (화이트)
+    inversePrimary = Color(0xFF7EDAFF),      // 다크모드 대비용 아쿠아
 
-    error = Color(0xFFB00020),           // 시각적으로 경고를 주는 진한 레드
-    onError = Color(0xFFFFFFFF),         // 에러 위 텍스트 (화이트)
+    secondary = Color(0xFF4F6D87),           // 부드러운 블루그레이 (보조 색상)
+    onSecondary = Color.White,
 
-    background = Color(0xFFFFFFFF),      // 전체 배경: 아주 연한 푸른 백색
-    onBackground = Color(0xFF1B2D3C),    // 배경 위 텍스트 (짙은 블루그레이)
+    secondaryContainer = Color(0xFFDFEAF1),  // 연한 블루-그레이 배경
+    onSecondaryContainer = Color(0xFF1B2B38),
 
-    surface = Color(0xFFF6F6F6),         // 카드/섹션 배경: primary의 옅은 버전
-    onSurface = Color(0xFF1B2D3C),       // surface 위 텍스트 (가독성 높은 진한 컬러)
+    tertiary = Color(0xFF567DA7),            // 강조용 블루-그레이 (포인트 색)
+    onTertiary = Color.White,
 
-    surfaceVariant = Color(0xFFECECEC),  // 변형된 서피스 색 (살짝 채도 낮춘 블루)
-    onSurfaceVariant = Color(0xFF1B2D3C),// 변형 surface 위 텍스트
+    tertiaryContainer = Color(0xFFD9E8F6),   // 연한 회청색 (선택된 배경)
+    onTertiaryContainer = Color(0xFF1D2F45),
 
-    outline = Color(0xFF7EB6E9),         // 테두리 (중간 톤 블루)
-    outlineVariant = Color(0xFFB5DAF1),  // 옅은 테두리 (투명도 높은 느낌)
 
-    surfaceTint = Color(0xFF24BAEC),     // primary와 동일한 틴트 색
+    background = Color(0xFFFAFCFD),       // 완전 화이트보다 살짝 부드러운 톤
+    onBackground = Color(0xFF1C1C1C),
 
-    inverseSurface = Color(0xFF1A3445),  // 다크 모드용 반전 surface (짙은 네이비)
-    inverseOnSurface = Color(0xFFE0F4FB),// inverse surface 위 텍스트
+    surface = Color(0xFFF5F7F9),          // 카드/시트용 따뜻한 연회색
+    onSurface = Color(0xFF1C1C1C),
 
-    errorContainer = Color(0xFFFFDAD4),  // 에러 영역 배경 (부드러운 살구빛 레드)
-    onErrorContainer = Color(0xFF410002),// 에러 박스 위 텍스트
+    surfaceVariant = Color(0xFFE9EFF3),   // 약간 구분감 있는 회색 (그리드/탭)
+    onSurfaceVariant = Color(0xFF37424A),
 
-    scrim = Color(0x991B2D3C)            // 스크림(덮개) 색상 (짙은 반투명 블루)
+    surfaceTint = Color(0xFF24BAEC),         // elevation tint
+
+    inverseSurface = Color(0xFF2A3B4A),
+    inverseOnSurface = Color(0xFFE6F4FA),
+
+    error = Color(0xFFB00020),
+    onError = Color.White,
+
+    errorContainer = Color(0xFFFFDAD4),
+    onErrorContainer = Color(0xFF410002),
+
+    outline = Color(0xFFB0C9DA),             // 테두리용 라이트 블루 그레이
+    outlineVariant = Color(0xFFD7EAF4),      // 비활성 테두리용 더 연한 톤
+
+    scrim = Color(0x991C1C1C)                // modal 블러용
 )
-
 
 
 @Composable

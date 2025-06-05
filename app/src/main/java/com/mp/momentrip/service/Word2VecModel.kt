@@ -2,7 +2,7 @@ package com.mp.momentrip.service
 
 import android.content.Context
 import android.util.Log
-import com.mp.momentrip.data.Place
+import com.mp.momentrip.data.place.Place
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async

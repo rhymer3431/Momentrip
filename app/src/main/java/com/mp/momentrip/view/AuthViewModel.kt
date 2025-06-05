@@ -5,7 +5,6 @@ import androidx.lifecycle.ViewModel
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.auth
-import com.mp.momentrip.data.User
 
 class AuthViewModel : ViewModel() {
     private val auth = Firebase.auth

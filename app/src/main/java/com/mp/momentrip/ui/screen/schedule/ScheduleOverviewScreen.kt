@@ -1,11 +1,28 @@
 package com.mp.momentrip.ui.screen.schedule
 
 import android.annotation.SuppressLint
-import android.util.Log
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
@@ -13,12 +30,29 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material.icons.filled.Hotel
+import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.Place
+import androidx.compose.material.icons.filled.Restaurant
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
@@ -29,17 +63,32 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
-import com.kakao.vectormap.*
+import com.kakao.vectormap.KakaoMap
+import com.kakao.vectormap.KakaoMapReadyCallback
+import com.kakao.vectormap.LatLng
+import com.kakao.vectormap.MapLifeCycleCallback
+import com.kakao.vectormap.MapView
 import com.kakao.vectormap.animation.Interpolation
 import com.kakao.vectormap.camera.CameraAnimation
 import com.kakao.vectormap.camera.CameraPosition
 import com.kakao.vectormap.camera.CameraUpdateFactory
-import com.kakao.vectormap.label.*
-import com.kakao.vectormap.route.*
+import com.kakao.vectormap.label.LabelOptions
+import com.kakao.vectormap.label.LabelStyle
+import com.kakao.vectormap.label.LabelStyles
+import com.kakao.vectormap.label.LabelTextBuilder
+import com.kakao.vectormap.route.OnRouteLineAnimatorStopCallback
+import com.kakao.vectormap.route.RouteLineOptions
+import com.kakao.vectormap.route.RouteLineSegment
+import com.kakao.vectormap.route.RouteLineStyle
+import com.kakao.vectormap.route.RouteLineStyles
+import com.kakao.vectormap.route.RouteLineStylesSet
 import com.kakao.vectormap.route.animation.ProgressAnimation
 import com.kakao.vectormap.route.animation.ProgressDirection
 import com.kakao.vectormap.route.animation.ProgressType
-import com.mp.momentrip.data.*
+import com.mp.momentrip.data.place.Place
+import com.mp.momentrip.data.schedule.Activity
+import com.mp.momentrip.data.schedule.Day
+import com.mp.momentrip.data.schedule.Schedule
 import com.mp.momentrip.ui.ScheduleDestinations
 import com.mp.momentrip.ui.components.DayCalendarBar
 import com.mp.momentrip.ui.components.DayItem
@@ -182,7 +231,7 @@ fun ScheduleOverviewScreen(
                     .clip(RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp))
                     .background(MaterialTheme.colorScheme.surface)
             ) {
-                LazyColumn(contentPadding = PaddingValues(16.dp)) {
+                LazyColumn(contentPadding = PaddingValues(20.dp)) {
                     itemsIndexed(currentDay.timeTable) { idx, activity ->
                         ScheduleItemCard(
                             index = idx,
@@ -212,14 +261,13 @@ fun ScheduleOverviewScreen(
 
 
                         )
+                        Spacer(modifier = Modifier.height(8.dp))
                     }
                 }
             }
         }
     }
 }
-
-/* ───────── 일정 카드 ───────── */
 @Composable
 private fun ScheduleItemCard(
     index: Int,
@@ -227,67 +275,131 @@ private fun ScheduleItemCard(
     isSelected: Boolean,
     onClick: () -> Unit
 ) {
-    Card(
+    val icon = when (activity.place.contentTypeId) {
+        12 -> Icons.Filled.LocationOn
+        32 -> Icons.Filled.Hotel
+        39 -> Icons.Filled.Restaurant
+        else -> Icons.Filled.Place
+    }
+
+    val interactionSource = remember { MutableInteractionSource() }
+    val isPressed by interactionSource.collectIsPressedAsState()
+
+    val backgroundColor by animateColorAsState(
+        targetValue = when {
+            isPressed -> MaterialTheme.colorScheme.surfaceVariant
+            else -> MaterialTheme.colorScheme.surface
+        },
+        label = "cardColor"
+    )
+
+    val elevation by animateDpAsState(
+        targetValue = when {
+            isPressed -> 2.dp
+            isSelected -> 8.dp
+            else -> 1.dp
+        },
+        label = "cardElevation"
+    )
+
+    val scale by animateFloatAsState(
+        targetValue = when {
+            isPressed -> 0.97f
+            isSelected -> 1.05f
+            else -> 1f
+        },
+        label = "cardScale"
+    )
+
+    val border = if (isSelected)
+        BorderStroke(1.5.dp, MaterialTheme.colorScheme.primary)
+    else null
+
+    Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 6.dp)
-            .clickable { onClick() },
-        shape = RoundedCornerShape(16.dp),
-        elevation = CardDefaults.cardElevation(4.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = if (isSelected) MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)
-            else MaterialTheme.colorScheme.surface
-        )
+            .padding(start = 12.dp, top = 4.dp, bottom = 4.dp)
+            .clickable(
+                interactionSource = interactionSource,
+                indication = null,
+                onClick = onClick
+            ),
+        verticalAlignment = Alignment.Top
     ) {
-        Row(
-            modifier = Modifier
-                .padding(16.dp)
-                .fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
+        // 타임라인
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.padding(top = 4.dp)
         ) {
-            /* 순번 원형 */
             Box(
                 modifier = Modifier
-                    .size(28.dp)
-                    .clip(CircleShape)
-                    .background(Color(0xFF7D5CF6)),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = "${index + 1}",
-                    color = Color.White,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 14.sp
+                    .size(12.dp)
+                    .background(
+                        if (isSelected) MaterialTheme.colorScheme.primary else Color.LightGray,
+                        shape = CircleShape
+                    )
+            )
+            if (!isSelected) {
+                Spacer(modifier = Modifier.height(4.dp))
+                Box(
+                    modifier = Modifier
+                        .width(2.dp)
+                        .height(60.dp)
+                        .background(Color.LightGray)
                 )
             }
+        }
 
-            Spacer(modifier = Modifier.width(12.dp))
+        Spacer(modifier = Modifier.width(8.dp))
 
-            /* 시간 + 장소 정보 */
-            Column {
-                activity.startTime?.let {
-                    Text(
-                        text = it.format(DateTimeFormatter.ofPattern("HH:mm")),
-                        fontSize = 12.sp,
-                        color = Color.Gray
-                    )
+        // 카드 본문
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(end = 12.dp)
+                .graphicsLayer {
+                    scaleX = scale
+                    scaleY = scale
                 }
-                Spacer(modifier = Modifier.height(4.dp))
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    AsyncImage(
-                        model = activity.place.firstImage,
+                .animateContentSize(),  // 크기 변화 부드럽게
+            shape = RoundedCornerShape(16.dp),
+            elevation = CardDefaults.cardElevation(defaultElevation = elevation),
+            border = border,
+            colors = CardDefaults.cardColors(containerColor = backgroundColor)
+        ) {
+            Box(modifier = Modifier.fillMaxWidth()) {
+                // 카드 내용
+                Row(
+                    modifier = Modifier
+                        .padding(12.dp)
+                        .fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        imageVector = icon,
                         contentDescription = null,
-                        modifier = Modifier
-                            .size(60.dp)
-                            .clip(RoundedCornerShape(10.dp))
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(24.dp)
                     )
+
                     Spacer(modifier = Modifier.width(12.dp))
-                    Column {
-                        Text(
-                            text = activity.place.title,
-                            fontWeight = FontWeight.SemiBold,
-                            fontSize = 14.sp
-                        )
+
+                    Column(modifier = Modifier.weight(1f)) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            activity.startTime?.let {
+                                Text(
+                                    text = it.format(DateTimeFormatter.ofPattern("HH:mm")),
+                                    fontSize = 12.sp,
+                                    color = Color.Gray
+                                )
+                            }
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                text = activity.place.title,
+                                fontWeight = FontWeight.SemiBold,
+                                fontSize = 14.sp
+                            )
+                        }
                         activity.place.addr1?.let {
                             Text(
                                 text = it,
@@ -297,11 +409,22 @@ private fun ScheduleItemCard(
                             )
                         }
                     }
+
+                    Spacer(modifier = Modifier.width(8.dp))
+
+                    AsyncImage(
+                        model = activity.place.firstImage,
+                        contentDescription = null,
+                        modifier = Modifier
+                            .size(56.dp)
+                            .clip(RoundedCornerShape(12.dp))
+                    )
                 }
             }
         }
     }
 }
+
 
 /* ───────── 지도 유틸 ───────── */
 private fun updateMapPosition(

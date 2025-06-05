@@ -15,9 +15,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.mp.momentrip.ui.ScheduleDestinations
 import com.mp.momentrip.ui.theme.OrangeNice
-import com.mp.momentrip.view.UserViewModel
 
 
 @Composable
@@ -25,7 +23,7 @@ fun RecommendResult(
     navController: NavController,
     modifier: Modifier = Modifier,
     resultRegion: String,
-    userState: UserViewModel
+    onClick : () -> Unit
 ) {
 
         Column(
@@ -54,11 +52,11 @@ fun RecommendResult(
                 onClick = {
                     // viewModelScope를 사용하여 ViewModel에서 비동기 작업 처리
 
-                    navController.navigate(ScheduleDestinations.SCHEDULE_ROUTE)
+                    onClick()
                 },
                 modifier = Modifier.padding(top = 16.dp)
             ) {
-                Text(text = "여행 일정 생성")
+                Text(text = "바로 시작하기")
             }
         }
 

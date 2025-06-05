@@ -2,17 +2,21 @@ package com.mp.momentrip.service
 
 
 import okhttp3.OkHttpClient
-import com.mp.momentrip.BuildConfig.TOUR_API_KEY
-import com.mp.momentrip.data.ApiResponse
-import com.mp.momentrip.data.AreaBasedItem
-import com.mp.momentrip.data.AreaCode
-import com.mp.momentrip.data.ContentDetailItem
+import com.mp.momentrip.data.tourAPI.ApiResponse
 
-import com.mp.momentrip.data.DetailIntroItem
-import com.mp.momentrip.data.FestivalItem
-import com.mp.momentrip.data.KeywordSearchItem
-import com.mp.momentrip.data.LocationBasedItem
-import com.mp.momentrip.data.StayItem
+import com.mp.momentrip.data.tourAPI.AreaCode
+
+
+
+import com.mp.momentrip.data.tourAPI.FestivalItem
+
+
+import com.mp.momentrip.data.tourAPI.AreaBasedItem
+import com.mp.momentrip.data.tourAPI.ContentDetailItem
+import com.mp.momentrip.data.tourAPI.DetailIntroItem
+import com.mp.momentrip.data.tourAPI.KeywordSearchItem
+import com.mp.momentrip.data.tourAPI.LocationBasedItem
+import com.mp.momentrip.data.tourAPI.StayItem
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory

@@ -1,16 +1,12 @@
 package com.mp.momentrip.service
 
-import android.util.Log
-import com.mp.momentrip.data.Category
-import com.mp.momentrip.data.FoodCategory
-import com.mp.momentrip.data.Place
-import com.mp.momentrip.data.UserPreference
-import com.mp.momentrip.view.UserViewModel
+import com.mp.momentrip.data.place.Place
+import com.mp.momentrip.data.tourAPI.Category
+import com.mp.momentrip.data.tourAPI.ContentType
+import com.mp.momentrip.data.user.FoodPreference
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
-import org.openkoreantext.processor.KoreanPosJava
-import org.openkoreantext.processor.OpenKoreanTextProcessorJava
 
 object RecommendService {
 
@@ -25,79 +21,70 @@ object RecommendService {
         "안동" to "문화 역사 전통 건축물 음식"
     )
 
-    suspend fun getFavoriteFoodType(userPreference: UserPreference?): String? {
-        // 유저의 foodPreference가 null일 경우를 체크
-        val foodTypeCode = userPreference?.foodPreference?.foodTypeId?.maxByOrNull{ it.value }?.key
-
-        // foodTypeCode가 null이 아니면 해당 카테고리 찾기
-        return if (foodTypeCode != null) {
-            FoodCategory.fromCode(foodTypeCode)?.description
-        } else {
-            null  // foodTypeCode가 null일 경우 null 반환
-        }
+    suspend fun getFavoriteFoodType(foodPreference: FoodPreference?): String? {
+        val foodTypeCode = foodPreference?.foodTypeId?.maxByOrNull { it.value }?.key
+        return foodTypeCode?.let { Category.fromCode(it)?.categoryName }
     }
 
-    suspend fun getRegionByPreference(userPreference: UserPreference?): String {
+    suspend fun getRegionByVector(userVector: List<Float>): String {
         val regionVectors = regions.mapValues { (_, keywords) ->
             val keywordList = keywords.split(" ")
             Word2VecModel.getVectorByList(keywordList)
         }
-        return regionVectors.maxByOrNull { (_, regionVector) ->
-            cosineSimilarity(userPreference?.preferenceVector!!, regionVector)
+
+        return regionVectors.maxByOrNull { (_, regionVec) ->
+            cosineSimilarity(userVector, regionVec)
         }?.key ?: "추천할 지역 없음"
     }
 
-
-    suspend fun getRecommendRestaurants(
-        userPreference: UserPreference,
-        region: String
-    ): List<Place> {
+    suspend fun getRecommendRestaurants(userVector: List<Float>, region: String): List<Place> {
         val restaurants = TourService.getRestaurantsByRegion(region)
-
-        return calculateTopPlaces(userPreference, restaurants)
+        return calculateTopPlaces(userVector, restaurants)
     }
 
-    suspend fun getRecommendTourSpots(
-        userPreference: UserPreference,
-        region: String
-    ): List<Place> {
-        val tourSpots = TourService.getTouristSpotsByRegion(region)
-
-        return calculateTopPlaces(userPreference, tourSpots)
+    suspend fun getRecommendTourSpots(userVector: List<Float>, region: String): List<Place> {
+        val spots = TourService.getTouristSpotsByRegion(region)
+        return calculateTopPlaces(userVector, spots)
     }
 
-    /**
-     * 숙소 추천
-     */
-    suspend fun getRecommendDormitories(
-        userPreference: UserPreference,
-        region: String
-    ): List<Place> {
-        val accommodations = TourService.getAccommodationsByRegion(region)
-
-        return calculateTopPlaces(userPreference, accommodations)
+    suspend fun getRecommendDormitories(userVector: List<Float>, region: String): List<Place> {
+        val dorms = TourService.getAccommodationsByRegion(region)
+        return calculateTopPlaces(userVector, dorms)
     }
 
-    /**
-     * 공통 추천 계산 로직
-     */
+    suspend fun getRecommendedPlacesByRegion(
+        userVector: List<Float>,
+        region: String,
+        topN: Int = 10
+    ): Map<ContentType, List<Place>> {
+        val allPlaces = TourService.getAllPlacesByRegion(region)
+
+        return allPlaces
+            .groupBy { ContentType.fromId(it.contentTypeId) }
+            .mapNotNull { (type, places) ->
+                if (type == null) return@mapNotNull null
+
+                val ranked = places.mapNotNull { place ->
+                    val vec = Word2VecModel.getVectorByPlace(place)
+                    vec?.let { cosineSimilarity(userVector, it) to place }
+                }.sortedByDescending { it.first }
+                    .take(topN)
+                    .map { it.second }
+
+                if (ranked.isNotEmpty()) type to ranked else null
+            }
+            .toMap()
+    }
+
     private suspend fun calculateTopPlaces(
-        userPreference: UserPreference,
+        userVector: List<Float>,
         places: List<Place>,
         topN: Int = 10
     ): List<Place> = coroutineScope {
-        val userVec = userPreference.preferenceVector ?: return@coroutineScope emptyList()
-
         places.map { place ->
             async {
-                val placeVec = Word2VecModel.getVectorByPlace(place)
-                if (placeVec == null) {
-                    Log.w("RecommendService", "place vector null: ${place.title}")
-                    null
-                } else {
-                    val similarity = cosineSimilarity(userVec, placeVec)
-                    similarity to place
-                }
+                val vec = Word2VecModel.getVectorByPlace(place)
+                vec?.let { cosineSimilarity(userVector, it) to place }
             }
         }.awaitAll()
             .filterNotNull()
@@ -106,8 +93,7 @@ object RecommendService {
             .map { it.second }
     }
 
-    // 코사인 유사도 함수
-    private fun cosineSimilarity(vec1: List<Float>, vec2: List<Float>): Float {
+    fun cosineSimilarity(vec1: List<Float>, vec2: List<Float>): Float {
         if (vec1.size != vec2.size) return 0f
 
         var dot = 0f
@@ -115,30 +101,18 @@ object RecommendService {
         var mag2 = 0f
 
         for (i in vec1.indices) {
-            val a = vec1[i]
-            val b = vec2[i]
-            dot += a * b
-            mag1 += a * a
-            mag2 += b * b
+            dot += vec1[i] * vec2[i]
+            mag1 += vec1[i] * vec1[i]
+            mag2 += vec2[i] * vec2[i]
         }
 
         val denom = kotlin.math.sqrt(mag1) * kotlin.math.sqrt(mag2)
         return if (denom == 0f) 0f else dot / denom
     }
-    fun getFavoriteFood(userPreference: UserPreference): Pair<String?, String?> {
-        val typeMap = userPreference.foodPreference.foodTypeId
-        val nameMap = userPreference.foodPreference.foodNameId
 
-        val topType = typeMap
-            ?.maxByOrNull { it.value }
-            ?.key
-
-        val topName = nameMap
-            ?.maxByOrNull { it.value }
-            ?.key
-
+    fun getFavoriteFood(foodPreference: FoodPreference): Pair<String?, String?> {
+        val topType = foodPreference.foodTypeId?.maxByOrNull { it.value }?.key
+        val topName = foodPreference.foodNameId?.maxByOrNull { it.value }?.key
         return Pair(topType, topName)
     }
-
-
 }

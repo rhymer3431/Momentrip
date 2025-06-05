@@ -1,7 +1,7 @@
 package com.mp.momentrip.util.schedule
 
-import com.mp.momentrip.data.Activity
-import com.mp.momentrip.data.Day
+import com.mp.momentrip.data.schedule.Activity
+import com.mp.momentrip.data.schedule.Day
 
 object ScheduleUtil{
     fun isAvailable(day: Day, newActivity: Activity) : Boolean{

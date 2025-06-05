@@ -1,14 +1,13 @@
 // ScheduleViewModel.kt
 package com.mp.momentrip.view
 
-import androidx.compose.runtime.collectAsState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.mp.momentrip.data.Activity
-import com.mp.momentrip.data.CheckItem
-import com.mp.momentrip.data.Day
-import com.mp.momentrip.data.Place
-import com.mp.momentrip.data.Schedule
+import com.mp.momentrip.data.place.Place
+import com.mp.momentrip.data.schedule.Activity
+import com.mp.momentrip.data.schedule.CheckItem
+import com.mp.momentrip.data.schedule.Day
+import com.mp.momentrip.data.schedule.Schedule
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -108,22 +107,35 @@ class ScheduleViewModel : ViewModel() {
 
         days[dayIdx] = today.copy(timeTable = updatedTable)
         val updatedSchedule = current.copy(days = days)
-
+        _schedule.value = updatedSchedule
         saveSchedule(updatedSchedule, allSchedules, userVM)
     }
 
     fun updateScheduleById(
-        schedules: List<Schedule>,
+        schedules: List<Schedule?>,
         updated: Schedule
     ): List<Schedule> {
-        return schedules.map { if (it.id == updated.id) updated else it }
+        return schedules.mapNotNull {
+            it?.let { if (it.id == updated.id) updated else it }
+        }
     }
-    fun deleteScheduleById(
-        schedules: List<Schedule>,
-        targetId: String
-    ): List<Schedule> {
-        return schedules.filterNot { it.id == targetId }
+    fun initSchedule(){
+        _schedule.value = null
     }
+    fun deleteSchedule(userVM: UserViewModel) {
+        val current = _schedule.value ?: return
+        val currentId = current.id
+        val existing = userVM.user.value?.schedules.orEmpty().filterNotNull()
+
+        // 삭제된 리스트 생성
+        val updated = existing.filterNot { it.id == currentId }
+
+        // 업데이트 및 초기화
+        userVM.updateSchedules(updated)
+        userVM.refreshSchedules()
+        _schedule.value = null
+    }
+
     fun saveSchedule(
         updated: Schedule,
         allSchedules: List<Schedule>,
@@ -132,6 +144,46 @@ class ScheduleViewModel : ViewModel() {
         val replaced = updateScheduleById(allSchedules, updated)
         userVM.updateSchedules(replaced)
     }
+    fun updateScheduleTitle(newTitle: String, userVM: UserViewModel) {
+        val current = _schedule.value ?: return
+        val updated = current.copy(title = newTitle)
+
+        val schedules = userVM.user.value?.schedules.orEmpty()
+        val newList = updateScheduleById(schedules, updated)
+
+        // 1. 로컬 User 상태 업데이트
+        userVM.updateSchedules(newList)
+
+        // 2. 서버(Firebase)로부터 재동기화
+        userVM.refreshSchedules()
+
+        // 3. 현재 화면 상태 갱신
+        _schedule.value = updated
+    }
+    fun removeActivityById(
+        activityId: String,
+        userVM: UserViewModel
+    ) {
+        val currentSchedule = _schedule.value ?: return
+        val schedules = userVM.user.value?.schedules?.filterNotNull() ?: return
+        val dayIndex = _selectedDayIndex.value
+
+        val days = currentSchedule.days.toMutableList()
+        val today = days.getOrNull(dayIndex) ?: return
+
+        val updatedTimeTable = today.timeTable.filterNot { it.id == activityId }
+        if (updatedTimeTable.size == today.timeTable.size) return // 삭제 대상 없음
+
+        days[dayIndex] = today.copy(timeTable = updatedTimeTable)
+        val updatedSchedule = currentSchedule.copy(days = days)
+
+        _schedule.value = updatedSchedule
+        saveSchedule(updatedSchedule, schedules, userVM)
+
+        // 선택된 인덱스 초기화
+        _selectedActivityIndex.value = null
+    }
+
 
 
 

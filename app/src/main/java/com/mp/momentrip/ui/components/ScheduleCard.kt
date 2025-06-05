@@ -25,22 +25,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
-import com.mp.momentrip.data.Activity
+import com.mp.momentrip.data.schedule.Activity
 
-import com.mp.momentrip.data.Day
+import com.mp.momentrip.data.schedule.Day
 
 
-import com.mp.momentrip.data.Place
-import com.mp.momentrip.data.Schedule
+import com.mp.momentrip.data.schedule.Schedule
 import com.mp.momentrip.ui.theme.MomenTripTheme
 
 

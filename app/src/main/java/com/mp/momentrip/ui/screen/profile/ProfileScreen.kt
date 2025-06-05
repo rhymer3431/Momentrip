@@ -17,10 +17,8 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountBox
 import androidx.compose.material.icons.filled.DeleteForever
 import androidx.compose.material.icons.filled.Logout
 import androidx.compose.material.icons.filled.Place
@@ -44,7 +42,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberAsyncImagePainter
 import com.mp.momentrip.service.AccountService
 import com.mp.momentrip.ui.MainDestinations
@@ -55,6 +52,7 @@ import com.mp.momentrip.view.UserViewModel
 
 @Composable
 fun ProfileScreen(
+    mainNavController: NavController,
     navController: NavController,
     userState: UserViewModel
 ) {
@@ -71,7 +69,9 @@ fun ProfileScreen(
 
             UserStats(userState)
             // Profile Menu
-            ProfileMenu(navController)
+            ProfileMenu(
+                mainNavController,
+                navController)
         }
     }
 }
@@ -105,24 +105,6 @@ fun UserStats(
         modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Avatar
-        Box(
-            modifier = Modifier
-                .size(96.dp)
-                .background(Color(0xFFFFEADF), CircleShape),
-            contentAlignment = Alignment.Center
-        ) {
-            // This would be replaced with your actual avatar image
-            // For now using a placeholder with initials
-            Text(
-                text = "L",
-                fontSize = 36.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color(0xFF1B1E28)
-            )
-        }
-
-        Spacer(modifier = Modifier.height(8.dp))
 
         if (user != null) {
             Text(
@@ -187,7 +169,9 @@ fun StatItem(title: String, value: String) {
 }
 
 @Composable
-fun ProfileMenu(navController: NavController) {
+fun ProfileMenu(
+    mainNavController: NavController,
+    navController: NavController) {
 
     ThemeCard(
         modifier = Modifier
@@ -226,7 +210,7 @@ fun ProfileMenu(navController: NavController) {
                 icon = Icons.Default.Logout, // 로그아웃
                 title = "로그아웃",
                 showDivider = true,
-                onClick = { AccountService.signOut(navController) }
+                onClick = { AccountService.signOut(mainNavController) }
             )
         }
     }
@@ -333,11 +317,6 @@ fun ProfileScreen2() {
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun ProfilePreview(){
-    ProfileScreen(rememberNavController(), UserViewModel())
-}
 
 @Preview(showBackground = true)
 @Composable

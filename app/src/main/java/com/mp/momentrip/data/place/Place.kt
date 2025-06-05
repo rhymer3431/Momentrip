@@ -1,4 +1,4 @@
-package com.mp.momentrip.data
+package com.mp.momentrip.data.place
 
 import androidx.annotation.DrawableRes
 import com.mp.momentrip.R
@@ -149,24 +149,24 @@ enum class Region(val code: Int, val locationName: String) {
          */
         @DrawableRes
         fun getRegionImage(locationName: String): Int? =
-            when (Region.fromName(locationName)) {
-                Region.SEOUL     -> R.drawable.q4a1
-                Region.INCHEON   ->  R.drawable.q4a1
-                Region.DAEJEON   ->  R.drawable.q4a1
-                Region.DAEGU     ->  R.drawable.q4a1
-                Region.GWANGJU   ->    R.drawable.q4a1
-                Region.BUSAN     ->  R.drawable.q4a1
-                Region.ULSAN     ->  R.drawable.q4a1
-                Region.SEJONG    ->  R.drawable.q4a1
-                Region.GYEONGGI  ->  R.drawable.q4a1
-                Region.GANGWON   ->  R.drawable.q4a1
-                Region.CHUNGBUK  ->  R.drawable.q4a1
-                Region.CHUNGNAM  ->  R.drawable.q4a1
-                Region.JEONBUK   ->  R.drawable.q4a1
-                Region.JEONNAM   ->  R.drawable.q4a1
-                Region.GYEONGBUK ->  R.drawable.q4a1
-                Region.GYEONGNAM ->  R.drawable.q4a1
-                Region.JEJU      ->  R.drawable.q4a1
+            when (fromName(locationName)) {
+                SEOUL     -> R.drawable.seoul
+                INCHEON   ->  R.drawable.incheon
+                DAEJEON   ->  R.drawable.daejeon
+                DAEGU     ->  R.drawable.daegu
+                GWANGJU   ->    R.drawable.gwangju
+                BUSAN     ->  R.drawable.busan
+                ULSAN     ->  R.drawable.ulsan
+                SEJONG    ->  R.drawable.sejong
+                GYEONGGI  ->  R.drawable.gyeonggi
+                GANGWON   ->  R.drawable.ganrueng
+                CHUNGBUK  ->  R.drawable.chungbook
+                CHUNGNAM  ->  R.drawable.chungnam
+                JEONBUK   ->  R.drawable.jeonbook
+                JEONNAM   ->  R.drawable.jeonnam
+                GYEONGBUK ->  R.drawable.gyeongbook
+                GYEONGNAM ->  R.drawable.gyeongnam
+                JEJU      ->  R.drawable.jeju
                 null             -> null          // 알 수 없는 지역
             }
 
